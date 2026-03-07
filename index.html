@@ -1196,11 +1196,18 @@ async function changerPhotoProfil(input){
   reader.onload=async function(e){
     alert('⏳ Mise à jour...');
     const url=await uploadPhoto(e.target.result,'profil');
-    const result=await sbPatch('users',utilisateur.id,{photo_profil:url});
-    if(Array.isArray(result)&&result.length>0){utilisateur=result[0];localStorage.setItem('tn_user',JSON.stringify(utilisateur));alert('✅ Photo mise à jour !');afficherMesInfos();updateHeader();}
+    if(!url){alert('❌ Erreur upload. Réessayez.');return;}
+    utilisateur.photo_profil=url;
+    localStorage.setItem('tn_user',JSON.stringify(utilisateur));
+    await sbPatch('users',utilisateur.id,{photo_profil:url});
+    alert('✅ Photo mise à jour !');
+    afficherMesInfos();
+    afficherDashboard();
+    updateHeader();
   };
   reader.readAsDataURL(file);
 }
+
 
 async function afficherMesAnnonces(){
   if(!utilisateur){showPage('connexion');return;}
