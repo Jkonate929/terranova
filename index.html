@@ -1402,7 +1402,8 @@ async function adminAfficher(type){
         </div>
       </div>`).join(''):'<p style="color:#666;text-align:center;padding:20px">Aucune en attente 🎉</p>');
   }else if(type==='users'){
-    const users=await sbGet('users','select=*');
+   const users=await sbGet('users','select=*&limit=50&order=created_at.desc');
+ 
     el.innerHTML=`<h3 style="color:#2d5a1b;margin:10px 0">👥 (${Array.isArray(users)?users.length:0})</h3>`+
     (Array.isArray(users)?users.map(u=>`
       <div class="card ${u.statut==='suspendu'?'suspended-card':''}">
