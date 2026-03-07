@@ -1,21 +1,43 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TerraNova</title>
-  <style>
-    body{font-family:sans-serif;text-align:center;padding:40px;background:#f0f7ee}
-    h1{color:#2d5a1b;font-size:2.5em}
-    p{color:#555;font-size:1.2em}
-    .btn{background:#2d5a1b;color:white;padding:15px 30px;border-radius:10px;text-decoration:none;font-size:1.1em;margin:10px;display:inline-block}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TerraNova</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:sans-serif;background:#f0f7ee}
+.header{background:#2d5a1b;color:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:1.3em}
+.btn{background:#2d5a1b;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em}
+.btn-outline{background:white;color:#2d5a1b;border:2px solid #2d5a1b;padding:8px 16px;border-radius:8px;cursor:pointer}
+.page{display:none;padding:20px}
+.page.active{display:block}
+.card{background:white;border-radius:10px;padding:15px;margin:10px 0;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+input,textarea,select{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:8px;font-size:1em}
+.hero{background:#2d5a1b;color:white;padding:40px 20px;text-align:center}
+.hero h2{font-size:1.8em;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
+.badge{background:#e8f5e9;color:#2d5a1b;padding:4px 10px;border-radius:20px;font-size:0.85em}
+.badge-red{background:#ffebee;color:#c62828}
+</style>
 </head>
 <body>
+
+<div class="header">
   <h1>🌍 TerraNova</h1>
-  <p>Plateforme immobilière de Côte d'Ivoire</p>
-  <p>Achetez,  vendez et louez des terrains facilement</p>
-  <a class="btn" href="#">Voir les annonces</a>
-  <a class="btn" href="#">Publier une annonce</a>
-</body>
-</html>
+  <div id="nav-buttons">
+    <button class="btn-outline" style="color:white;border-color:white;margin-right:5px" onclick="showPage('connexion')">Connexion</button>
+    <button class="btn" style="background:white;color:#2d5a1b" onclick="showPage('publier')">Publier</button>
+  </div>
+</div>
+
+<!-- PAGE ACCUEIL -->
+<div id="page-accueil" class="page active">
+  <div class="hero">
+    <h2>Trouvez votre terrain idéal</h2>
+    <p>Achetez, vendez et louez des terrains en Côte d'Ivoire</p>
+    <br>
+    <button class="btn" style="background:white;color:#2d5a1b;font-size:1.1em;padding:12px 30px" onclick="showPage('annonces')">Voir les annonces</button>
+  </div>
+  <div style="padding:20px">
