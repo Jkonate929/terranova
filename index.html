@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TerraNova</title>
+<meta name="theme-color" content="#2d5a1b">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:sans-serif;background:#f0f7ee;transition:background 0.3s}
+body.dark{background:#1a1a1a;color:#eee}
+body.dark .card{background:#2a2a2a;color:#eee}
+body.dark .header{background:#1a3a0a}
+body.dark input,body.dark textarea,body.dark select{background:#333;color:#eee;border-color:#444}
+body.dark .tab-bar{background:#222;border-color:#333}
+body.dark .menu-item{border-color:#333}
+body.dark .info-row{border-color:#333}
+body.dark .badge{background:#2d5a1b;color:#fff}
+.header{background:#2d5a1b;color:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:1.3em}
+.btn{background:#2d5a1b;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em;width:100%;margin-top:8px}
+.btn-white{background:white;color:#2d5a1b;border:2px solid #2d5a1b;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:1em;width:100%;margin-top:8px}
+.btn-green{background:#25D366;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em;width:100%;margin-top:8px}
+.btn-orange{background:#ff6600;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em;width:100%;margin-top:8px}
+.btn-small{background:#2d5a1b;color:white;padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-size:0.9em}
+.page{display:none;padding:20px 15px;padding-bottom:90px}
+.page.active{display:block}
+.card{background:white;border-radius:10px;padding:15px;margin:10px 0;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+.card-click{cursor:pointer}
+input,textarea,select{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:8px;font-size:1em;box-sizing:border-box}
+.hero{background:#2d5a1b;color:white;padding:30px 20px;text-align:center}
+.badge{background:#e8f5e9;color:#2d5a1b;padding:4px 10px;border-radius:20px;font-size:0.85em;display:inline-block}
+.badge-red{background:#ffebee;color:#c62828}
+.badge-gold{background:#fff8e1;color:#f57f17;border:1px solid #ffc107}
+.badge-blue{background:#e3f2fd;color:#1565c0}
+.badge-pending{background:#fff3e0;color:#e65100}
+.badge-new{background:#c62828;color:white;font-size:0.7em;padding:2px 6px;border-radius:10px}
+.back-btn{background:none;border:none;color:#2d5a1b;font-size:1em;cursor:pointer;margin-bottom:15px;display:block}
+.detail-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee;flex-wrap:wrap;gap:5px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
+.role-card{background:white;border:2px solid #ddd;border-radius:10px;padding:15px;text-align:center;cursor:pointer}
+.role-card.selected{border-color:#2d5a1b;background:#e8f5e9}
+.role-card .emoji{font-size:2em;margin-bottom:5px}
+.role-card h4{color:#2d5a1b;font-size:0.9em}
+.role-card p{color:#888;font-size:0.75em;margin-top:3px}
+.condition-box{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px;margin:10px 0;font-size:0.9em;color:#856404}
+.info-box{background:#e3f2fd;border:1px solid #90caf9;border-radius:8px;padding:12px;margin:10px 0;font-size:0.9em;color:#1565c0}
+.warning-box{background:#ffebee;border:1px solid #ef9a9a;border-radius:8px;padding:12px;margin:10px 0;font-size:0.9em;color:#c62828}
+.success-box{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:12px;margin:10px 0;font-size:0.9em;color:#2d5a1b}
+.photo-upload{border:2px dashed #c62828;border-radius:10px;padding:20px;text-align:center;cursor:pointer;margin:10px 0;background:#fff5f5}
+.photo-upload-ok{border:2px dashed #2d5a1b;background:#f9fff9;border-radius:10px;padding:20px;text-align:center;cursor:pointer;margin:10px 0}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
+.stat-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:15px 0}
+.stat-card{background:white;border-radius:10px;padding:12px;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+.stat-card .number{font-size:1.8em;color:#2d5a1b;font-weight:bold}
+.stat-card .label{color:#888;font-size:0.72em;margin-top:4px}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #ddd;display:flex;justify-content:space-around;padding:8px 0;z-index:100}
+.tab-btn{background:none;border:none;font-size:1.3em;cursor:pointer;padding:5px;display:flex;flex-direction:column;align-items:center;position:relative}
+.tab-btn span{font-size:0.6em;color:#888;margin-top:2px}
+.notif-badge{position:absolute;top:0;right:0;background:#c62828;color:white;border-radius:50%;width:16px;height:16px;font-size:0.6em;display:flex;align-items:center;justify-content:center}
+.loading{text-align:center;padding:30px;color:#888}
+.certifie-banner{background:linear-gradient(135deg,#2d5a1b,#4caf50);color:white;padding:15px;border-radius:10px;text-align:center;margin:10px 0}
+.legal-text{font-size:0.8em;color:#888;line-height:1.6;padding:10px;background:#f9f9f9;border-radius:8px;margin:10px 0}
+.admin-header{background:linear-gradient(135deg,#1a237e,#283593);color:white;padding:20px;border-radius:10px;text-align:center;margin-bottom:15px}
+.info-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f0f0f0;flex-wrap:wrap;gap:5px}
+.info-label{color:#888;font-size:0.9em;min-width:120px}
+.info-value{color:#333;font-weight:500;font-size:0.9em;text-align:right}
+.menu-item{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f0f0f0;cursor:pointer}
+.menu-icon{font-size:1.3em;margin-right:10px}
+.menu-arrow{color:#ccc;font-size:1.2em}
+.msg-bubble-me{background:#2d5a1b;color:white;padding:10px 14px;border-radius:18px 18px 4px 18px;margin:4px 0;max-width:80%;align-self:flex-end;font-size:0.9em;word-break:break-word}
+.msg-bubble-other{background:#f0f0f0;color:#333;padding:10px 14px;border-radius:18px 18px 18px 4px;margin:4px 0;max-width:80%;align-self:flex-start;font-size:0.9em;word-break:break-word}
+.msg-time{font-size:0.7em;opacity:0.7;margin-top:3px}
+.conv-item{display:flex;align-items:center;padding:12px;border-bottom:1px solid #eee;cursor:pointer}
+.conv-avatar{width:45px;height:45px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;font-size:1.5em;margin-right:12px;flex-shrink:0}
+.conv-unread{background:#c62828;color:white;border-radius:50%;width:20px;height:20px;font-size:0.7em;display:flex;align-items:center;justify-content:center;margin-left:auto}
+.pending-card{border-left:4px solid #ff6600;background:#fff8f0}
+.suspended-card{border-left:4px solid #c62828;background:#fff5f5}
+.step-box{background:#f8f9fa;border-left:4px solid #2d5a1b;border-radius:8px;padding:12px;margin:8px 0;font-size:0.9em;line-height:1.8}
+.avatar-circle{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #2d5a1b}
+.lang-btn{padding:10px;border:2px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:1em;text-align:center}
+.lang-btn.selected{border-color:#2d5a1b;background:#e8f5e9}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}
+.cgu-modal{background:white;border-radius:15px;padding:25px;max-width:420px;width:100%;max-height:80vh;overflow-y:auto}
+.refused-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:#1a1a1a;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:30px;text-align:center}
+.activity-tab{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+.activity-tab button{padding:8px 14px;border:2px solid #ddd;border-radius:20px;background:white;cursor:pointer;font-size:0.85em}
+.activity-tab button.active{border-color:#2d5a1b;background:#e8f5e9;color:#2d5a1b}
+.photo-gallery{display:flex;gap:8px;overflow-x:auto;margin:10px 0;padding-bottom:5px}
+.photo-gallery img{width:100px;height:80px;object-fit:cover;border-radius:8px;flex-shrink:0;cursor:pointer}
+.photo-gallery-full{display:flex;gap:8px;overflow-x:auto;margin:10px 0}
+.photo-gallery-full img{width:200px;height:150px;object-fit:cover;border-radius:8px;flex-shrink:0;cursor:pointer}
+.star{color:#ffc107;font-size:1.2em;cursor:pointer}
+.star.empty{color:#ddd}
+.filtre-box{background:white;border-radius:10px;padding:15px;margin:10px 0;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+.quartier-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.quartier-btn{padding:8px;border:2px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:0.85em;text-align:center}
+.quartier-btn.selected{border-color:#2d5a1b;background:#e8f5e9;color:#2d5a1b}
+.template-card{background:#f0f7ee;border:1px solid #c8e6c9;border-radius:8px;padding:10px;margin:8px 0;cursor:pointer;font-size:0.85em;color:#2d5a1b}
+.rank-card{display:flex;align-items:center;padding:12px;border-bottom:1px solid #eee}
+.rank-num{width:30px;height:30px;border-radius:50%;background:#2d5a1b;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:0.9em;margin-right:12px;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<!-- CGU OVERLAY -->
+<div class="overlay" id="cgu-overlay" style="display:none">
+  <div class="cgu-modal">
+    <div style="text-align:center;margin-bottom:15px">
+      <div style="font-size:3em">🌍</div>
+      <h2 style="color:#2d5a1b;margin:8px 0">TerraNova</h2>
+      <p style="color:#666;font-size:0.9em">Avant de continuer, veuillez accepter nos conditions d'utilisation</p>
+    </div>
+    <div style="background:#f9f9f9;border-radius:8px;padding:12px;margin:10px 0;max-height:200px;overflow-y:auto;font-size:0.85em;color:#555;line-height:1.7">
+      <strong>1. Présentation</strong><br>TerraNova est une plateforme de mise en relation immobilière en Côte d'Ivoire.<br><br>
+      <strong>2. Responsabilité</strong><br>TerraNova ne peut être tenu responsable des litiges entre utilisateurs.<br><br>
+      <strong>3. Certification</strong><br>Pour publier, selfie + CNI recto/verso requis. Vérification manuelle.<br><br>
+      <strong>4. Sécurité</strong><br>Ne versez jamais d'argent sans visiter le terrain. Consultez un notaire.<br><br>
+      <strong>5. Données</strong><br>Vos données sont sécurisées et ne sont pas partagées avec des tiers.
+    </div>
+    <button class="btn" onclick="accepterCGU()">✅ J'accepte les conditions</button>
+    <button class="btn-white" onclick="refuserCGU()" style="margin-top:8px">❌ Refuser</button>
+  </div>
+</div>
+
+<!-- REFUSED SCREEN -->
+<div class="refused-screen" id="refused-screen" style="display:none">
+  <div style="font-size:4em">🚫</div>
+  <h2 style="color:white;margin:15px 0">Accès refusé</h2>
+  <p style="color:#aaa;font-size:0.95em;line-height:1.7;margin-bottom:20px">Vous devez accepter les conditions pour accéder à TerraNova.</p>
+  <button onclick="relancerCGU()" style="background:#2d5a1b;color:white;border:none;padding:12px 25px;border-radius:8px;cursor:pointer;font-size:1em">🔄 Réessayer</button>
+</div>
+
+<div class="header">
+  <h1>🌍 TerraNova</h1>
+  <div id="header-btns"></div>
+</div>
+
+<!-- ACCUEIL -->
+<div id="page-accueil" class="page active">
+  <div class="hero">
+    <h2 id="hero-title">Trouvez votre terrain idéal</h2>
+    <p style="margin-top:5px;opacity:0.9" id="hero-sub">Achetez, vendez et louez en Côte d'Ivoire</p>
+    <div style="margin-top:15px;display:flex;gap:8px">
+      <input type="text" id="search-accueil" placeholder="🔍 Rechercher un terrain..." style="margin:0;flex:1;border-radius:8px" oninput="rechercherAccueil(this.value)">
+      <button onclick="sauvegarderRecherche()" style="background:white;color:#2d5a1b;border:none;padding:10px;border-radius:8px;cursor:pointer;font-size:1.1em" title="Sauvegarder">🔖</button>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <button onclick="filtrerQuartier('Cocody')" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);padding:5px 10px;border-radius:15px;cursor:pointer;font-size:0.8em">📍 Cocody</button>
+      <button onclick="filtrerQuartier('Yopougon')" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);padding:5px 10px;border-radius:15px;cursor:pointer;font-size:0.8em">📍 Yopougon</button>
+      <button onclick="filtrerQuartier('Abobo')" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);padding:5px 10px;border-radius:15px;cursor:pointer;font-size:0.8em">📍 Abobo</button>
+      <button onclick="filtrerQuartier('Plateau')" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);padding:5px 10px;border-radius:15px;cursor:pointer;font-size:0.8em">📍 Plateau</button>
+      <button onclick="filtrerQuartier('Marcory')" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);padding:5px 10px;border-radius:15px;cursor:pointer;font-size:0.8em">📍 Marcory</button>
+    </div>
+  </div>
+  <div style="padding:10px 0">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h3 style="color:#2d5a1b" id="recents-title">🔥 Annonces récentes</h3>
+      <button onclick="showPage('classement')" style="background:none;border:none;color:#2d5a1b;cursor:pointer;font-size:0.85em">🏆 Top vendeurs</button>
+    </div>
+    <div id="annonces-accueil"><div class="loading">Chargement...</div></div>
+  </div>
+</div>
+
+<!-- ANNONCES -->
+<div id="page-annonces" class="page">
+  <h2 style="color:#2d5a1b;margin-bottom:10px" id="annonces-title">📋 Annonces</h2>
+  <input type="text" id="search-annonces" placeholder="🔍 Rechercher..." oninput="rechercher(this.value)">
+  <div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap">
+    <button class="btn-small" onclick="filtrer('tous')">Tous</button>
+    <button class="btn-small" style="background:#e8f5e9;color:#2d5a1b" onclick="filtrer('vente')">🏷️ Vente</button>
+    <button class="btn-small" style="background:#ffebee;color:#c62828" onclick="filtrer('location')">🔑 Location</button>
+    <button class="btn-small" style="background:#fff8e1;color:#f57f17" onclick="filtrer('certifie')">✅ Certifiés</button>
+    <button class="btn-small" style="background:#e8f5e9;color:#2d5a1b" onclick="showPage('filtres-avances')">⚙️ Filtres</button>
+  </div>
+  <div id="liste-annonces"><div class="loading">Chargement...</div></div>
+</div>
+
+<!-- FILTRES AVANCES -->
+<div id="page-filtres-avances" class="page">
+  <button class="back-btn" onclick="showPage('annonces')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px">⚙️ Filtres avancés</h2>
+  <div class="card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">💰 Budget (FCFA)</h3>
+    <div style="display:flex;gap:10px">
+      <input type="number" id="prix-min" placeholder="Min" style="flex:1">
+      <input type="number" id="prix-max" placeholder="Max" style="flex:1">
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">📐 Surface (m²)</h3>
+    <div style="display:flex;gap:10px">
+      <input type="number" id="surface-min" placeholder="Min" style="flex:1">
+      <input type="number" id="surface-max" placeholder="Max" style="flex:1">
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">📍 Quartier / Commune</h3>
+    <div class="quartier-grid">
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Cocody')">📍 Cocody</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Yopougon')">📍 Yopougon</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Abobo')">📍 Abobo</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Plateau')">📍 Plateau</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Marcory')">📍 Marcory</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Adjamé')">📍 Adjamé</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Treichville')">📍 Treichville</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Koumassi')">📍 Koumassi</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Port-Bouët')">📍 Port-Bouët</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Bingerville')">📍 Bingerville</div>
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">📅 Date de publication</h3>
+    <select id="filtre-date">
+      <option value="">Toutes les dates</option>
+      <option value="1">Aujourd'hui</option>
+      <option value="7">Cette semaine</option>
+      <option value="30">Ce mois</option>
+    </select>
+  </div>
+  <button class="btn" onclick="appliquerFiltres()">🔍 Appliquer les filtres</button>
+  <button class="btn-white" onclick="reinitialiserFiltres()">🔄 Réinitialiser</button>
+</div>
+
+<!-- DETAIL -->
+<div id="page-detail" class="page">
+  <button class="back-btn" onclick="showPage('annonces')">← Retour</button>
+  <div id="detail-contenu"></div>
+</div>
+
+<!-- CONNEXION -->
+<div id="page-connexion" class="page">
+  <div class="card" style="max-width:400px;margin:20px auto">
+    <h2 style="color:#2d5a1b;margin-bottom:8px;text-align:center">🔐 Connexion</h2>
+    <div class="info-box" style="font-size:0.85em;text-align:center" id="login-info">
+      💡 Connectez-vous pour découvrir toutes les fonctionnalités disponibles !
+    </div>
+    <input type="email" id="email-login" placeholder="Email">
+    <input type="password" id="password-login" placeholder="Mot de passe">
+    <button class="btn" onclick="connecter()">Se connecter</button>
+    <p style="text-align:center;margin-top:10px"><a href="#" onclick="showPage('mot-de-passe-oublie')" style="color:#2d5a1b;font-size:0.9em">Mot de passe oublié ?</a></p>
+    <hr style="margin:15px 0;border-color:#eee">
+    <button class="btn-white" onclick="showPage('inscription')">Créer un compte</button>
+  </div>
+</div>
+
+<!-- MOT DE PASSE OUBLIE -->
+<div id="page-mot-de-passe-oublie" class="page">
+  <div class="card" style="max-width:400px;margin:20px auto">
+    <button class="back-btn" onclick="showPage('connexion')">← Retour</button>
+    <h2 style="color:#2d5a1b;margin-bottom:10px;text-align:center">🔑 Mot de passe oublié</h2>
+    <div id="step-tel-oublie">
+      <input type="tel" id="tel-oublie" placeholder="Votre numéro de téléphone">
+      <button class="btn" onclick="envoyerCodeReset()">Envoyer le code</button>
+    </div>
+    <div id="step-code-oublie" style="display:none">
+      <div class="condition-box">📱 Code envoyé au <span id="tel-affiche"></span></div>
+      <input type="text" id="code-oublie" placeholder="Code reçu">
+      <input type="password" id="nouveau-password" placeholder="Nouveau mot de passe">
+      <input type="password" id="confirm-password" placeholder="Confirmer">
+      <button class="btn" onclick="reinitialiserPassword()">Réinitialiser</button>
+    </div>
+  </div>
+</div>
+
+<!-- INSCRIPTION -->
+<div id="page-inscription" class="page">
+  <div class="card" style="max-width:400px;margin:10px auto">
+    <h2 style="color:#2d5a1b;margin-bottom:5px;text-align:center">📝 Inscription</h2>
+    <div class="role-grid">
+      <div class="role-card" id="role-acheteur" onclick="choisirRole('acheteur')"><div class="emoji">🛒</div><h4>Acheteur</h4><p>Acheter un terrain</p></div>
+      <div class="role-card" id="role-vendeur" onclick="choisirRole('vendeur')"><div class="emoji">🏷️</div><h4>Vendeur</h4><p>Vendre un terrain</p></div>
+      <div class="role-card" id="role-locataire" onclick="choisirRole('locataire')"><div class="emoji">🔑</div><h4>Locataire</h4><p>Louer un terrain</p></div>
+      <div class="role-card" id="role-bailleur" onclick="choisirRole('bailleur')"><div class="emoji">🏘️</div><h4>Bailleur</h4><p>Mettre en location</p></div>
+      <div class="role-card" id="role-entreprise" onclick="choisirRole('entreprise')" style="grid-column:span 2"><div class="emoji">🏢</div><h4>Entreprise / Agence</h4></div>
+    </div>
+    <div id="conditions-role" style="display:none"></div>
+    <div id="form-inscription" style="display:none">
+      <input type="text" id="nom-inscription" placeholder="Nom complet *">
+      <input type="tel" id="tel-inscription" placeholder="Téléphone *">
+      <input type="email" id="email-inscription" placeholder="Email *">
+      <input type="password" id="password-inscription" placeholder="Mot de passe *">
+      <div id="step-sms" style="display:none">
+        <div class="condition-box">📱 Code envoyé au <span id="tel-sms-affiche"></span></div>
+        <input type="text" id="code-sms" placeholder="Code de confirmation *">
+      </div>
+      <div class="legal-text" id="cgu-texte" style="display:none">☑️ En créant un compte, vous acceptez les <a href="#" onclick="showPage('cgu')" style="color:#2d5a1b">CGU</a>.</div>
+      <button class="btn" id="btn-inscription" onclick="etapeInscription()">Continuer</button>
+    </div>
+    <p style="text-align:center;margin-top:15px;font-size:0.9em">Déjà un compte ? <a href="#" onclick="showPage('connexion')" style="color:#2d5a1b">Se connecter</a></p>
+  </div>
+</div>
+
+<!-- CERTIFICATION -->
+<div id="page-certifier" class="page">
+  <div class="card" style="max-width:400px;margin:10px auto">
+    <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+    <div class="certifie-banner"><div style="font-size:2em">🏅</div><h2 style="margin:8px 0">Certifiez votre compte</h2><p style="font-size:0.9em;opacity:0.9">Selfie + CNI Recto/Verso</p></div>
+    <div class="condition-box">⏳ Vérification manuelle — quelques heures à plusieurs jours. Vous serez notifié par message.</div>
+    <div class="warning-box" style="font-size:0.85em">📸 Bonne luminosité • Document entier • Texte LISIBLE • Pas de reflets</div>
+    <h3 style="color:#2d5a1b;margin:12px 0 5px">1️⃣ Selfie</h3>
+    <div class="photo-upload" id="selfie-zone" onclick="document.getElementById('selfie-input').click()"><div style="font-size:2em">🤳</div><p style="color:#c62828;font-weight:bold">Selfie OBLIGATOIRE</p></div>
+    <input type="file" id="selfie-input" accept="image/*" style="display:none" onchange="previewCertif(this,'selfie-preview','selfie-zone','selfie')">
+    <img id="selfie-preview" style="display:none;width:100%;height:160px;object-fit:cover;border-radius:10px;margin:5px 0">
+    <h3 style="color:#2d5a1b;margin:12px 0 5px">2️⃣ CNI Recto</h3>
+    <div class="photo-upload" id="cni-recto-zone" onclick="document.getElementById('cni-recto-input').click()"><div style="font-size:2em">🪪</div><p style="color:#c62828;font-weight:bold">CNI Recto OBLIGATOIRE</p><p style="color:#888;font-size:0.85em">Texte parfaitement LISIBLE</p></div>
+    <input type="file" id="cni-recto-input" accept="image/*" style="display:none" onchange="previewCertif(this,'cni-recto-preview','cni-recto-zone','cni-recto')">
+    <img id="cni-recto-preview" style="display:none;width:100%;height:160px;object-fit:cover;border-radius:10px;margin:5px 0">
+    <h3 style="color:#2d5a1b;margin:12px 0 5px">3️⃣ CNI Verso</h3>
+    <div class="photo-upload" id="cni-verso-zone" onclick="document.getElementById('cni-verso-input').click()"><div style="font-size:2em">🪪</div><p style="color:#c62828;font-weight:bold">CNI Verso OBLIGATOIRE</p><p style="color:#888;font-size:0.85em">Texte parfaitement LISIBLE</p></div>
+    <input type="file" id="cni-verso-input" accept="image/*" style="display:none" onchange="previewCertif(this,'cni-verso-preview','cni-verso-zone','cni-verso')">
+    <img id="cni-verso-preview" style="display:none;width:100%;height:160px;object-fit:cover;border-radius:10px;margin:5px 0">
+    <input type="text" id="cni-numero" placeholder="Numéro CNI *">
+    <input type="text" id="localite-certif" placeholder="Votre localité *">
+    <div class="warning-box" style="font-size:0.82em">🔒 Photos sécurisées — jamais publiées publiquement.</div>
+    <button class="btn" onclick="envoyerCertification()">📤 Envoyer pour vérification</button>
+  </div>
+</div>
+
+<!-- PUBLIER -->
+<div id="page-publier" class="page">
+  <div class="card" style="max-width:500px;margin:0 auto">
+    <h2 style="color:#2d5a1b;margin-bottom:15px">➕ Publier une annonce</h2>
+    <input type="text" id="titre-annonce" placeholder="Titre *">
+    <input type="text" id="lieu-annonce" placeholder="Lieu (ex: Cocody, Abidjan) *">
+    <input type="number" id="prix-annonce" placeholder="Prix en FCFA *">
+    <input type="number" id="surface-annonce" placeholder="Surface en m² *">
+    <select id="type-annonce"><option value="">-- Type * --</option><option value="vente">🏷️ Vente</option><option value="location">🔑 Location</option></select>
+    <input type="tel" id="tel-annonce" placeholder="Téléphone *">
+    <div style="margin:8px 0">
+      <p style="color:#666;font-size:0.85em;margin-bottom:5px">📋 Modèles de description :</p>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <span class="template-card" onclick="utiliserTemplate('borde-route')">🛣️ Bord de route</span>
+        <span class="template-card" onclick="utiliserTemplate('viabilise')">✅ Viabilisé</span>
+        <span class="template-card" onclick="utiliserTemplate('titre-foncier')">📄 Titre foncier</span>
+        <span class="template-card" onclick="utiliserTemplate('residentiel')">🏡 Résidentiel</span>
+      </div>
+    </div>
+    <textarea id="desc-annonce" placeholder="Description du terrain..." rows="4"></textarea>
+    <p style="color:#2d5a1b;font-size:0.9em;margin:8px 0;font-weight:bold">📸 Photos (jusqu'à 5 photos)</p>
+    <div id="photos-preview-container" style="display:flex;gap:8px;flex-wrap:wrap;margin:5px 0"></div>
+    <div class="photo-upload" id="photo-zone" onclick="document.getElementById('photo-input').click()">
+      <div style="font-size:2em">📸</div><p style="color:#c62828;font-weight:bold">Ajouter des photos *</p><p style="color:#888;font-size:0.85em">Jusqu'à 5 photos du terrain</p>
+    </div>
+    <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="previewPhotos(this)">
+    <div style="margin:10px 0">
+      <label style="color:#666;font-size:0.85em">📍 Latitude (optionnel)</label>
+      <input type="text" id="lat-annonce" placeholder="ex: 5.3600">
+      <label style="color:#666;font-size:0.85em">📍 Longitude (optionnel)</label>
+      <input type="text" id="lng-annonce" placeholder="ex: -4.0083">
+      <button onclick="maPosition()" style="background:#e8f5e9;color:#2d5a1b;border:1px solid #c8e6c9;padding:8px;border-radius:8px;cursor:pointer;width:100%;margin-top:5px;font-size:0.85em">📍 Utiliser ma position actuelle</button>
+    </div>
+    <div class="warning-box" style="font-size:0.85em">⚠️ Vous êtes seul responsable du contenu de votre annonce.</div>
+    <button class="btn" onclick="publierAnnonce()">📤 Publier</button>
+  </div>
+</div>
+
+<!-- PROFIL -->
+<div id="page-profil" class="page"><div id="dashboard-contenu"></div></div>
+
+<!-- MES INFORMATIONS -->
+<div id="page-mes-infos" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px">👤 Mes informations</h2>
+  <div id="mes-infos-contenu"></div>
+</div>
+
+<!-- MES ANNONCES -->
+<div id="page-mes-annonces" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px">📌 Mes annonces</h2>
+  <div id="mes-annonces-liste"></div>
+</div>
+
+<!-- FAVORIS -->
+<div id="page-favoris" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px">❤️ Mes favoris</h2>
+  <div id="favoris-liste"></div>
+</div>
+
+<!-- ACTIVITE -->
+<div id="page-activite" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:10px">📊 Mon activité</h2>
+  <div class="activity-tab">
+    <button class="active" onclick="afficherActivite('favoris',this)">❤️ Sauvegardées</button>
+    <button onclick="afficherActivite('recherches',this)">🔍 Recherches</button>
+    <button onclick="afficherActivite('masquees',this)">🚫 Masquées</button>
+  </div>
+  <div id="activite-contenu"></div>
+</div>
+
+<!-- CALCULATEUR -->
+<div id="page-calculateur" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px">💰 Calculateur de budget</h2>
+  <div class="card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">Votre budget disponible</h3>
+    <input type="number" id="budget-input" placeholder="Entrez votre budget en FCFA" oninput="calculerBudget()">
+  </div>
+  <div id="budget-result"></div>
+  <div class="card" style="background:#e8f5e9">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">📊 Estimation des frais</h3>
+    <div id="frais-result"><p style="color:#888;font-size:0.9em">Entrez un budget pour voir les frais estimés</p></div>
+  </div>
+</div>
+
+<!-- CLASSEMENT -->
+<div id="page-classement" class="page">
+  <button class="back-btn" onclick="showPage('accueil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px">🏆 Top vendeurs TerraNova</h2>
+  <div id="classement-liste"><div class="loading">Chargement...</div></div>
+</div>
+
+<!-- PROFIL VENDEUR PUBLIC -->
+<div id="page-profil-vendeur" class="page">
+  <button class="back-btn" onclick="showPage('annonces')">← Retour</button>
+  <div id="profil-vendeur-contenu"></div>
+</div>
+
+<!-- PARAMETRES -->
+<div id="page-parametres" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px">⚙️ Paramètres</h2>
+  <div class="card">
+    <h3 style="color:#2d5a1b;margin-bottom:15px">🌍 Langue</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="lang-btn" id="lang-fr" onclick="changerLangue('fr')">🇫🇷<br><strong>Français</strong></div>
+      <div class="lang-btn" id="lang-en" onclick="changerLangue('en')">🇬🇧<br><strong>English</strong></div>
+      <div class="lang-btn" id="lang-es" onclick="changerLangue('es')">🇪🇸<br><strong>Español</strong></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">🌙 Apparence</h3>
+    <div class="menu-item" onclick="toggleDarkMode()">
+      <span><span class="menu-icon">🌙</span>Mode sombre</span>
+      <span id="dark-mode-status" class="badge">Désactivé</span>
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">🔒 Confidentialité</h3>
+    <div class="menu-item" onclick="showPage('cgu')"><span>Conditions d'utilisation</span><span class="menu-arrow">›</span></div>
+    <div class="menu-item" style="border:none" onclick="relancerCGU()"><span>Revoir les CGU</span><span class="menu-arrow">›</span></div>
+  </div>
+</div>
+
+<!-- MESSAGES -->
+<div id="page-messages" class="page">
+  <h2 style="color:#2d5a1b;margin-bottom:15px">💬 Messages</h2>
+  <div id="conversations-liste"><div class="loading">Chargement...</div></div>
+</div>
+
+<!-- CONVERSATION -->
+<div id="page-conversation" class="page">
+  <button class="back-btn" onclick="showPage('messages')">← Retour</button>
+  <div id="conv-header" style="background:#e8f5e9;padding:12px;border-radius:10px;margin-bottom:10px"></div>
+  <div id="conv-messages" style="display:flex;flex-direction:column;min-height:200px;max-height:50vh;overflow-y:auto;padding:10px;background:white;border-radius:10px;margin-bottom:10px"></div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button onclick="document.getElementById('msg-photo-input').click()" style="background:#e8f5e9;border:none;padding:10px;border-radius:8px;cursor:pointer;font-size:1.2em;flex-shrink:0">📷</button>
+    <input type="file" id="msg-photo-input" accept="image/*" style="display:none" onchange="envoyerPhotoMessage(this)">
+    <input type="text" id="msg-input" placeholder="Écrire un message..." style="margin:0;flex:1" onkeydown="if(event.key==='Enter')envoyerMessage()">
+    <button onclick="envoyerMessage()" style="background:#2d5a1b;color:white;border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:1.2em;flex-shrink:0">➤</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="page-admin" class="page">
+  <div class="admin-header"><div style="font-size:2em">🛡️</div><h2 style="margin:8px 0">Tableau de bord Admin</h2><p style="opacity:0.8;font-size:0.9em">TerraNova</p></div>
+  <div id="admin-stats"></div>
+  <div style="display:flex;gap:8px;margin:10px 0;flex-wrap:wrap">
+    <button class="btn-small" onclick="adminAfficher('pending')" style="background:#ff6600">⏳ Certifications</button>
+    <button class="btn-small" onclick="adminAfficher('users')">👥 Utilisateurs</button>
+    <button class="btn-small" onclick="adminAfficher('annonces')" style="background:#1565c0">📋 Annonces</button>
+    <button class="btn-small" onclick="adminAfficher('messages')" style="background:#6a1b9a">💬 Messages</button>
+  </div>
+  <div id="admin-contenu"></div>
+</div>
+
+<!-- INSTALLER -->
+<div id="page-installer" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:5px">📲 Installer TerraNova</h2>
+  <div class="card" style="background:#e8f5e9">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">🍎 iPhone (Safari)</h3>
+    <div class="step-box">1️⃣ Ouvrez <strong>Safari</strong><br>2️⃣ <strong>terranova-lilac.vercel.app</strong><br>3️⃣ Partager ⬆️ → <strong>"Sur l'écran d'accueil"</strong><br>4️⃣ <strong>"Ajouter"</strong> ✅</div>
+  </div>
+  <div class="card" style="background:#e3f2fd">
+    <h3 style="color:#1565c0;margin-bottom:10px">🤖 Android (Chrome)</h3>
+    <div class="step-box">1️⃣ Ouvrez <strong>Chrome</strong><br>2️⃣ <strong>terranova-lilac.vercel.app</strong><br>3️⃣ ⋮ → <strong>"Ajouter à l'écran d'accueil"</strong><br>4️⃣ <strong>"Ajouter"</strong> ✅</div>
+  </div>
+</div>
+
+<!-- CGU -->
+<div id="page-cgu" class="page">
+  <button class="back-btn" onclick="showPage('parametres')">← Retour</button>
+  <div class="card">
+    <h2 style="color:#2d5a1b;margin-bottom:15px;text-align:center">⚖️ CGU TerraNova</h2>
+    <p style="color:#555;font-size:0.9em;line-height:1.7">TerraNova est une plateforme de mise en relation immobilière en Côte d'Ivoire. Nous agissons uniquement comme intermédiaire technique. Toute transaction est conclue directement entre acheteur et vendeur. TerraNova ne peut être tenu responsable des litiges.</p>
+    <div class="warning-box" style="margin-top:15px">⚠️ Ne versez jamais d'argent sans visiter le terrain • Consultez un notaire • Vérifiez le titre foncier</div>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn" onclick="showPage('accueil')">🏠<span id="tab-home">Accueil</span></button>
+  <button class="tab-btn" onclick="showPage('annonces')">📋<span id="tab-annonces">Annonces</span></button>
+  <button class="tab-btn" onclick="checkPublier()">➕<span id="tab-publier">Publier</span></button>
+  <button class="tab-btn" onclick="showPage('messages')" id="tab-messages">💬<span id="tab-msg">Messages</span></button>
+  <button class="tab-btn" onclick="showPage('profil')">👤<span id="tab-profil">Profil</span></button>
+</div>
+
+<script>
+const SB_URL='https://bebillevaxdbtjfdhaut.supabase.co';
+const SB_KEY='sb_publishable_4jOGEtncvGG_QSFn-AJkWA_HlE5_WBM';
+const HEADERS={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+const ADMIN_EMAIL='jkonate929@gmail.com';
+
+let utilisateur=JSON.parse(localStorage.getItem('tn_user')||'null');
+let annonces=[];
+let favoris=JSON.parse(localStorage.getItem('tn_favoris')||'[]');
+let masquees=JSON.parse(localStorage.getItem('tn_masquees')||'[]');
+let recherches=JSON.parse(localStorage.getItem('tn_recherches')||'[]');
+let roleChoisi='';
+let photosBase64=[];
+let selfieBase64='';
+let cniRectoBase64='';
+let cniVersoBase64='';
+let codeReset='';
+let codeSMS='';
+let inscriptionData={};
+let convActuelle=null;
+let langueActuelle=localStorage.getItem('tn_langue')||'fr';
+let darkMode=localStorage.getItem('tn_dark')==='true';
+let quartiersChoisis=[];
+let noteSelectionnee=0;
+let annonceCourante=null;
+
+const T={
+  fr:{hero:'Trouvez votre terrain idéal',heroSub:'Achetez, vendez et louez en Côte d\'Ivoire',recents:'🔥 Annonces récentes',annonces:'📋 Annonces',login:'Connexion',publier:'Publier',profil:'Profil',messages:'Messages',accueil:'Accueil',bienvenue:'Bienvenue'},
+  en:{hero:'Find your ideal land',heroSub:'Buy, sell and rent in Côte d\'Ivoire',recents:'🔥 Recent listings',annonces:'📋 Listings',login:'Login',publier:'Publish',profil:'Profile',messages:'Messages',accueil:'Home',bienvenue:'Welcome'},
+  es:{hero:'Encuentra tu terreno ideal',heroSub:'Compra, vende y alquila en Costa de Marfil',recents:'🔥 Anuncios recientes',annonces:'📋 Anuncios',login:'Iniciar sesión',publier:'Publicar',profil:'Perfil',messages:'Mensajes',accueil:'Inicio',bienvenue:'Bienvenido'}
+};
+
+function t(key){return(T[langueActuelle]&&T[langueActuelle][key])||T['fr'][key]||key;}
+
+function appliquerLangue(){
+  const e=id=>document.getElementById(id);
+  if(e('hero-title'))e('hero-title').textContent=t('hero');
+  if(e('hero-sub'))e('hero-sub').textContent=t('heroSub');
+  if(e('recents-title'))e('recents-title').textContent=t('recents');
+  if(e('annonces-title'))e('annonces-title').textContent=t('annonces');
+  if(e('tab-home'))e('tab-home').textContent=t('accueil');
+  if(e('tab-annonces'))e('tab-annonces').textContent='Annonces';
+  if(e('tab-publier'))e('tab-publier').textContent=t('publier');
+  if(e('tab-profil'))e('tab-profil').textContent=t('profil');
+  if(e('tab-msg'))e('tab-msg').textContent=t('messages');
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('selected'));
+  if(e('lang-'+langueActuelle))e('lang-'+langueActuelle).classList.add('selected');
+}
+
+function changerLangue(langue){
+  langueActuelle=langue;
+  localStorage.setItem('tn_langue',langue);
+  if(utilisateur){sbPatch('users',utilisateur.id,{langue});utilisateur.langue=langue;localStorage.setItem('tn_user',JSON.stringify(utilisateur));}
+  appliquerLangue();
+  alert(langue==='fr'?'✅ Français':langue==='en'?'✅ English':'✅ Español');
+}
+
+function toggleDarkMode(){
+  darkMode=!darkMode;
+  localStorage.setItem('tn_dark',darkMode);
+  document.body.classList.toggle('dark',darkMode);
+  const s=document.getElementById('dark-mode-status');
+  if(s)s.textContent=darkMode?'Activé':'Désactivé';
+}
+
+function verifierCGU(){
+  if(!localStorage.getItem('tn_cgu_accepte'))document.getElementById('cgu-overlay').style.display='flex';
+}
+function accepterCGU(){localStorage.setItem('tn_cgu_accepte','true');document.getElementById('cgu-overlay').style.display='none';}
+function refuserCGU(){
+  document.getElementById('cgu-overlay').style.display='none';
+  document.getElementById('refused-screen').style.display='flex';
+  document.querySelector('.header').style.display='none';
+  document.querySelector('.tab-bar').style.display='none';
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+}
+function relancerCGU(){
+  document.getElementById('refused-screen').style.display='none';
+  document.querySelector('.header').style.display='flex';
+  document.querySelector('.tab-bar').style.display='flex';
+  document.querySelectorAll('.page').forEach(p=>p.style.display='');
+  document.getElementById('page-accueil').classList.add('active');
+  document.getElementById('cgu-overlay').style.display='flex';
+}
+
+async function sbGet(table,query=''){const r=await fetch(`${SB_URL}/rest/v1/${table}?${query}&order=created_at.desc`,{headers:HEADERS});return await r.json();}
+async function sbPost(table,data){const r=await fetch(`${SB_URL}/rest/v1/${table}`,{method:'POST',headers:{...HEADERS,'Prefer':'return=representation'},body:JSON.stringify(data)});return await r.json();}
+async function sbPatch(table,id,data){const r=await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`,{method:'PATCH',headers:{...HEADERS,'Prefer':'return=representation'},body:JSON.stringify(data)});return await r.json();}
+async function sbDelete(table,id){await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`,{method:'DELETE',headers:HEADERS});}
+
+function genCode(){return Math.floor(1000+Math.random()*9000).toString();}
+
+function choisirRole(role){
+  roleChoisi=role;
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('role-'+role).classList.add('selected');
+  const msgs={acheteur:'<div class="info-box">🛒 Acheteur — Gratuit !</div>',vendeur:'<div class="condition-box">🏷️ Vendeur — CNI requise pour publier.</div>',locataire:'<div class="info-box">🔑 Locataire — Gratuit !</div>',bailleur:'<div class="condition-box">🏘️ Bailleur — CNI requise pour publier.</div>',entreprise:'<div class="condition-box">🏢 Entreprise — CNI requise.</div>'};
+  document.getElementById('conditions-role').innerHTML=msgs[role];
+  document.getElementById('conditions-role').style.display='block';
+  document.getElementById('form-inscription').style.display='block';
+  document.getElementById('cgu-texte').style.display='block';
+  document.getElementById('step-sms').style.display='none';
+  document.getElementById('btn-inscription').textContent='Continuer';
+}
+
+async function etapeInscription(){
+  const stepSMS=document.getElementById('step-sms');
+  if(stepSMS.style.display==='none'){
+    if(!roleChoisi){alert('Choisissez votre profil !');return;}
+    const nom=document.getElementById('nom-inscription').value;
+    const tel=document.getElementById('tel-inscription').value;
+    const email=document.getElementById('email-inscription').value;
+    const password=document.getElementById('password-inscription').value;
+    if(!nom||!tel||!email||!password){alert('Remplissez tous les champs');return;}
+    const existing=await sbGet('users',`email=eq.${email}&select=id`);
+    if(Array.isArray(existing)&&existing.length>0){alert('Email déjà utilisé');return;}
+    const bl=await sbGet('blacklist',`email=eq.${email}`);
+    if(Array.isArray(bl)&&bl.length>0){alert('❌ Banni.');return;}
+    codeSMS=genCode();
+    inscriptionData={nom,tel,email,password,role:roleChoisi,certifie:false,statut:'actif',langue:langueActuelle};
+    document.getElementById('tel-sms-affiche').textContent=tel;
+    stepSMS.style.display='block';
+    document.getElementById('btn-inscription').textContent='Confirmer';
+    alert('Code : '+codeSMS);
+  }else{
+    const code=document.getElementById('code-sms').value;
+    if(code!==codeSMS){alert('Code incorrect !');return;}
+    const emojis={acheteur:'🛒',vendeur:'🏷️',locataire:'🔑',bailleur:'🏘️',entreprise:'🏢'};
+    const result=await sbPost('users',{...inscriptionData,emoji:emojis[inscriptionData.role],user_code:'TN-'+Math.floor(10000+Math.random()*90000)});
+    if(Array.isArray(result)&&result.length>0){
+      utilisateur=result[0];
+      localStorage.setItem('tn_user',JSON.stringify(utilisateur));
+      alert('✅ '+t('bienvenue')+' '+utilisateur.nom+' !');
+      showPage('accueil');
+    }else{alert('Erreur.');}
+  }
+}
+
+function previewCertif(input,previewId,zoneId,type){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    if(type==='selfie')selfieBase64=e.target.result;
+    else if(type==='cni-recto')cniRectoBase64=e.target.result;
+    else if(type==='cni-verso')cniVersoBase64=e.target.result;
+    const p=document.getElementById(previewId);p.src=e.target.result;p.style.display='block';
+    const z=document.getElementById(zoneId);z.className='photo-upload-ok';z.innerHTML='<div style="font-size:1.5em">✅</div><p style="color:#2d5a1b;font-weight:bold">Photo ajoutée !</p>';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function uploadPhoto(base64,nom){
+  try{
+    const blob=await fetch(base64).then(r=>r.blob());
+    const fileName=nom+'_'+Date.now()+'.jpg';
+    const res=await fetch(`${SB_URL}/storage/v1/object/terranova-photos/${fileName}`,{method:'POST',headers:{'Authorization':'Bearer '+SB_KEY,'Content-Type':blob.type},body:blob});
+    if(res.ok)return`${SB_URL}/storage/v1/object/public/terranova-photos/${fileName}`;
+    return base64;
+  }catch(e){return base64;}
+}
+
+async function envoyerCertification(){
+  const cniNumero=document.getElementById('cni-numero').value;
+  const localite=document.getElementById('localite-certif').value;
+  if(!selfieBase64){alert('📸 Selfie obligatoire !');return;}
+  if(!cniRectoBase64){alert('🪪 CNI Recto obligatoire !');return;}
+  if(!cniVersoBase64){alert('🪪 CNI Verso obligatoire !');return;}
+  if(!cniNumero||!localite){alert('Remplissez tous les champs');return;}
+  const bl=await sbGet('blacklist',`cni=eq.${cniNumero}`);
+  if(Array.isArray(bl)&&bl.length>0){alert('❌ CNI banni.');return;}
+  alert('⏳ Envoi en cours...');
+  const selfieUrl=await uploadPhoto(selfieBase64,'selfie');
+  const cniRectoUrl=await uploadPhoto(cniRectoBase64,'cni-recto');
+  const cniVersoUrl=await uploadPhoto(cniVersoBase64,'cni-verso');
+  const result=await sbPatch('users',utilisateur.id,{cni:cniNumero,localite,selfie_url:selfieUrl,cni_url:cniRectoUrl,cni_verso_url:cniVersoUrl,certifie:false,certification_status:'pending'});
+  if(Array.isArray(result)&&result.length>0){
+    utilisateur=result[0];localStorage.setItem('tn_user',JSON.stringify(utilisateur));
+    await sbPost('messages',{expediteur_id:utilisateur.id,destinataire_id:utilisateur.id,contenu:'✅ Documents envoyés ! Selfie + CNI Recto + Verso reçus. Vérification en cours — peut prendre quelques heures à plusieurs jours. Vous serez notifié ici. Merci ! 🙏',lu:false,type:'admin'});
+    selfieBase64='';cniRectoBase64='';cniVersoBase64='';
+    alert('✅ Documents envoyés ! Vous recevrez un message de confirmation.');
+    showPage('profil');
+  }else{alert('Erreur.');}
+}
+
+function previewPhotos(input){
+  const files=Array.from(input.files).slice(0,5);
+  photosBase64=[];
+  const container=document.getElementById('photos-preview-container');
+  container.innerHTML='';
+  files.forEach((file,i)=>{
+    const reader=new FileReader();
+    reader.onload=function(e){
+      photosBase64.push(e.target.result);
+      const img=document.createElement('img');
+      img.src=e.target.result;
+      img.style.cssText='width:80px;height:70px;object-fit:cover;border-radius:8px;border:2px solid #2d5a1b';
+      container.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('photo-zone').innerHTML='<div style="font-size:1.5em">✅</div><p style="color:#2d5a1b;font-weight:bold">'+files.length+' photo(s) ajoutée(s)</p>';
+}
+
+function maPosition(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      document.getElementById('lat-annonce').value=pos.coords.latitude.toFixed(6);
+      document.getElementById('lng-annonce').value=pos.coords.longitude.toFixed(6);
+      alert('✅ Position ajoutée !');
+    },()=>alert('❌ Impossible d\'obtenir la position'));
+  }else{alert('Géolocalisation non supportée');}
+}
+
+function utiliserTemplate(type){
+  const templates={
+    'borde-route':'Terrain situé en bord de route principale, idéal pour une activité commerciale ou résidentielle. Facilement accessible, bien exposé avec une bonne visibilité.',
+    'viabilise':'Terrain entièrement viabilisé avec accès eau, électricité et voie bitumée. Prêt à construire immédiatement. Documents en règle.',
+    'titre-foncier':'Terrain avec titre foncier authentique et certifié. Toutes les démarches administratives sont complètes. Vente sécurisée avec notaire.',
+    'residentiel':'Terrain résidentiel situé dans un quartier calme et sécurisé. Environnement agréable, proche des commodités (écoles, marchés, transports).'
+  };
+  document.getElementById('desc-annonce').value=templates[type]||'';
+}
+
+function checkPublier(){
+  if(!utilisateur){alert('Connectez-vous pour publier !');showPage('connexion');return;}
+  if(utilisateur.statut==='suspendu'){alert('🚫 Compte suspendu.');return;}
+  if(utilisateur.statut==='recertification'){showPage('certifier');return;}
+  if(!utilisateur.certifie){
+    if(utilisateur.certification_status==='pending'){alert('⏳ Certification en cours.');return;}
+    if(confirm('⚠️ Certifiez votre compte pour publier ?')){showPage('certifier');}
+    return;
+  }
+  showPage('publier');
+}
+
+async function chargerAnnonces(){
+  try{annonces=await sbGet('annonces','select=*');if(!Array.isArray(annonces))annonces=[];}
+  catch(e){annonces=[];}
+}
+
+function isNew(dateStr){
+  if(!dateStr)return false;
+  return(Date.now()-new Date(dateStr).getTime())<48*3600*1000;
+}
+
+function rechercherAccueil(terme){
+  if(!terme){afficherAccueil();return;}
+  const f=annonces.filter(a=>!masquees.includes(a.id)&&(a.titre.toLowerCase().includes(terme.toLowerCase())||a.lieu.toLowerCase().includes(terme.toLowerCase())));
+  document.getElementById('annonces-accueil').innerHTML=f.length?f.map(a=>carteAnnonce(a)).join(''):'<p style="color:#888;text-align:center;padding:20px">Aucun résultat</p>';
+}
+
+function filtrerQuartier(q){
+  document.getElementById('search-accueil').value=q;
+  rechercherAccueil(q);
+  showPage('annonces');
+  rechercher(q);
+}
+
+function sauvegarderRecherche(){
+  const terme=document.getElementById('search-accueil').value.trim();
+  if(!terme){alert('Entrez un terme à sauvegarder');return;}
+  if(!recherches.includes(terme)){recherches.unshift(terme);if(recherches.length>10)recherches.pop();localStorage.setItem('tn_recherches',JSON.stringify(recherches));alert('🔖 Recherche sauvegardée !');}
+  else{alert('Déjà sauvegardée !');}
+}
+
+async function afficherAccueil(){
+  await chargerAnnonces();
+  const visible=annonces.filter(a=>!masquees.includes(a.id));
+  const el=document.getElementById('annonces-accueil');
+  if(el)el.innerHTML=visible.slice(0,6).map(a=>carteAnnonce(a)).join('')||'<p style="color:#888;text-align:center;padding:20px">Aucune annonce</p>';
+  if(utilisateur)verifierNotifs();
+}
+
+async function afficherAnnonces(liste){
+  const el=document.getElementById('liste-annonces');
+  if(!liste){await chargerAnnonces();liste=annonces.filter(a=>!masquees.includes(a.id));}
+  if(el)el.innerHTML=liste.map(a=>carteAnnonce(a)).join('')||'<p style="color:#888;text-align:center;padding:20px">Aucune annonce</p>';
+}
+
+function filtrer(type){
+  const visible=annonces.filter(a=>!masquees.includes(a.id));
+  if(type==='tous')afficherAnnonces(visible);
+  else if(type==='certifie')afficherAnnonces(visible.filter(a=>a.certifie_annonceur));
+  else afficherAnnonces(visible.filter(a=>a.type===type));
+}
+
+function toggleQuartier(btn,q){
+  btn.classList.toggle('selected');
+  if(quartiersChoisis.includes(q))quartiersChoisis=quartiersChoisis.filter(x=>x!==q);
+  else quartiersChoisis.push(q);
+}
+
+function appliquerFiltres(){
+  const pMin=parseInt(document.getElementById('prix-min').value)||0;
+  const pMax=parseInt(document.getElementById('prix-max').value)||Infinity;
+  const sMin=parseInt(document.getElementById('surface-min').value)||0;
+  const sMax=parseInt(document.getElementById('surface-max').value)||Infinity;
+  const jours=parseInt(document.getElementById('filtre-date').value)||0;
+  let f=annonces.filter(a=>!masquees.includes(a.id));
+  f=f.filter(a=>a.prix>=pMin&&a.prix<=pMax&&a.surface>=sMin&&a.surface<=sMax);
+  if(quartiersChoisis.length>0)f=f.filter(a=>quartiersChoisis.some(q=>a.lieu.toLowerCase().includes(q.toLowerCase())));
+  if(jours>0){const cutoff=Date.now()-jours*24*3600*1000;f=f.filter(a=>new Date(a.created_at).getTime()>cutoff);}
+  afficherAnnonces(f);
+  showPage('annonces');
+  alert('✅ '+f.length+' annonce(s) trouvée(s)');
+}
+
+function reinitialiserFiltres(){
+  document.getElementById('prix-min').value='';
+  document.getElementById('prix-max').value='';
+  document.getElementById('surface-min').value='';
+  document.getElementById('surface-max').value='';
+  document.getElementById('filtre-date').value='';
+  quartiersChoisis=[];
+  document.querySelectorAll('.quartier-btn').forEach(b=>b.classList.remove('selected'));
+  afficherAnnonces();
+  showPage('annonces');
+}
+
+function carteAnnonce(a){
+  const fav=favoris.includes(a.id);
+  const certBadge=a.certifie_annonceur?'<span class="badge badge-gold" style="font-size:0.72em">✅</span>':'';
+  const newBadge=isNew(a.created_at)?'<span class="badge-new">NOUVEAU</span>':'';
+  const ph=a.photo?`<img src="${a.photo}" style="width:calc(100% + 30px);height:150px;object-fit:cover;border-radius:8px 8px 0 0;margin:-15px -15px 10px -15px;display:block" onerror="this.style.display='none'">`:`<div style="background:#e8f5e9;height:100px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:center;font-size:3em;margin:-15px -15px 10px -15px">${a.emoji||'🌿'}</div>`;
+  return `<div class="card card-click" onclick="voirDetail('${a.id}')" style="padding-top:0;overflow:hidden;position:relative">
+    ${ph}
+    <div style="position:absolute;top:8px;right:8px;display:flex;gap:4px">
+      <button onclick="event.stopPropagation();toggleFavori('${a.id}')" style="background:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:0.9em">${fav?'❤️':'🤍'}</button>
+      <button onclick="event.stopPropagation();masquerAnnonce('${a.id}')" style="background:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:0.85em">🚫</button>
+    </div>
+    ${newBadge?`<div style="position:absolute;top:8px;left:8px">${newBadge}</div>`:''}
+    <h3 style="color:#2d5a1b;margin-bottom:4px;padding-right:10px;font-size:0.95em">${a.titre} ${certBadge}</h3>
+    <p style="color:#888;font-size:0.85em">📍 ${a.lieu} • 📐 ${a.surface} m²</p>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+      <strong style="color:#2d5a1b">${Number(a.prix).toLocaleString()} FCFA</strong>
+      <span class="badge ${a.type==='location'?'badge-red':''}" style="font-size:0.78em">${a.type==='vente'?'🏷️ Vente':'🔑 Location'}</span>
+    </div>
+  </div>`;
+}
+
+function masquerAnnonce(id){
+  if(!masquees.includes(id)){masquees.push(id);localStorage.setItem('tn_masquees',JSON.stringify(masquees));}
+  afficherAnnonces();
+}
+
+function toggleFavori(id){
+  const idx=favoris.indexOf(id);
+  if(idx>-1)favoris.splice(idx,1);else favoris.push(id);
+  localStorage.setItem('tn_favoris',JSON.stringify(favoris));
+  afficherAnnonces(annonces.filter(a=>!masquees.includes(a.id)));
+}
+
+async function activerAlertesPrix(annonceId,prixActuel){
+  if(!utilisateur){alert('Connectez-vous !');return;}
+  await sbPost('alertes_prix',{user_id:utilisateur.id,annonce_id:annonceId,prix_initial:prixActuel});
+  alert('🔔 Alerte activée ! Vous serez notifié si le prix baisse.');
+}
+
+async function signalerInteret(annonceId,auteurId){
+  if(!utilisateur){alert('Connectez-vous !');showPage('connexion');return;}
+  await sbPatch('annonces',annonceId,{interesses:(annonceCourante.interesses||0)+1});
+  await sbPost('messages',{expediteur_id:utilisateur.id,destinataire_id:auteurId,contenu:'👋 Je suis intéressé par votre annonce "'+annonceCourante.titre+'" — '+annonceCourante.lieu+'. Pouvez-vous me donner plus d\'informations ?',lu:false,type:'user'});
+  alert('✅ Message d\'intérêt envoyé au vendeur !');
+}
+
+function partagerWhatsApp(annonce){
+  const msg=`🌍 *TerraNova* — ${annonce.titre}\n📍 ${annonce.lieu}\n💰 ${Number(annonce.prix).toLocaleString()} FCFA\n📐 ${annonce.surface} m²\n\n🔗 Voir sur TerraNova : https://terranova-lilac.vercel.app`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+async function voirDetail(id){
+  const a=annonces.find(x=>x.id===id);
+  if(!a)return;
+  annonceCourante=a;
+  await sbPatch('annonces',id,{vues:(a.vues||0)+1});
+  a.vues=(a.vues||0)+1;
+  const fav=favoris.includes(a.id);
+  const certBadge=a.certifie_annonceur?'<span class="badge badge-gold">✅ Certifié</span>':'<span class="badge" style="background:#fff3cd;color:#856404">⚠️ Non certifié</span>';
+  const newBadge=isNew(a.created_at)?'<span class="badge-new" style="font-size:0.9em">🆕 NOUVEAU</span>':'';
+  let photosHtml='';
+  if(a.photo){
+    const allPhotos=[a.photo];
+    try{const extras=JSON.parse(a.photos||'[]');allPhotos.push(...extras);}catch(e){}
+    photosHtml=`<div class="photo-gallery-full">${allPhotos.map(p=>`<img src="${p}" onclick="window.open('${p}','_blank')" onerror="this.style.display='none'">`).join('')}</div>`;
+  }
+  const mapsUrl=a.lat&&a.lng?`https://www.google.com/maps?q=${a.lat},${a.lng}`:`https://www.google.com/maps/search/${encodeURIComponent(a.lieu+' Côte d\'Ivoire')}`;
+  document.getElementById('detail-contenu').innerHTML=`
+    ${photosHtml}
+    <div style="background:#2d5a1b;color:white;padding:20px;text-align:center;border-radius:10px;margin-bottom:10px">
+      <div style="font-size:2em">${a.emoji||'🌿'}</div>
+      <h2 style="margin:5px 0;font-size:1.1em">${a.titre} ${newBadge}</h2>
+      <span style="background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:20px;font-size:0.85em">${a.type==='vente'?'🏷️ Vente':'🔑 Location'}</span>
+    </div>
+    <div class="card" style="cursor:default">
+      <div class="detail-row"><span style="color:#666">💰 Prix</span><strong style="color:#2d5a1b">${Number(a.prix).toLocaleString()} FCFA</strong></div>
+      <div class="detail-row"><span style="color:#666">📍 Lieu</span><span>${a.lieu}</span></div>
+      <div class="detail-row"><span style="color:#666">📐 Surface</span><span>${a.surface} m²</span></div>
+      <div class="detail-row"><span style="color:#666">👁️ Vues</span><span>${a.vues||0}</span></div>
+      <div class="detail-row"><span style="color:#666">🤝 Intéressés</span><span>${a.interesses||0} personnes</span></div>
+      <div class="detail-row"><span style="color:#666">👤 Vendeur</span><span style="cursor:pointer;color:#2d5a1b;text-decoration:underline" onclick="voirProfilVendeur('${a.auteur_id||''}')">${a.auteur||'Anonyme'} ${certBadge}</span></div>
+      <div class="detail-row" style="border:none"><span style="color:#666">📅 Publié</span><span>${a.created_at?new Date(a.created_at).toLocaleDateString('fr-FR'):''}</span></div>
+    </div>
+    <div class="card" style="cursor:default">
+      <h3 style="color:#2d5a1b;margin-bottom:8px">📝 Description</h3>
+      <p style="color:#555;line-height:1.6;font-size:0.9em">${a.description||'Aucune description'}</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0">
+      <button onclick="toggleFavori('${a.id}')" style="padding:10px;border:2px solid #2d5a1b;background:white;color:#2d5a1b;border-radius:8px;cursor:pointer;font-size:0.85em">${fav?'❤️ Retirer':'🤍 Favoris'}</button>
+      <button onclick="partagerWhatsApp(annonceCourante)" style="padding:10px;background:#25D366;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.85em">📤 Partager</button>
+      <button onclick="activerAlertesPrix('${a.id}',${a.prix})" style="padding:10px;background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:8px;cursor:pointer;font-size:0.85em">🔔 Alerte prix</button>
+      <a href="${mapsUrl}" target="_blank" style="text-decoration:none"><button style="width:100%;padding:10px;background:#e3f2fd;color:#1565c0;border:1px solid #90caf9;border-radius:8px;cursor:pointer;font-size:0.85em">🗺️ Voir carte</button></a>
+    </div>
+    ${utilisateur&&a.auteur_id&&a.auteur_id!==utilisateur.id?`
+    <button onclick="signalerInteret('${a.id}','${a.auteur_id}')" class="btn" style="margin-top:5px">🤝 Je suis intéressé</button>
+    <button onclick="ouvrirConversation('${a.auteur_id}','${a.auteur||'Vendeur'}')" style="width:100%;padding:10px;background:#e8f5e9;color:#2d5a1b;border:1px solid #c8e6c9;border-radius:8px;cursor:pointer;margin-top:8px">💬 Envoyer un message</button>`:''}
+    ${a.tel?`<a href="tel:${a.tel}" style="display:block;text-decoration:none;margin-top:8px"><button class="btn">📞 Appeler</button></a><a href="https://wa.me/225${a.tel.replace(/\D/g,'')}" target="_blank" style="display:block;text-decoration:none"><button class="btn-green">💬 WhatsApp</button></a>`:''}
+    <div class="warning-box" style="font-size:0.8em;margin-top:10px">⚠️ TerraNova est une plateforme de mise en relation. Ne versez jamais d'argent sans visiter le terrain.</div>
+  `;
+  showPage('detail');
+}
+
+async function voirProfilVendeur(userId){
+  if(!userId){return;}
+  const users=await sbGet('users',`id=eq.${userId}&select=*`);
+  const u=Array.isArray(users)&&users.length?users[0]:null;
+  if(!u)return;
+  const anns=await sbGet('annonces',`auteur_id=eq.${userId}&select=*`);
+  const avis=await sbGet('avis',`vendeur_id=eq.${userId}&select=*`);
+  const totalVues=Array.isArray(anns)?anns.reduce((s,a)=>s+(a.vues||0),0):0;
+  const avgNote=Array.isArray(avis)&&avis.length?(avis.reduce((s,a)=>s+a.note,0)/avis.length).toFixed(1):0;
+  const stars='⭐'.repeat(Math.round(avgNote))+'☆'.repeat(5-Math.round(avgNote));
+  const avatar=u.photo_profil?`<img src="${u.photo_profil}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #2d5a1b">`:`<div style="font-size:4em">${u.emoji||'👤'}</div>`;
+  document.getElementById('profil-vendeur-contenu').innerHTML=`
+    <div class="card" style="text-align:center;background:linear-gradient(135deg,#2d5a1b,#4caf50);color:white">
+      ${avatar}
+      <h2 style="margin:10px 0">${u.nom}</h2>
+      <p style="opacity:0.85;font-size:0.85em">${u.user_code||''} ${u.certifie?'✅ Certifié':''}</p>
+    </div>
+    <div class="stat-grid-3" style="margin:10px 0">
+      <div class="stat-card"><div class="number">${Array.isArray(anns)?anns.length:0}</div><div class="label">Annonces</div></div>
+      <div class="stat-card"><div class="number">${totalVues}</div><div class="label">Vues</div></div>
+      <div class="stat-card"><div class="number">${avgNote}</div><div class="label">⭐ Note</div></div>
+    </div>
+    <div class="card">
+      <h3 style="color:#2d5a1b;margin-bottom:10px">⭐ Avis (${Array.isArray(avis)?avis.length:0})</h3>
+      ${Array.isArray(avis)&&avis.length?avis.map(av=>`<div style="padding:8px 0;border-bottom:1px solid #eee"><strong>${av.acheteur_nom||'Anonyme'}</strong> — ${'⭐'.repeat(av.note)}<p style="color:#666;font-size:0.85em;margin-top:3px">${av.commentaire||''}</p></div>`).join(''):'<p style="color:#888">Aucun avis</p>'}
+    </div>
+    ${utilisateur&&utilisateur.id!==userId?`
+    <div class="card">
+      <h3 style="color:#2d5a1b;margin-bottom:10px">✍️ Laisser un avis</h3>
+      <div style="display:flex;gap:5px;margin:8px 0" id="stars-container">
+        ${[1,2,3,4,5].map(n=>`<span class="star empty" onclick="selectionnerNote(${n})" id="star-${n}">☆</span>`).join('')}
+      </div>
+      <textarea id="avis-commentaire" placeholder="Votre commentaire..." rows="3"></textarea>
+      <button onclick="envoyerAvis('${userId}')" class="btn">📝 Envoyer l'avis</button>
+    </div>`:''}
+    <h3 style="color:#2d5a1b;margin:15px 0 10px">📋 Ses annonces</h3>
+    ${Array.isArray(anns)?anns.map(a=>carteAnnonce(a)).join(''):''}
+  `;
+  showPage('profil-vendeur');
+}
+
+function selectionnerNote(n){
+  noteSelectionnee=n;
+  for(let i=1;i<=5;i++){
+    const s=document.getElementById('star-'+i);
+    if(s)s.textContent=i<=n?'⭐':'☆';
+  }
+}
+
+async function envoyerAvis(vendeurId){
+  if(!utilisateur){alert('Connectez-vous !');return;}
+  if(!noteSelectionnee){alert('Choisissez une note !');return;}
+  const commentaire=document.getElementById('avis-commentaire').value;
+  await sbPost('avis',{vendeur_id:vendeurId,acheteur_id:utilisateur.id,acheteur_nom:utilisateur.nom,note:noteSelectionnee,commentaire});
+  const avisVendeur=await sbGet('avis',`vendeur_id=eq.${vendeurId}&select=note`);
+  if(Array.isArray(avisVendeur)&&avisVendeur.length){
+    const avg=avisVendeur.reduce((s,a)=>s+a.note,0)/avisVendeur.length;
+    await sbPatch('users',vendeurId,{note_moyenne:avg,nombre_avis:avisVendeur.length});
+  }
+  alert('✅ Avis envoyé !');
+  voirProfilVendeur(vendeurId);
+}
+
+async function afficherClassement(){
+  const users=await sbGet('users',`certifie=eq.true&select=*&order=note_moyenne.desc`);
+  const el=document.getElementById('classement-liste');
+  if(!Array.isArray(users)||!users.length){el.innerHTML='<p style="color:#666;text-align:center;padding:20px">Pas encore de classement</p>';return;}
+  el.innerHTML=`<div class="card" style="background:linear-gradient(135deg,#2d5a1b,#4caf50);color:white;text-align:center;padding:20px">
+    <div style="font-size:2em">🏆</div>
+    <p style="opacity:0.9;font-size:0.9em">Vendeurs les mieux notés</p>
+  </div>`+users.slice(0,10).map((u,i)=>{
+    const medals=['🥇','🥈','🥉'];
+    const avatar=u.photo_profil?`<img src="${u.photo_profil}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">`:`<div style="width:40px;height:40px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;font-size:1.3em">${u.emoji||'👤'}</div>`;
+    return `<div class="rank-card" onclick="voirProfilVendeur('${u.id}')">
+      <div class="rank-num">${medals[i]||i+1}</div>
+      ${avatar}
+      <div style="margin-left:10px;flex:1">
+        <strong>${u.nom}</strong> ${u.certifie?'✅':''}
+        <p style="color:#888;font-size:0.82em">${'⭐'.repeat(Math.round(u.note_moyenne||0))} (${u.nombre_avis||0} avis)</p>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function calculerBudget(){
+  const budget=parseInt(document.getElementById('budget-input').value)||0;
+  const resultEl=document.getElementById('budget-result');
+  const fraisEl=document.getElementById('frais-result');
+  if(!budget){resultEl.innerHTML='';fraisEl.innerHTML='<p style="color:#888;font-size:0.9em">Entrez un budget</p>';return;}
+  const matching=annonces.filter(a=>a.prix<=budget&&!masquees.includes(a.id));
+  const fraisNotaire=Math.round(budget*0.05);
+  const fraisTaxes=Math.round(budget*0.03);
+  const fraisGeo=150000;
+  const total=budget+fraisNotaire+fraisTaxes+fraisGeo;
+  resultEl.innerHTML=`<div class="success-box">✅ <strong>${matching.length} terrain(s)</strong> disponibles dans votre budget</div>${matching.slice(0,3).map(a=>carteAnnonce(a)).join('')}`;
+  fraisEl.innerHTML=`
+    <div class="info-row"><span class="info-label">💰 Budget terrain</span><span class="info-value">${budget.toLocaleString()} FCFA</span></div>
+    <div class="info-row"><span class="info-label">⚖️ Frais notaire (~5%)</span><span class="info-value">${fraisNotaire.toLocaleString()} FCFA</span></div>
+    <div class="info-row"><span class="info-label">🏛️ Taxes (~3%)</span><span class="info-value">${fraisTaxes.toLocaleString()} FCFA</span></div>
+    <div class="info-row"><span class="info-label">📐 Frais géomètre</span><span class="info-value">~${fraisGeo.toLocaleString()} FCFA</span></div>
+    <div class="info-row" style="border:none;background:#fff3cd;padding:8px;border-radius:8px"><span class="info-label" style="color:#856404"><strong>💳 Budget total estimé</strong></span><span class="info-value" style="color:#856404"><strong>${total.toLocaleString()} FCFA</strong></span></div>
+  `;
+}
+
+async function connecter(){
+  const email=document.getElementById('email-login').value;
+  const password=document.getElementById('password-login').value;
+  if(!email||!password){alert('Remplissez tous les champs');return;}
+  const users=await sbGet('users',`email=eq.${email}&password=eq.${password}&select=*`);
+  if(Array.isArray(users)&&users.length>0){
+    const u=users[0];
+    if(u.statut==='suspendu'){utilisateur=u;localStorage.setItem('tn_user',JSON.stringify(u));alert('🚫 Compte suspendu.\n'+u.raison_suspension);showPage('messages');return;}
+    utilisateur=u;
+    if(u.langue)langueActuelle=u.langue;
+    localStorage.setItem('tn_user',JSON.stringify(utilisateur));
+    localStorage.setItem('tn_langue',langueActuelle);
+    appliquerLangue();
+    alert(t('bienvenue')+' '+utilisateur.nom+' !');
+    showPage('accueil');
+    verifierNotifs();
+  }else{alert('Email ou mot de passe incorrect');}
+}
+
+function deconnecter(){utilisateur=null;localStorage.removeItem('tn_user');showPage('accueil');}
+
+function envoyerCodeReset(){
+  const tel=document.getElementById('tel-oublie').value;
+  if(!tel){alert('Entrez votre numéro');return;}
+  codeReset=genCode();
+  localStorage.setItem('tn_code_reset',JSON.stringify({code:codeReset,tel}));
+  document.getElementById('tel-affiche').textContent=tel;
+  document.getElementById('step-tel-oublie').style.display='none';
+  document.getElementById('step-code-oublie').style.display='block';
+  alert('Code : '+codeReset);
+}
+
+async function reinitialiserPassword(){
+  const code=document.getElementById('code-oublie').value;
+  const newPwd=document.getElementById('nouveau-password').value;
+  const confirmPwd=document.getElementById('confirm-password').value;
+  const saved=JSON.parse(localStorage.getItem('tn_code_reset')||'{}');
+  if(code!==saved.code){alert('Code incorrect');return;}
+  if(newPwd!==confirmPwd){alert('Mots de passe différents');return;}
+  if(newPwd.length<6){alert('Minimum 6 caractères');return;}
+  const users=await sbGet('users',`tel=eq.${saved.tel}&select=id`);
+  if(Array.isArray(users)&&users.length>0){
+    await sbPatch('users',users[0].id,{password:newPwd});
+    localStorage.removeItem('tn_code_reset');
+    alert('Réinitialisé !');showPage('connexion');
+  }else{alert('Numéro non trouvé');}
+}
+
+async function publierAnnonce(){
+  if(!utilisateur){alert('Connectez-vous !');showPage('connexion');return;}
+  if(utilisateur.statut==='suspendu'){alert('🚫 Compte suspendu.');return;}
+  if(!utilisateur.certifie){if(utilisateur.certification_status==='pending'){alert('⏳ Certification en cours.');return;}alert('Certifiez votre compte.');showPage('certifier');return;}
+  const titre=document.getElementById('titre-annonce').value;
+  const lieu=document.getElementById('lieu-annonce').value;
+  const prix=document.getElementById('prix-annonce').value;
+  const surface=document.getElementById('surface-annonce').value;
+  const type=document.getElementById('type-annonce').value;
+  const description=document.getElementById('desc-annonce').value;
+  const tel=document.getElementById('tel-annonce').value;
+  const lat=document.getElementById('lat-annonce').value;
+  const lng=document.getElementById('lng-annonce').value;
+  if(!titre||!lieu||!prix||!surface||!tel){alert('Remplissez tous les champs');return;}
+  if(!type){alert('Choisissez Vente ou Location');return;}
+  if(photosBase64.length===0){alert('📸 Au moins une photo obligatoire !');return;}
+  alert('⏳ Publication en cours...');
+  const photoUrls=await Promise.all(photosBase64.map((p,i)=>uploadPhoto(p,'terrain'+i)));
+  const emojis=['🌿','🌱','🏡','🏢','🌳','🏘️'];
+  const result=await sbPost('annonces',{titre,lieu,prix:parseInt(prix),surface:parseInt(surface),type,description,tel,emoji:emojis[Math.floor(Math.random()*emojis.length)],auteur:utilisateur.nom,auteur_id:utilisateur.id,photo:photoUrls[0],photos:JSON.stringify(photoUrls.slice(1)),vues:0,certifie_annonceur:true,lat:lat||null,lng:lng||null,interesses:0});
+  if(Array.isArray(result)&&result.length>0){
+    photosBase64=[];
+    document.getElementById('photos-preview-container').innerHTML='';
+    ['titre-annonce','lieu-annonce','prix-annonce','surface-annonce','tel-annonce','desc-annonce','lat-annonce','lng-annonce'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('type-annonce').value='';
+    document.getElementById('photo-zone').className='photo-upload';
+    document.getElementById('photo-zone').innerHTML='<div style="font-size:2em">📸</div><p style="color:#c62828;font-weight:bold">Ajouter des photos *</p>';
+    alert('✅ Annonce publiée !');showPage('annonces');
+  }else{alert('Erreur.');}
+}
+
+async function afficherDashboard(){
+  if(!utilisateur){
+    document.getElementById('dashboard-contenu').innerHTML=`
+      <div class="card" style="text-align:center;margin-top:30px">
+        <div style="font-size:3em">👤</div>
+        <h2 style="color:#2d5a1b;margin:10px 0">${t('profil')}</h2>
+        <div class="info-box" style="font-size:0.85em">💡 Connectez-vous pour accéder à toutes les fonctionnalités !</div>
+        <button class="btn" onclick="showPage('connexion')">${t('login')}</button>
+        <button class="btn-white" onclick="showPage('inscription')">Créer un compte</button>
+      </div>`;
+    return;
+  }
+  const mesAnnonces=await sbGet('annonces',`auteur_id=eq.${utilisateur.id}&select=*`);
+  const totalVues=Array.isArray(mesAnnonces)?mesAnnonces.reduce((s,a)=>s+(a.vues||0),0):0;
+  const nb=Array.isArray(mesAnnonces)?mesAnnonces.length:0;
+  const msgs=await sbGet('messages',`destinataire_id=eq.${utilisateur.id}&lu=eq.false`);
+  const nbMsgs=Array.isArray(msgs)?msgs.length:0;
+  const roles={acheteur:'🛒 Acheteur',vendeur:'🏷️ Vendeur',locataire:'🔑 Locataire',bailleur:'🏘️ Bailleur',entreprise:'🏢 Entreprise'};
+  let certifBlock='';
+  if(utilisateur.statut==='suspendu')certifBlock=`<div class="warning-box">🚫 <strong>Suspendu</strong> — ${utilisateur.raison_suspension||''}</div>`;
+  else if(utilisateur.statut==='recertification')certifBlock=`<div class="warning-box">🔄 Re-certification requise<br><button class="btn-orange" onclick="showPage('certifier')" style="margin-top:8px">🏅 Re-certifier</button></div>`;
+  else if(utilisateur.certifie)certifBlock='<div class="success-box">✅ <strong>Compte certifié</strong></div>';
+  else if(utilisateur.certification_status==='pending')certifBlock='<div class="condition-box">⏳ Vérification en cours — quelques jours</div>';
+  else if(utilisateur.certification_status==='refused')certifBlock=`<div class="warning-box">❌ Refusé<br><button class="btn-orange" onclick="showPage('certifier')" style="margin-top:8px">🔄 Renvoyer</button></div>`;
+  else certifBlock=`<div class="warning-box">⚠️ Non certifié<br><button class="btn-orange" onclick="showPage('certifier')" style="margin-top:8px">🏅 Certifier</button></div>`;
+  const isAdmin=utilisateur.email===ADMIN_EMAIL;
+  const avatar=utilisateur.photo_profil?`<img src="${utilisateur.photo_profil}" class="avatar-circle" style="margin:10px auto;display:block">`:`<div style="font-size:4em;text-align:center">${utilisateur.emoji||'👤'}</div>`;
+  document.getElementById('dashboard-contenu').innerHTML=`
+    <div class="card" style="text-align:center">
+      ${avatar}
+      <h2 style="color:#2d5a1b;margin:8px 0">${utilisateur.nom}</h2>
+      <p style="color:#aaa;font-size:0.8em">${utilisateur.user_code||''}</p>
+      <p style="color:#666;font-size:0.85em">${utilisateur.email}</p>
+      <div style="margin-top:8px">
+        <span class="badge">${roles[utilisateur.role]||'Membre'}</span>
+        ${utilisateur.certifie?'<span class="badge badge-gold" style="margin-left:5px">✅</span>':''}
+        ${utilisateur.note_moyenne>0?`<span class="badge" style="margin-left:5px">⭐ ${Number(utilisateur.note_moyenne).toFixed(1)}</span>`:''}
+        ${isAdmin?'<span class="badge badge-blue" style="margin-left:5px">🛡️ Admin</span>':''}
+      </div>
+    </div>
+    ${certifBlock}
+    <div class="stat-grid">
+      <div class="stat-card"><div class="number">${nb}</div><div class="label">Mes annonces</div></div>
+      <div class="stat-card"><div class="number">${totalVues}</div><div class="label">Vues totales</div></div>
+    </div>
+    <div class="card" style="cursor:default;padding:5px 15px">
+      <div class="menu-item" onclick="showPage('mes-infos')"><span><span class="menu-icon">👤</span>Mes informations</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('mes-annonces')"><span><span class="menu-icon">📌</span>Mes annonces</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('favoris')"><span><span class="menu-icon">❤️</span>Mes favoris</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('activite')"><span><span class="menu-icon">📊</span>Mon activité</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('calculateur')"><span><span class="menu-icon">💰</span>Calculateur de budget</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('classement')"><span><span class="menu-icon">🏆</span>Top vendeurs</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('messages')"><span><span class="menu-icon">💬</span>Messages${nbMsgs>0?` <span style="background:#c62828;color:white;border-radius:50%;padding:2px 7px;font-size:0.8em;margin-left:5px">${nbMsgs}</span>`:''}</span><span class="menu-arrow">›</span></div>
+      ${utilisateur.statut!=='suspendu'?`<div class="menu-item" onclick="checkPublier()"><span><span class="menu-icon">➕</span>Publier une annonce</span><span class="menu-arrow">›</span></div>`:''}
+      <div class="menu-item" onclick="showPage('parametres')"><span><span class="menu-icon">⚙️</span>Paramètres</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('installer')"><span><span class="menu-icon">📲</span>Installer l'app</span><span class="menu-arrow">›</span></div>
+      ${isAdmin?`<div class="menu-item" onclick="showPage('admin')" style="color:#1a237e"><span><span class="menu-icon">🛡️</span><strong>Admin</strong></span><span class="menu-arrow">›</span></div>`:''}
+    </div>
+    <button class="btn-white" onclick="deconnecter()" style="margin-top:8px">🚪 Se déconnecter</button>
+  `;
+}
+
+function afficherMesInfos(){
+  if(!utilisateur){showPage('connexion');return;}
+  const roles={acheteur:'🛒 Acheteur',vendeur:'🏷️ Vendeur',locataire:'🔑 Locataire',bailleur:'🏘️ Bailleur',entreprise:'🏢 Entreprise'};
+  let s='';
+  if(utilisateur.certifie)s='<span class="badge badge-gold">✅ Certifié</span>';
+  else if(utilisateur.certification_status==='pending')s='<span class="badge badge-pending">⏳ En attente</span>';
+  else if(utilisateur.certification_status==='refused')s='<span class="badge badge-red">❌ Refusé</span>';
+  else s='<span class="badge badge-red">❌ Non certifié</span>';
+  const avatar=utilisateur.photo_profil?`<img src="${utilisateur.photo_profil}" class="avatar-circle">`:`<div style="font-size:4em">${utilisateur.emoji||'👤'}</div>`;
+  document.getElementById('mes-infos-contenu').innerHTML=`
+    <div class="card" style="text-align:center;background:linear-gradient(135deg,#2d5a1b,#4caf50);color:white">
+      ${avatar}
+      <h2 style="margin-top:10px">${utilisateur.nom}</h2>
+      <p style="opacity:0.8;font-size:0.85em">${utilisateur.user_code||''}</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <p style="color:#666;font-size:0.85em;margin-bottom:8px">Changer ma photo de profil</p>
+      <button onclick="document.getElementById('photo-profil-input').click()" class="btn-small">📷 Changer la photo</button>
+      <input type="file" id="photo-profil-input" accept="image/*" style="display:none" onchange="changerPhotoProfil(this)">
+    </div>
+    <div class="card" style="cursor:default">
+      <div class="info-row"><span class="info-label">👤 Nom</span><span class="info-value">${utilisateur.nom||'—'}</span></div>
+      <div class="info-row"><span class="info-label">🔢 ID</span><span class="info-value" style="color:#2d5a1b;font-weight:bold">${utilisateur.user_code||'—'}</span></div>
+      <div class="info-row"><span class="info-label">📧 Email</span><span class="info-value">${utilisateur.email||'—'}</span></div>
+      <div class="info-row"><span class="info-label">📱 Téléphone</span><span class="info-value">${utilisateur.tel||'—'}</span></div>
+      <div class="info-row"><span class="info-label">🏷️ Profil</span><span class="info-value">${roles[utilisateur.role]||'—'}</span></div>
+      <div class="info-row"><span class="info-label">📍 Localité</span><span class="info-value">${utilisateur.localite||'—'}</span></div>
+      <div class="info-row"><span class="info-label">🪪 CNI</span><span class="info-value">${utilisateur.cni?utilisateur.cni.substring(0,4)+'****':'—'}</span></div>
+      <div class="info-row"><span class="info-label">⭐ Note</span><span class="info-value">${utilisateur.note_moyenne>0?Number(utilisateur.note_moyenne).toFixed(1)+' ('+utilisateur.nombre_avis+' avis)':'Aucun avis'}</span></div>
+      <div class="info-row" style="border:none"><span class="info-label">✅ Statut</span><span class="info-value">${s}</span></div>
+    </div>
+    <div class="warning-box" style="font-size:0.82em">🔒 Données protégées et jamais partagées.</div>
+  `;
+}
+
+async function changerPhotoProfil(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    alert('⏳ Mise à jour...');
+    const url=await uploadPhoto(e.target.result,'profil');
+    const result=await sbPatch('users',utilisateur.id,{photo_profil:url});
+    if(Array.isArray(result)&&result.length>0){utilisateur=result[0];localStorage.setItem('tn_user',JSON.stringify(utilisateur));alert('✅ Photo mise à jour !');afficherMesInfos();updateHeader();}
+  };
+  reader.readAsDataURL(file);
+}
+
+async function afficherMesAnnonces(){
+  if(!utilisateur){showPage('connexion');return;}
+  const mes=await sbGet('annonces',`auteur_id=eq.${utilisateur.id}&select=*`);
+  document.getElementById('mes-annonces-liste').innerHTML=Array.isArray(mes)&&mes.length?mes.map(a=>`
+    <div class="card" style="padding-top:0;overflow:hidden">
+      ${a.photo?`<img src="${a.photo}" style="width:calc(100% + 30px);height:120px;object-fit:cover;border-radius:8px 8px 0 0;margin:-15px -15px 10px -15px;display:block">`:`<div style="background:#e8f5e9;height:80px;display:flex;align-items:center;justify-content:center;font-size:2em;margin:-15px -15px 10px -15px">${a.emoji||'🌿'}</div>`}
+      <h3 style="color:#2d5a1b;font-size:0.95em">${a.titre}</h3>
+      <p style="color:#888;font-size:0.82em">📍 ${a.lieu} • 👁️ ${a.vues||0} • 🤝 ${a.interesses||0} intéressés</p>
+      <p style="color:#2d5a1b;font-weight:bold;font-size:0.9em">${Number(a.prix).toLocaleString()} FCFA</p>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button onclick="remonterAnnonce('${a.id}')" style="flex:1;background:#e8f5e9;color:#2d5a1b;border:1px solid #c8e6c9;padding:6px;border-radius:6px;cursor:pointer;font-size:0.8em">🔄 Remonter</button>
+        <button onclick="supprimerAnnonce('${a.id}')" style="background:#ffebee;color:#c62828;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.8em">🗑️</button>
+      </div>
+    </div>`).join(''):'<p style="color:#666;text-align:center;margin-top:20px">Pas encore d\'annonces</p>';
+}
+
+async function remonterAnnonce(id){
+  const a=annonces.find(x=>x.id===id);
+  if(a&&a.derniere_remontee){
+    const lastTime=new Date(a.derniere_remontee).getTime();
+    if(Date.now()-lastTime<7*24*3600*1000){alert('⏳ Vous pouvez remonter cette annonce 1 fois par semaine.');return;}
+  }
+  await sbPatch('annonces',id,{derniere_remontee:new Date().toISOString(),created_at:new Date().toISOString()});
+  alert('✅ Annonce remontée en tête de liste !');
+  afficherMesAnnonces();
+}
+
+async function supprimerAnnonce(id){
+  if(!confirm('Supprimer ?'))return;
+  await sbDelete('annonces',id);
+  annonces=annonces.filter(a=>a.id!==id);
+  afficherMesAnnonces();
+}
+
+function afficherFavoris(){
+  const mesFavoris=annonces.filter(a=>favoris.includes(a.id));
+  document.getElementById('favoris-liste').innerHTML=mesFavoris.length?mesFavoris.map(a=>carteAnnonce(a)).join(''):'<p style="color:#666;text-align:center;margin-top:20px">Aucun favori</p>';
+}
+
+function afficherActivite(type,btn){
+  document.querySelectorAll('.activity-tab button').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  const el=document.getElementById('activite-contenu');
+  if(type==='favoris'){
+    const f=annonces.filter(a=>favoris.includes(a.id));
+    el.innerHTML=f.length?f.map(a=>carteAnnonce(a)).join(''):'<p style="color:#666;text-align:center;padding:20px">Aucune annonce sauvegardée</p>';
+  }else if(type==='recherches'){
+    el.innerHTML=recherches.length?recherches.map(r=>`
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:12px">
+        <span onclick="lancerRechercheSauvegardee('${r}')" style="cursor:pointer;color:#2d5a1b">🔍 ${r}</span>
+        <button onclick="supprimerRecherche('${r}')" style="background:none;border:none;color:#c62828;cursor:pointer;font-size:1.2em">✕</button>
+      </div>`).join(''):'<p style="color:#666;text-align:center;padding:20px">Aucune recherche sauvegardée</p>';
+  }else if(type==='masquees'){
+    const m=annonces.filter(a=>masquees.includes(a.id));
+    el.innerHTML=m.length?m.map(a=>`
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:12px;opacity:0.7">
+        <span>${a.emoji||'🌿'} ${a.titre}</span>
+        <button onclick="demasquerAnnonce('${a.id}')" style="background:#e8f5e9;color:#2d5a1b;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.85em">👁️</button>
+      </div>`).join(''):'<p style="color:#666;text-align:center;padding:20px">Aucune annonce masquée</p>';
+  }
+}
+
+function lancerRechercheSauvegardee(terme){document.getElementById('search-annonces').value=terme;rechercher(terme);showPage('annonces');}
+function supprimerRecherche(terme){recherches=recherches.filter(r=>r!==terme);localStorage.setItem('tn_recherches',JSON.stringify(recherches));afficherActivite('recherches');}
+function demasquerAnnonce(id){masquees=masquees.filter(m=>m!==id);localStorage.setItem('tn_masquees',JSON.stringify(masquees));afficherActivite('masquees');}
+
+function rechercher(terme){
+  const f=annonces.filter(a=>!masquees.includes(a.id)&&(a.titre.toLowerCase().includes(terme.toLowerCase())||a.lieu.toLowerCase().includes(terme.toLowerCase())));
+  document.getElementById('liste-annonces').innerHTML=f.length?f.map(a=>carteAnnonce(a)).join(''):'<p style="color:#888;text-align:center;padding:20px">Aucun résultat</p>';
+}
+
+async function afficherMessages(){
+  if(!utilisateur){document.getElementById('conversations-liste').innerHTML=`<div class="card" style="text-align:center;margin-top:20px"><p style="color:#666">Connectez-vous pour voir vos messages</p><button class="btn" onclick="showPage('connexion')" style="margin-top:10px">Connexion</button></div>`;return;}
+  const msgs=await sbGet('messages',`or=(expediteur_id.eq.${utilisateur.id},destinataire_id.eq.${utilisateur.id})&select=*`);
+  if(!Array.isArray(msgs)||msgs.length===0){document.getElementById('conversations-liste').innerHTML='<p style="color:#666;text-align:center;padding:30px">Aucun message</p>';return;}
+  const convMap={};
+  msgs.forEach(m=>{const otherId=m.expediteur_id===utilisateur.id?m.destinataire_id:m.expediteur_id;if(!convMap[otherId]||new Date(m.created_at)>new Date(convMap[otherId].created_at))convMap[otherId]=m;});
+  const allUserIds=[...new Set(Object.keys(convMap))];
+  const usersData=await Promise.all(allUserIds.map(id=>sbGet('users',`id=eq.${id}&select=id,nom,emoji,certifie,photo_profil`)));
+  const usersMap={};
+  usersData.forEach(arr=>{if(Array.isArray(arr)&&arr.length>0)usersMap[arr[0].id]=arr[0];});
+  document.getElementById('conversations-liste').innerHTML=Object.entries(convMap).map(([otherId,lastMsg])=>{
+    const other=usersMap[otherId]||{nom:'Utilisateur',emoji:'👤'};
+    const unread=msgs.filter(m=>m.destinataire_id===utilisateur.id&&m.expediteur_id===otherId&&!m.lu).length;
+    const isSelf=otherId===utilisateur.id;
+    const avatarHtml=isSelf?`<div class="conv-avatar">🌍</div>`:other.photo_profil?`<img src="${other.photo_profil}" style="width:45px;height:45px;border-radius:50%;object-fit:cover;margin-right:12px;flex-shrink:0">`:`<div class="conv-avatar">${other.emoji||'👤'}</div>`;
+    return `<div class="conv-item" onclick="ouvrirConversation('${otherId}','${isSelf?'TerraNova':other.nom}')">
+      ${avatarHtml}
+      <div style="flex:1;min-width:0">
+        <strong>${isSelf?'🌍 TerraNova':other.nom}</strong>
+        <p style="color:#888;font-size:0.82em;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${lastMsg.contenu.startsWith('IMG:')?'📷 Photo':lastMsg.contenu.substring(0,50)}</p>
+      </div>
+      ${unread>0?`<div class="conv-unread">${unread}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+async function ouvrirConversation(otherId,otherNom){
+  if(!utilisateur){showPage('connexion');return;}
+  convActuelle={id:otherId,nom:otherNom};
+  document.getElementById('conv-header').innerHTML=`<strong>${otherId===utilisateur.id?'🌍 TerraNova':otherNom}</strong>`;
+  const msgs=await sbGet('messages',`or=(and(expediteur_id.eq.${utilisateur.id},destinataire_id.eq.${otherId}),and(expediteur_id.eq.${otherId},destinataire_id.eq.${utilisateur.id}))&order=created_at.asc`);
+  const el=document.getElementById('conv-messages');
+  if(Array.isArray(msgs)){
+    el.innerHTML=msgs.map(m=>{
+      const isMe=m.expediteur_id===utilisateur.id;
+      const time=new Date(m.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+      const isImg=m.contenu&&m.contenu.startsWith('IMG:');
+      const content=isImg?`<img src="${m.contenu.substring(4)}" style="max-width:200px;border-radius:10px;cursor:pointer" onclick="window.open('${m.contenu.substring(4)}','_blank')">`:`<span>${m.contenu}</span>`;
+      return `<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'};margin-bottom:8px">
+        <div class="${isMe?'msg-bubble-me':'msg-bubble-other'}">${content}</div>
+        <div class="msg-time" style="${isMe?'text-align:right':''}">${time}</div>
+      </div>`;
+    }).join('');
+    el.scrollTop=el.scrollHeight;
+    msgs.filter(m=>m.destinataire_id===utilisateur.id&&!m.lu).forEach(m=>sbPatch('messages',m.id,{lu:true}));
+  }
+  showPage('conversation');
+}
+
+async function envoyerMessage(){
+  if(!utilisateur||!convActuelle)return;
+  const input=document.getElementById('msg-input');
+  const contenu=input.value.trim();if(!contenu)return;
+  input.value='';
+  await sbPost('messages',{expediteur_id:utilisateur.id,destinataire_id:convActuelle.id,contenu,lu:false,type:'user'});
+  ouvrirConversation(convActuelle.id,convActuelle.nom);
+}
+
+async function envoyerPhotoMessage(input){
+  if(!utilisateur||!convActuelle)return;
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    const photoUrl=await uploadPhoto(e.target.result,'msg');
+    await sbPost('messages',{expediteur_id:utilisateur.id,destinataire_id:convActuelle.id,contenu:'IMG:'+photoUrl,lu:false,type:'photo'});
+    ouvrirConversation(convActuelle.id,convActuelle.nom);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function verifierNotifs(){
+  if(!utilisateur)return;
+  try{
+    const msgs=await sbGet('messages',`destinataire_id=eq.${utilisateur.id}&lu=eq.false`);
+    const nb=Array.isArray(msgs)?msgs.length:0;
+    const tabMsg=document.getElementById('tab-messages');
+    if(tabMsg)tabMsg.innerHTML=nb>0?`💬<span>${t('messages')}</span><div class="notif-badge">${nb}</div>`:`💬<span>${t('messages')}</span>`;
+  }catch(e){}
+}
+
+async function afficherAdmin(){
+  if(!utilisateur||utilisateur.email!==ADMIN_EMAIL){alert('Accès refusé !');showPage('profil');return;}
+  const users=await sbGet('users','select=*');
+  const anns=await sbGet('annonces','select=*');
+  const total=Array.isArray(users)?users.length:0;
+  const certifies=Array.isArray(users)?users.filter(u=>u.certifie).length:0;
+  const pending=Array.isArray(users)?users.filter(u=>u.certification_status==='pending'&&!u.certifie).length:0;
+  const suspendus=Array.isArray(users)?users.filter(u=>u.statut==='suspendu').length:0;
+  const totalAnn=Array.isArray(anns)?anns.length:0;
+  const totalVues=Array.isArray(anns)?anns.reduce((s,a)=>s+(a.vues||0),0):0;
+  document.getElementById('admin-stats').innerHTML=`
+    <div class="stat-grid-3">
+      <div class="stat-card"><div class="number">${total}</div><div class="label">👥 Inscrits</div></div>
+      <div class="stat-card"><div class="number">${certifies}</div><div class="label">✅ Certifiés</div></div>
+      <div class="stat-card"><div class="number" style="color:#ff6600">${pending}</div><div class="label">⏳ Attente</div></div>
+      <div class="stat-card"><div class="number" style="color:#c62828">${suspendus}</div><div class="label">🚫 Suspendus</div></div>
+      <div class="stat-card"><div class="number">${totalAnn}</div><div class="label">📋 Annonces</div></div>
+      <div class="stat-card"><div class="number">${totalVues}</div><div class="label">👁️ Vues</div></div>
+    </div>`;
+  adminAfficher('pending');
+}
+
+async function adminAfficher(type){
+  const el=document.getElementById('admin-contenu');
+  el.innerHTML='<div class="loading">Chargement...</div>';
+  if(type==='pending'){
+    const users=await sbGet('users','select=*&certification_status=eq.pending&certifie=eq.false');
+    el.innerHTML=`<h3 style="color:#ff6600;margin:10px 0">⏳ En attente (${Array.isArray(users)?users.length:0})</h3>`+
+    (Array.isArray(users)&&users.length?users.map(u=>`
+      <div class="card pending-card">
+        <strong>${u.emoji||'👤'} ${u.nom}</strong> <span style="color:#aaa;font-size:0.8em">${u.user_code||''}</span>
+        <p style="color:#888;font-size:0.85em">${u.email} • ${u.tel||'—'} • ${u.role}</p>
+        <p style="color:#555;font-size:0.85em">📍 ${u.localite||'—'} • 🪪 ${u.cni||'—'}</p>
+        <p style="color:#2d5a1b;font-size:0.85em;font-weight:bold;margin-top:8px">🤳 Selfie :</p>
+        ${u.selfie_url?`<img src="${u.selfie_url}" style="width:100px;height:100px;object-fit:cover;border-radius:50%;margin:5px 0;cursor:pointer" onclick="window.open('${u.selfie_url}','_blank')">`:'<p style="color:#aaa;font-size:0.85em">Pas de selfie</p>'}
+        <p style="color:#2d5a1b;font-size:0.85em;font-weight:bold;margin-top:5px">🪪 CNI Recto :</p>
+        ${u.cni_url?`<img src="${u.cni_url}" style="width:100%;height:130px;object-fit:cover;border-radius:8px;margin:5px 0;cursor:pointer" onclick="window.open('${u.cni_url}','_blank')">`:'<p style="color:#aaa;font-size:0.85em">Pas de recto</p>'}
+        <p style="color:#2d5a1b;font-size:0.85em;font-weight:bold;margin-top:5px">🪪 CNI Verso :</p>
+        ${u.cni_verso_url?`<img src="${u.cni_verso_url}" style="width:100%;height:130px;object-fit:cover;border-radius:8px;margin:5px 0;cursor:pointer" onclick="window.open('${u.cni_verso_url}','_blank')">`:'<p style="color:#aaa;font-size:0.85em">Pas de verso</p>'}
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button onclick="adminCertifier('${u.id}')" style="flex:1;background:#2d5a1b;color:white;border:none;padding:8px;border-radius:8px;cursor:pointer">✅ Approuver</button>
+          <button onclick="adminRefuser('${u.id}')" style="flex:1;background:#c62828;color:white;border:none;padding:8px;border-radius:8px;cursor:pointer">❌ Refuser</button>
+        </div>
+      </div>`).join(''):'<p style="color:#666;text-align:center;padding:20px">Aucune en attente 🎉</p>');
+  }else if(type==='users'){
+    const users=await sbGet('users','select=*');
+    el.innerHTML=`<h3 style="color:#2d5a1b;margin:10px 0">👥 (${Array.isArray(users)?users.length:0})</h3>`+
+    (Array.isArray(users)?users.map(u=>`
+      <div class="card ${u.statut==='suspendu'?'suspended-card':''}">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          ${u.photo_profil?`<img src="${u.photo_profil}" style="width:38px;height:38px;border-radius:50%;object-fit:cover">`:`<div style="width:38px;height:38px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center">${u.emoji||'👤'}</div>`}
+          <div><strong>${u.nom}</strong> <span style="color:#aaa;font-size:0.78em">${u.user_code||''}</span><p style="color:#888;font-size:0.8em">${u.email} • ${u.role}</p></div>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          <button onclick="adminEnvoyerMessage('${u.id}','${u.nom}')" style="background:#6a1b9a;color:white;border:none;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:0.75em">💬</button>
+          ${u.statut==='suspendu'?`<button onclick="adminReactiver('${u.id}')" style="background:#2d5a1b;color:white;border:none;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:0.75em">✅ Réactiver</button>`:`<button onclick="adminSuspendre('${u.id}')" style="background:#ff6600;color:white;border:none;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:0.75em">🚫 Suspendre</button>`}
+          <button onclick="adminDemanderRecertif('${u.id}','${u.nom}')" style="background:#1565c0;color:white;border:none;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:0.75em">🔄 Re-certif</button>
+          <button onclick="adminBlacklister('${u.id}','${u.email}','${u.tel||''}','${u.cni||''}')" style="background:#c62828;color:white;border:none;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:0.75em">⛔ Blacklist</button>
+          <button onclick="adminSupprimerUser('${u.id}')" style="background:#ffebee;color:#c62828;border:none;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:0.75em">🗑️</button>
+        </div>
+      </div>`).join(''):'');
+  }else if(type==='annonces'){
+    const anns=await sbGet('annonces','select=*');
+    el.innerHTML=`<h3 style="color:#1565c0;margin:10px 0">📋 (${Array.isArray(anns)?anns.length:0})</h3>`+
+    (Array.isArray(anns)?anns.map(a=>`
+      <div class="card" style="padding:10px">
+        <div style="display:flex;justify-content:space-between;gap:8px">
+          <div style="flex:1"><strong style="color:#2d5a1b;font-size:0.9em">${a.titre}</strong><p style="color:#888;font-size:0.8em">📍 ${a.lieu} • 👤 ${a.auteur||'—'} • 👁️ ${a.vues||0} • 🤝 ${a.interesses||0}</p><p style="color:#2d5a1b;font-size:0.85em;font-weight:bold">${Number(a.prix).toLocaleString()} FCFA</p></div>
+          <button onclick="adminSupprimerAnnonce('${a.id}')" style="background:#ffebee;color:#c62828;border:none;padding:6px;border-radius:6px;cursor:pointer">🗑️</button>
+        </div>
+      </div>`).join(''):'');
+  }else if(type==='messages'){
+    const msgs=await sbGet('messages','select=*');
+    el.innerHTML=`<h3 style="color:#6a1b9a;margin:10px 0">💬 (${Array.isArray(msgs)?msgs.length:0})</h3>`+
+    (Array.isArray(msgs)?msgs.slice(0,20).map(m=>{
+      const isImg=m.contenu&&m.contenu.startsWith('IMG:');
+      return `<div class="card" style="padding:8px"><p style="font-size:0.78em;color:#aaa">${new Date(m.created_at).toLocaleDateString('fr-FR')}</p>${isImg?`<img src="${m.contenu.substring(4)}" style="max-width:120px;border-radius:6px;margin-top:4px">`:`<p style="font-size:0.85em;color:#333;margin-top:2px">${m.contenu.substring(0,80)}</p>`}<p style="font-size:0.75em;color:#aaa">${m.lu?'✅':'📩'}</p></div>`;}).join(''):'<p>Aucun</p>');
+  }
+}
+
+async function adminCertifier(userId){
+  if(!confirm('Approuver ?'))return;
+  await sbPatch('users',userId,{certifie:true,certification_status:'approved',statut:'actif'});
+  await sbPost('messages',{expediteur_id:userId,destinataire_id:userId,contenu:'🎉 Félicitations ! Votre compte est certifié. Vous pouvez publier des annonces. Bienvenue ! 🌍',lu:false,type:'admin'});
+  alert('✅ Certifié !');adminAfficher('pending');
+}
+async function adminRefuser(userId){
+  const r=prompt('Raison :');
+  await sbPatch('users',userId,{certifie:false,certification_status:'refused'});
+  await sbPost('messages',{expediteur_id:userId,destinataire_id:userId,contenu:`❌ Certification refusée.${r?' Raison : '+r:''} Renvoyez des documents lisibles.`,lu:false,type:'admin'});
+  alert('❌ Refusé.');adminAfficher('pending');
+}
+async function adminSuspendre(userId){
+  const r=prompt('Raison :');if(!r)return;
+  await sbPatch('users',userId,{statut:'suspendu',raison_suspension:r});
+  await sbPost('messages',{expediteur_id:userId,destinataire_id:userId,contenu:`🚫 Compte suspendu. Raison : ${r}. Répondez pour contester.`,lu:false,type:'admin'});
+  alert('🚫 Suspendu.');adminAfficher('users');
+}
+async function adminReactiver(userId){
+  if(!confirm('Réactiver ?'))return;
+  await sbPatch('users',userId,{statut:'actif',raison_suspension:''});
+  await sbPost('messages',{expediteur_id:userId,destinataire_id:userId,contenu:'✅ Compte réactivé. Vous pouvez utiliser TerraNova normalement.',lu:false,type:'admin'});
+  alert('✅ Réactivé.');adminAfficher('users');
+}
+async function adminDemanderRecertif(userId,nom){
+  if(!confirm(`Re-certif pour ${nom} ?`))return;
+  await sbPatch('users',userId,{certifie:false,certification_status:'',statut:'recertification'});
+  await sbPost('messages',{expediteur_id:userId,destinataire_id:userId,contenu:'🔄 Re-certification requise. Allez dans Profil → Certifier et renvoyez Selfie + CNI Recto + Verso. Photos claires et lisibles.',lu:false,type:'admin'});
+  alert('🔄 Demandé.');adminAfficher('users');
+}
+async function adminEnvoyerMessage(userId,nom){
+  const msg=prompt(`Message à ${nom} :`);if(!msg)return;
+  await sbPost('messages',{expediteur_id:utilisateur.id,destinataire_id:userId,contenu:'🌍 TerraNova : '+msg,lu:false,type:'admin'});
+  alert('✅ Envoyé à '+nom);
+}
+async function adminBlacklister(userId,email,tel,cni){
+  const r=prompt('Raison :');if(!r)return;
+  if(email)await sbPost('blacklist',{email,tel,cni,raison:r});
+  await sbPatch('users',userId,{statut:'suspendu',raison_suspension:'Banni : '+r});
+  await sbPost('messages',{expediteur_id:userId,destinataire_id:userId,contenu:`⛔ Compte banni. Raison : ${r}.`,lu:false,type:'admin'});
+  alert('⛔ Banni.');adminAfficher('users');
+}
+async function adminSupprimerUser(userId){if(!confirm('Supprimer ?'))return;await sbDelete('users',userId);alert('Supprimé.');adminAfficher('users');}
+async function adminSupprimerAnnonce(id){if(!confirm('Supprimer ?'))return;await sbDelete('annonces',id);alert('Supprimée.');adminAfficher('annonces');}
+
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('page-'+page);
+  if(el)el.classList.add('active');
+  window.scrollTo(0,0);
+  if(page==='annonces')afficherAnnonces();
+  if(page==='accueil')afficherAccueil();
+  if(page==='profil')afficherDashboard();
+  if(page==='mes-annonces')afficherMesAnnonces();
+  if(page==='favoris')afficherFavoris();
+  if(page==='mes-infos')afficherMesInfos();
+  if(page==='admin')afficherAdmin();
+  if(page==='messages')afficherMessages();
+  if(page==='activite')afficherActivite('favoris');
+  if(page==='parametres'){appliquerLangue();const d=document.getElementById('dark-mode-status');if(d)d.textContent=darkMode?'Activé':'Désactivé';}
+  if(page==='classement')afficherClassement();
+  updateHeader();
+}
+
+function updateHeader(){
+  const btns=document.getElementById('header-btns');
+  if(utilisateur){
+    const avatar=utilisateur.photo_profil?`<img src="${utilisateur.photo_profil}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;margin-right:5px;vertical-align:middle">`:`<span style="margin-right:3px">${utilisateur.emoji||'👤'}</span>`;
+    btns.innerHTML=`<span style="color:white;font-size:0.85em">${avatar}${utilisateur.nom.split(' ')[0]}${utilisateur.certifie?' ✅':''}</span>`;
+  }else{
+    btns.innerHTML=`<button style="background:transparent;color:white;border:2px solid white;padding:5px 10px;border-radius:8px;cursor:pointer;margin-right:5px;font-size:0.85em" onclick="showPage('connexion')">${t('login')}</button><button style="background:white;color:#2d5a1b;border:none;padding:5px 10px;border-radius:8px;cursor:pointer;font-size:0.85em" onclick="checkPublier()">${t('publier')}</button>`;
+  }
+  if(utilisateur)verifierNotifs();
+}
+
+if(darkMode)document.body.classList.add('dark');
+verifierCGU();
+appliquerLangue();
+afficherAccueil();
+updateHeader();
+</script>
+</body>
+</html>
