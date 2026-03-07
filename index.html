@@ -10,26 +10,27 @@ body{font-family:sans-serif;background:#f0f7ee}
 .header{background:#2d5a1b;color:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center}
 .header h1{font-size:1.3em}
 .btn{background:#2d5a1b;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em}
-.btn-outline{background:white;color:#2d5a1b;border:2px solid #2d5a1b;padding:8px 16px;border-radius:8px;cursor:pointer}
 .btn-green{background:#25D366;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em}
 .page{display:none;padding:20px}
 .page.active{display:block}
 .card{background:white;border-radius:10px;padding:15px;margin:10px 0;box-shadow:0 2px 5px rgba(0,0,0,0.1);cursor:pointer}
 input,textarea,select{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:8px;font-size:1em}
 .hero{background:#2d5a1b;color:white;padding:40px 20px;text-align:center}
-.hero h2{font-size:1.8em;margin-bottom:10px}
 .badge{background:#e8f5e9;color:#2d5a1b;padding:4px 10px;border-radius:20px;font-size:0.85em}
 .badge-red{background:#ffebee;color:#c62828}
 .back-btn{background:none;border:none;color:#2d5a1b;font-size:1em;cursor:pointer;margin-bottom:15px}
 .detail-header{background:#2d5a1b;color:white;padding:30px 20px;text-align:center;border-radius:10px;margin-bottom:15px}
 .detail-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee}
 .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
-.role-card{background:white;border:2px solid #ddd;border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s}
+.role-card{background:white;border:2px solid #ddd;border-radius:10px;padding:20px;text-align:center;cursor:pointer}
 .role-card.selected{border-color:#2d5a1b;background:#e8f5e9}
 .role-card .emoji{font-size:2.5em;margin-bottom:8px}
 .role-card h4{color:#2d5a1b;font-size:0.95em}
 .role-card p{color:#888;font-size:0.8em;margin-top:4px}
 .condition-box{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px;margin:10px 0;font-size:0.9em;color:#856404}
+.photo-upload{border:2px dashed #2d5a1b;border-radius:10px;padding:20px;text-align:center;cursor:pointer;margin:10px 0;background:#f9fff9}
+.photo-preview{width:100%;height:200px;object-fit:cover;border-radius:10px;margin:10px 0}
+.card-photo{width:100%;height:160px;object-fit:cover;border-radius:8px 8px 0 0;margin:-15px -15px 10px -15px;width:calc(100% + 30px)}
 </style>
 </head>
 <body>
@@ -38,7 +39,6 @@ input,textarea,select{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc
   <h1>🌍 TerraNova</h1>
   <div>
     <button style="background:transparent;color:white;border:2px solid white;padding:8px 16px;border-radius:8px;cursor:pointer;margin-right:5px" onclick="showPage('connexion')">Connexion</button>
-
     <button class="btn" style="background:white;color:#2d5a1b" onclick="checkPublier()">Publier</button>
   </div>
 </div>
@@ -86,44 +86,40 @@ input,textarea,select{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc
   <div class="card" style="max-width:400px;margin:10px auto">
     <h2 style="color:#2d5a1b;margin-bottom:5px;text-align:center">📝 Inscription</h2>
     <p style="text-align:center;color:#666;margin-bottom:15px;font-size:0.9em">Choisissez votre profil</p>
-
     <div class="role-grid">
       <div class="role-card" id="role-acheteur" onclick="choisirRole('acheteur')">
         <div class="emoji">🛒</div>
         <h4>Acheteur</h4>
-        <p>Je cherche à acheter un terrain</p>
+        <p>Je cherche à acheter</p>
       </div>
       <div class="role-card" id="role-vendeur" onclick="choisirRole('vendeur')">
         <div class="emoji">🏷️</div>
         <h4>Vendeur</h4>
-        <p>Je veux vendre mon terrain</p>
+        <p>Je veux vendre</p>
       </div>
       <div class="role-card" id="role-locataire" onclick="choisirRole('locataire')">
         <div class="emoji">🔑</div>
         <h4>Locataire</h4>
-        <p>Je cherche un terrain à louer</p>
+        <p>Je cherche à louer</p>
       </div>
       <div class="role-card" id="role-bailleur" onclick="choisirRole('bailleur')">
         <div class="emoji">🏘️</div>
         <h4>Bailleur</h4>
-        <p>Je mets un terrain en location</p>
+        <p>Je mets en location</p>
       </div>
     </div>
-
     <div id="conditions-role" style="display:none"></div>
-
     <div id="form-inscription" style="display:none">
       <input type="text" id="nom-inscription" placeholder="Nom complet *">
       <input type="tel" id="tel-inscription" placeholder="Numéro de téléphone *">
       <input type="email" id="email-inscription" placeholder="Email *">
       <input type="password" id="password-inscription" placeholder="Mot de passe *">
       <div id="champs-vendeur-bailleur" style="display:none">
-        <input type="text" id="localite-inscription" placeholder="Votre localité (ville/quartier) *">
+        <input type="text" id="localite-inscription" placeholder="Votre localité *">
         <input type="text" id="cni-inscription" placeholder="Numéro CNI ou pièce d'identité *">
       </div>
       <button class="btn" style="width:100%;margin-top:15px" onclick="inscrire()">Créer mon compte</button>
     </div>
-
     <p style="text-align:center;margin-top:15px">Déjà un compte ? <a href="#" onclick="showPage('connexion')" style="color:#2d5a1b">Se connecter</a></p>
   </div>
 </div>
@@ -142,6 +138,13 @@ input,textarea,select{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc
     </select>
     <input type="tel" id="tel-annonce" placeholder="Votre numéro de téléphone *">
     <textarea id="desc-annonce" placeholder="Description du terrain..." rows="3"></textarea>
+    <div class="photo-upload" onclick="document.getElementById('photo-input').click()">
+      <div style="font-size:2em">📸</div>
+      <p style="color:#2d5a1b;margin-top:5px">Appuyez pour ajouter une photo</p>
+      <p style="color:#888;font-size:0.85em">JPG, PNG — max 5MB</p>
+    </div>
+    <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+    <img id="photo-preview" style="display:none" class="photo-preview">
     <button class="btn" style="width:100%;margin-top:10px" onclick="publierAnnonce()">Publier l'annonce</button>
   </div>
 </div>
@@ -156,7 +159,7 @@ input,textarea,select{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc
     <br>
     <button class="btn" onclick="showPage('mes-annonces')">📌 Mes annonces</button>
     <br><br>
-    <button class="btn-outline" onclick="deconnecter()">Se déconnecter</button>
+    <button style="background:white;color:#2d5a1b;border:2px solid #2d5a1b;padding:8px 16px;border-radius:8px;cursor:pointer" onclick="deconnecter()">Se déconnecter</button>
   </div>
 </div>
 
@@ -177,37 +180,50 @@ input,textarea,select{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc
 <div style="height:70px"></div>
 
 <script>
+const SUPABASE_URL = 'https://bebillevaxdbtjfdhaut.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_4jOGEtncvGG_QSFn-AJkWA_HlE5_WBM';
+
 let utilisateur = JSON.parse(localStorage.getItem('tn_user')||'null');
 let annonces = JSON.parse(localStorage.getItem('tn_annonces')||'[]');
 let roleChoisi = '';
+let photoBase64 = '';
 
 if(annonces.length===0){
   annonces=[
-    {id:1,titre:"Terrain résidentiel Cocody",lieu:"Cocody, Abidjan",prix:15000000,surface:500,type:"vente",desc:"Beau terrain en zone résidentielle calme. Idéal pour construction de villa. Titre foncier disponible.",emoji:"🌿",auteur:"Kouamé Jean",tel:"0707000001"},
-    {id:2,titre:"Terrain commercial Plateau",lieu:"Plateau, Abidjan",prix:25000000,surface:300,type:"vente",desc:"Terrain idéal pour commerce ou immeuble. Situé en plein centre ville. Fort passage.",emoji:"🏢",auteur:"Diabaté Moussa",tel:"0505000002"},
-    {id:3,titre:"Terrain à louer Yopougon",lieu:"Yopougon, Abidjan",prix:150000,surface:200,type:"location",desc:"Terrain disponible immédiatement. Clôturé et sécurisé. Accès facile.",emoji:"🌱",auteur:"Bamba Fatou",tel:"0101000003"}
+    {id:1,titre:"Terrain résidentiel Cocody",lieu:"Cocody, Abidjan",prix:15000000,surface:500,type:"vente",desc:"Beau terrain en zone résidentielle calme. Idéal pour construction de villa. Titre foncier disponible.",emoji:"🌿",auteur:"Kouamé Jean",tel:"0707000001",photo:""},
+    {id:2,titre:"Terrain commercial Plateau",lieu:"Plateau, Abidjan",prix:25000000,surface:300,type:"vente",desc:"Terrain idéal pour commerce ou immeuble. Situé en plein centre ville. Fort passage.",emoji:"🏢",auteur:"Diabaté Moussa",tel:"0505000002",photo:""},
+    {id:3,titre:"Terrain à louer Yopougon",lieu:"Yopougon, Abidjan",prix:150000,surface:200,type:"location",desc:"Terrain disponible immédiatement. Clôturé et sécurisé. Accès facile.",emoji:"🌱",auteur:"Bamba Fatou",tel:"0101000003",photo:""}
   ];
   localStorage.setItem('tn_annonces',JSON.stringify(annonces));
+}
+
+function previewPhoto(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    photoBase64 = e.target.result;
+    const preview = document.getElementById('photo-preview');
+    preview.src = photoBase64;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
 }
 
 function choisirRole(role) {
   roleChoisi = role;
   document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
   document.getElementById('role-'+role).classList.add('selected');
-  
   const conditions = {
-    acheteur: `<div class="condition-box">🛒 <strong>Profil Acheteur</strong><br>Vous pourrez consulter toutes les annonces et contacter directement les vendeurs. Inscription gratuite !</div>`,
-    vendeur: `<div class="condition-box">🏷️ <strong>Profil Vendeur</strong><br>Vous pourrez publier vos annonces de vente. Nous vous demandons votre localité et une pièce d'identité pour sécuriser les transactions.</div>`,
-    locataire: `<div class="condition-box">🔑 <strong>Profil Locataire</strong><br>Vous pourrez consulter les terrains à louer et contacter les bailleurs directement. Inscription gratuite !</div>`,
-    bailleur: `<div class="condition-box">🏘️ <strong>Profil Bailleur</strong><br>Vous pourrez mettre vos terrains en location. Nous vous demandons votre localité et une pièce d'identité pour rassurer les locataires.</div>`
+    acheteur:`<div class="condition-box">🛒 <strong>Profil Acheteur</strong><br>Consultez les annonces et contactez les vendeurs. Inscription gratuite !</div>`,
+    vendeur:`<div class="condition-box">🏷️ <strong>Profil Vendeur</strong><br>Publiez vos annonces de vente. Localité et pièce d'identité requises.</div>`,
+    locataire:`<div class="condition-box">🔑 <strong>Profil Locataire</strong><br>Consultez les terrains à louer. Inscription gratuite !</div>`,
+    bailleur:`<div class="condition-box">🏘️ <strong>Profil Bailleur</strong><br>Mettez vos terrains en location. Localité et pièce d'identité requises.</div>`
   };
-  
   document.getElementById('conditions-role').innerHTML = conditions[role];
   document.getElementById('conditions-role').style.display = 'block';
   document.getElementById('form-inscription').style.display = 'block';
-  
-  const champsExtra = document.getElementById('champs-vendeur-bailleur');
-  champsExtra.style.display = (role==='vendeur'||role==='bailleur') ? 'block' : 'none';
+  document.getElementById('champs-vendeur-bailleur').style.display = (role==='vendeur'||role==='bailleur')?'block':'none';
 }
 
 function showPage(page) {
@@ -221,8 +237,8 @@ function showPage(page) {
 }
 
 function checkPublier() {
-  if(!utilisateur){alert('Connectez-vous pour publier une annonce !');showPage('connexion');return;}
-  if(utilisateur.role==='acheteur'||utilisateur.role==='locataire'){alert('Votre profil ne permet pas de publier des annonces.\nChangez votre profil en Vendeur ou Bailleur.');return;}
+  if(!utilisateur){alert('Connectez-vous pour publier !');showPage('connexion');return;}
+  if(utilisateur.role==='acheteur'||utilisateur.role==='locataire'){alert('Votre profil ne permet pas de publier.\nChangez votre profil en Vendeur ou Bailleur.');return;}
   showPage('publier');
 }
 
@@ -237,15 +253,12 @@ function afficherAnnonces() {
 }
 
 function carteAnnonce(a) {
-  return `<div class="card" onclick="voirDetail(${a.id})">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-      <span style="font-size:2em">${a.emoji||'🌿'}</span>
-      <div>
-        <h3 style="color:#2d5a1b">${a.titre}</h3>
-        <p style="color:#888;font-size:0.9em">📍 ${a.lieu}</p>
-      </div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center">
+  const photoHtml = a.photo ? `<img src="${a.photo}" class="card-photo" onerror="this.style.display='none'">` : `<div style="background:#e8f5e9;height:120px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:center;font-size:3em;margin:-15px -15px 10px -15px;width:calc(100% + 30px)">${a.emoji||'🌿'}</div>`;
+  return `<div class="card" onclick="voirDetail(${a.id})" style="padding-top:0;overflow:hidden">
+    ${photoHtml}
+    <h3 style="color:#2d5a1b">${a.titre}</h3>
+    <p style="color:#888;font-size:0.9em">📍 ${a.lieu}</p>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
       <strong style="color:#2d5a1b">${Number(a.prix).toLocaleString()} FCFA</strong>
       <span class="badge ${a.type==='location'?'badge-red':''}">${a.type==='vente'?'🏷️ Vente':'🔑 Location'}</span>
     </div>
@@ -256,7 +269,9 @@ function carteAnnonce(a) {
 function voirDetail(id) {
   const a=annonces.find(x=>x.id===id);
   if(!a) return;
+  const photoHtml = a.photo ? `<img src="${a.photo}" style="width:100%;height:250px;object-fit:cover;border-radius:10px;margin-bottom:15px">` : '';
   document.getElementById('detail-contenu').innerHTML=`
+    ${photoHtml}
     <div class="detail-header">
       <div style="font-size:3em">${a.emoji||'🌿'}</div>
       <h2 style="margin:10px 0">${a.titre}</h2>
@@ -284,84 +299,4 @@ function voirDetail(id) {
 }
 
 function connecter() {
-  const email=document.getElementById('email-login').value;
-  const password=document.getElementById('password-login').value;
-  if(!email||!password){alert('Remplissez tous les champs');return;}
-  const users=JSON.parse(localStorage.getItem('tn_users')||'[]');
-  const user=users.find(u=>u.email===email&&u.password===password);
-  if(user){utilisateur=user;localStorage.setItem('tn_user',JSON.stringify(user));alert('Bienvenue '+user.nom+' !');showPage('accueil');}
-  else alert('Email ou mot de passe incorrect');
-}
-
-function inscrire() {
-  if(!roleChoisi){alert('Choisissez votre profil !');return;}
-  const nom=document.getElementById('nom-inscription').value;
-  const tel=document.getElementById('tel-inscription').value;
-  const email=document.getElementById('email-inscription').value;
-  const password=document.getElementById('password-inscription').value;
-  if(!nom||!tel||!email||!password){alert('Remplissez tous les champs obligatoires');return;}
-  if(roleChoisi==='vendeur'||roleChoisi==='bailleur'){
-    const localite=document.getElementById('localite-inscription').value;
-    const cni=document.getElementById('cni-inscription').value;
-    if(!localite||!cni){alert('Vendeurs et bailleurs doivent fournir leur localité et pièce d\'identité');return;}
-  }
-  const users=JSON.parse(localStorage.getItem('tn_users')||'[]');
-  if(users.find(u=>u.email===email)){alert('Email déjà utilisé');return;}
-  const emojis={acheteur:'🛒',vendeur:'🏷️',locataire:'🔑',bailleur:'🏘️'};
-  const user={id:Date.now(),nom,tel,email,password,role:roleChoisi,emoji:emojis[roleChoisi]};
-  users.push(user);
-  localStorage.setItem('tn_users',JSON.stringify(users));
-  utilisateur=user;
-  localStorage.setItem('tn_user',JSON.stringify(user));
-  alert('Bienvenue '+nom+' ! Votre compte '+roleChoisi+' a été créé.');
-  showPage('accueil');
-}
-
-function deconnecter() {
-  utilisateur=null;
-  localStorage.removeItem('tn_user');
-  showPage('accueil');
-}
-
-function publierAnnonce() {
-  if(!utilisateur){alert('Connectez-vous d\'abord !');showPage('connexion');return;}
-  const titre=document.getElementById('titre-annonce').value;
-  const lieu=document.getElementById('lieu-annonce').value;
-  const prix=document.getElementById('prix-annonce').value;
-  const surface=document.getElementById('surface-annonce').value;
-  const type=document.getElementById('type-annonce').value;
-  const desc=document.getElementById('desc-annonce').value;
-  const tel=document.getElementById('tel-annonce').value;
-  if(!titre||!lieu||!prix||!surface){alert('Remplissez tous les champs obligatoires');return;}
-  const emojis=['🌿','🌱','🏡','🏢','🌳','🏘️'];
-  const a={id:Date.now(),titre,lieu,prix,surface,type,desc,tel,emoji:emojis[Math.floor(Math.random()*emojis.length)],auteur:utilisateur.nom};
-  annonces.push(a);
-  localStorage.setItem('tn_annonces',JSON.stringify(annonces));
-  alert('Annonce publiée avec succès !');
-  showPage('annonces');
-}
-
-function afficherProfil() {
-  if(!utilisateur){showPage('connexion');return;}
-  const roles={acheteur:'🛒 Acheteur',vendeur:'🏷️ Vendeur',locataire:'🔑 Locataire',bailleur:'🏘️ Bailleur'};
-  document.getElementById('profil-emoji').textContent=utilisateur.emoji||'👤';
-  document.getElementById('profil-nom').textContent=utilisateur.nom;
-  document.getElementById('profil-email').textContent=utilisateur.email;
-  document.getElementById('profil-role').textContent=roles[utilisateur.role]||'Membre';
-}
-
-function afficherMesAnnonces() {
-  if(!utilisateur){showPage('connexion');return;}
-  const mes=annonces.filter(a=>a.auteur===utilisateur.nom);
-  document.getElementById('mes-annonces-liste').innerHTML=mes.length?mes.map(a=>carteAnnonce(a)).join(''):'<p style="color:#666;text-align:center;margin-top:20px">Vous n\'avez pas encore d\'annonces</p>';
-}
-
-function rechercher(terme) {
-  const f=annonces.filter(a=>a.titre.toLowerCase().includes(terme.toLowerCase())||a.lieu.toLowerCase().includes(terme.toLowerCase()));
-  document.getElementById('liste-annonces').innerHTML=f.map(a=>carteAnnonce(a)).join('');
-}
-
-afficherAccueil();
-</script>
-</body>
-</html>
+  const​​​​​​​​​​​​​​​​
