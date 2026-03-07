@@ -1379,10 +1379,7 @@ async function afficherAdmin(){
   adminAfficher('pending');
 }
 
-async function adminAfficher(type){
-  const el=document.getElementById('admin-contenu');
-  el.innerHTML='<div class="loading">Chargement...</div>';
-  if(type==='pending'){
+
     const users=await sbGet('users','select=*&certification_status=eq.pending&certifie=eq.false');
     el.innerHTML=`<h3 style="color:#ff6600;margin:10px 0">⏳ En attente (${Array.isArray(users)?users.length:0})</h3>`+
     (Array.isArray(users)&&users.length?users.map(u=>`
@@ -1404,41 +1401,8 @@ async function adminAfficher(type){
   }else if(type==='users'){
    const users=await sbGet('users','select=*&limit=50&order=created_at.desc');
  
-    el.innerHTML=`<h3 style="color:#2d5a1b;margin:10px 0">👥 (${Array.isArray(users)?users.length:0})</h3>`+
-    (Array.isArray(users)?users.map(u=>`
-      <div class="card ${u.statut==='suspendu'?'suspended-card':''}">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-          ${u.photo_profil?`<img src="${u.photo_profil}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">`:`<div style="width:36px;height:36px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center">${u.emoji||'👤'}</div>`}
-          <div><strong style="font-size:0.9em">${u.nom}</strong> <span style="color:#aaa;font-size:0.75em">${u.user_code||''}</span><p style="color:#888;font-size:0.78em">${u.email} • ${u.role}</p></div>
-        </div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <button onclick="adminEnvoyerMessage('${u.id}','${u.nom}')" style="background:#6a1b9a;color:white;border:none;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:0.73em">💬</button>
-          ${u.statut==='suspendu'?`<button onclick="adminReactiver('${u.id}')" style="background:#2d5a1b;color:white;border:none;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:0.73em">✅ Réactiver</button>`:`<button onclick="adminSuspendre('${u.id}')" style="background:#ff6600;color:white;border:none;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:0.73em">🚫 Suspendre</button>`}
-          <button onclick="adminDemanderRecertif('${u.id}','${u.nom}')" style="background:#1565c0;color:white;border:none;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:0.73em">🔄 Re-certif</button>
-          <button onclick="adminBlacklister('${u.id}','${u.email}','${u.tel||''}','${u.cni||''}')" style="background:#c62828;color:white;border:none;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:0.73em">⛔ Blacklist</button>
-          <button onclick="adminSupprimerUser('${u.id}')" style="background:#ffebee;color:#c62828;border:none;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:0.73em">🗑️</button>
-        </div>
-      </div>`).join(''):'');
-  }else if(type==='annonces'){
-    const anns=await sbGet('annonces','select=*');
-    el.innerHTML=`<h3 style="color:#1565c0;margin:10px 0">📋 (${Array.isArray(anns)?anns.length:0})</h3>`+
-    (Array.isArray(anns)?anns.map(a=>`
-      <div class="card" style="padding:10px">
-        <div style="display:flex;justify-content:space-between;gap:8px">
-          <div style="flex:1"><strong style="color:#2d5a1b;font-size:0.88em">${a.titre}</strong><p style="color:#888;font-size:0.78em">📍 ${a.lieu} • 👤 ${a.auteur||'—'} • 👁️ ${a.vues||0}</p><p style="color:#2d5a1b;font-size:0.83em;font-weight:bold">${Number(a.prix).toLocaleString()} FCFA</p></div>
-          <button onclick="adminSupprimerAnnonce('${a.id}')" style="background:#ffebee;color:#c62828;border:none;padding:6px;border-radius:6px;cursor:pointer">🗑️</button>
-        </div>
-      </div>`).join(''):'');
-  }else if(type==='messages'){
-    const msgs=await sbGet('messages','select=*');
-    el.innerHTML=`<h3 style="color:#6a1b9a;margin:10px 0">💬 (${Array.isArray(msgs)?msgs.length:0})</h3>`+
-    (Array.isArray(msgs)?msgs.slice(0,20).map(m=>{
-      const isImg=m.contenu&&m.contenu.startsWith('IMG:');
-      return `<div class="card" style="padding:8px"><p style="font-size:0.76em;color:#aaa">${new Date(m.created_at).toLocaleDateString('fr-FR')}</p>${isImg?`<img src="${m.contenu.substring(4)}" style="max-width:100px;border-radius:6px;margin-top:3px">`:`<p style="font-size:0.83em;color:#333;margin-top:2px">${m.contenu.substring(0,80)}</p>`}<p style="font-size:0.73em;color:#aaa">${m.lu?'✅':'📩'}</p></div>`;}).join(''):'<p>Aucun</p>');
-  }
-}
+    async function adminAfficher(type){
 
-async function adminCertifier(userId){
   if(!confirm('Approuver ?'))return;
   await sbPatch('users',userId,{certifie:true,certification_status:'approved',statut:'actif'});
   await sbPost('messages',{expediteur_id:userId,destinataire_id:userId,contenu:'🎉 Félicitations ! Votre compte est certifié. Vous pouvez publier des annonces. Bienvenue ! 🌍',lu:false,type:'admin'});
