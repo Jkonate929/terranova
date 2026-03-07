@@ -1,12 +1,4 @@
 {
   "name": "terranova",
-  "version": "1.0.0",
-  "scripts": {
-    "build": "cp App.jsx index.html",
-    "dev": "echo dev"
-  },
-  "dependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
-  }
+  "version": "1.0.0"
 }
