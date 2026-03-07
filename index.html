@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TerraNova</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:sans-serif;background:#f0f7ee}
+.header{background:#2d5a1b;color:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:1.3em}
+.btn{background:#2d5a1b;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em}
+.btn-green{background:#25D366;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em}
+.page{display:none;padding:20px}
+.page.active{display:block}
+.card{background:white;border-radius:10px;padding:15px;margin:10px 0;box-shadow:0 2px 5px rgba(0,0,0,0.1);cursor:pointer}
+input,textarea,select{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:8px;font-size:1em}
+.hero{background:#2d5a1b;color:white;padding:40px 20px;text-align:center}
+.badge{background:#e8f5e9;color:#2d5a1b;padding:4px 10px;border-radius:20px;font-size:0.85em}
+.badge-red{background:#ffebee;color:#c62828}
+.back-btn{background:none;border:none;color:#2d5a1b;font-size:1em;cursor:pointer;margin-bottom:15px}
+.detail-header{background:#2d5a1b;color:white;padding:30px 20px;text-align:center;border-radius:10px;margin-bottom:15px}
+.detail-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
+.role-card{background:white;border:2px solid #ddd;border-radius:10px;padding:20px;text-align:center;cursor:pointer}
+.role-card.selected{border-color:#2d5a1b;background:#e8f5e9}
+.role-card .emoji{font-size:2.5em;margin-bottom:8px}
+.role-card h4{color:#2d5a1b;font-size:0.95em}
+.role-card p{color:#888;font-size:0.8em;margin-top:4px}
+.condition-box{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px;margin:10px 0;font-size:0.9em;color:#856404}
+.photo-upload{border:2px dashed #2d5a1b;border-radius:10px;padding:20px;text-align:center;cursor:pointer;margin:10px 0;background:#f9fff9}
+.photo-preview{width:100%;height:200px;object-fit:cover;border-radius:10px;margin:10px 0}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🌍 TerraNova</h1>
+  <div>
+    <button style="background:transparent;color:white;border:2px solid white;padding:8px 16px;border-radius:8px;cursor:pointer;margin-right:5px" onclick="showPage('connexion')">Connexion</button>
+    <button class="btn" style="background:white;color:#2d5a1b" onclick="checkPublier()">Publier</button>
+  </div>
+</div>
+<div id="page-accueil" class="page active">
+  <div class="hero">
+    <h2>Trouvez votre terrain idéal</h2>
+    <p>Achetez, vendez et louez des terrains en Côte d'Ivoire</p>
+    <br>
+    <button class="btn" style="background:white;color:#2d5a1b;font-size:1.1em;padding:12px 30px" onclick="showPage('annonces')">Voir les annonces</button>
+  </div>
+  <div style="padding:20px 0">
+    <h3 style="color:#2d5a1b;margin-bottom:15px">Annonces récentes</h3>
+    <div id="annonces-accueil"></div>
+  </div>
+</div>
+<div id="page-annonces" class="page">
+  <h2 style="color:#2d5a1b;margin-bottom:15px">📋 Toutes les annonces</h2>
+  <input type="text" placeholder="🔍 Rechercher..." oninput="rechercher(this.value)">
+  <div id="liste-annonces"></div>
+</div>
+<div id="page-detail" class="page">
+  <button class="back-btn" onclick="showPage('annonces')">← Retour</button>
+  <div id="detail-contenu"></div>
+</div>
+<div id="page-connexion" class="page">
+  <div class="card" style="max-width:400px;margin:30px auto">
+    <h2 style="color:#2d5a1b;margin-bottom:20px;text-align:center">🔐 Connexion</h2>
+    <input type="email" id="email-login" placeholder="Email">
+    <input type="password" id="password-login" placeholder="Mot de passe">
+    <button class="btn" style="width:100%;margin-top:10px" onclick="connecter()">Se connecter</button>
+    <p style="text-align:center;margin-top:15px">Pas de compte ? <a href="#" onclick="showPage('inscription')" style="color:#2d5a1b">S'inscrire</a></p>
+  </div>
+</div>
+<div id="page-inscription" class="page">
+  <div class="card" style="max-width:400px;margin:10px auto">
+    <h2 style="color:#2d5a1b;margin-bottom:5px;text-align:center">📝 Inscription</h2>
+    <p style="text-align:center;color:#666;margin-bottom:15px;font-size:0.9em">Choisissez votre profil</p>
+    <div class="role-grid">
+      <div class="role-card" id="role-acheteur" onclick="choisirRole('acheteur')"><div class="emoji">🛒</div><h4>Acheteur</h4><p>Je cherche à acheter</p></div>
+      <div class="role-card" id="role-vendeur" onclick="choisirRole('vendeur')"><div class="emoji">🏷️</div><h4>Vendeur</h4><p>Je veux vendre</p></div>
+      <div class="role-card" id="role-locataire" onclick="choisirRole('locataire')"><div class="emoji">🔑</div><h4>Locataire</h4><p>Je cherche à louer</p></div>
+      <div class="role-card" id="role-bailleur" onclick="choisirRole('bailleur')"><div class="emoji">🏘️</div><h4>Bailleur</h4><p>Je mets en location</p></div>
+    </div>
+    <div id="conditions-role" style="display:none"></div>
+    <div id="form-inscription" style="display:none">
+      <input type="text" id="nom-inscription" placeholder="Nom complet *">
+      <input type="tel" id="tel-inscription" placeholder="Numéro de téléphone *">
+      <input type="email" id="email-inscription" placeholder="Email *">
+      <input type="password" id="password-inscription" placeholder="Mot de passe *">
+      <div id="champs-vendeur-bailleur" style="display:none">
+        <input type="text" id="localite-inscription" placeholder="Votre localité *">
+        <input type="text" id="cni-inscription" placeholder="Numéro CNI *">
+      </div>
+      <button class="btn" style="width:100%;margin-top:15px" onclick="inscrire()">Créer mon compte</button>
+    </div>
+    <p style="text-align:center;margin-top:15px">Déjà un compte ? <a href="#" onclick="showPage('connexion')" style="color:#2d5a1b">Se connecter</a></p>
+  </div>
+</div>
+<div id="page-publier" class="page">
+  <div class="card" style="max-width:500px;margin:0 auto">
+    <h2 style="color:#2d5a1b;margin-bottom:20px">➕ Publier une annonce</h2>
+    <input type="text" id="titre-annonce" placeholder="Titre *">
+    <input type="text" id="lieu-annonce" placeholder="Lieu *">
+    <input type="number" id="prix-annonce" placeholder="Prix en FCFA *">
+    <input type="number" id="surface-annonce" placeholder="Surface en m² *">
+    <select id="type-annonce"><option value="vente">Vente</option><option value="location">Location</option></select>
+    <input type="tel" id="tel-annonce" placeholder="Téléphone *">
+    <textarea id="desc-annonce" placeholder="Description..." rows="3"></textarea>
+    <div class="photo-upload" onclick="document.getElementById('photo-input').click()">
+      <div style="font-size:2em">📸</div>
+      <p style="color:#2d5a1b;margin-top:5px">Appuyez pour ajouter une photo</p>
+    </div>
+    <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+    <img id="photo-preview" style="display:none" class="photo-preview">
+    <button class="btn" style="width:100%;margin-top:10px" onclick="publierAnnonce()">Publier</button>
+  </div>
+</div>
+<div id="page-profil" class="page">
+  <div class="card" style="max-width:400px;margin:30px auto;text-align:center">
+    <div style="font-size:3em" id="profil-emoji">👤</div>
+    <h2 id="profil-nom" style="color:#2d5a1b;margin:10px 0"></h2>
+    <p id="profil-email" style="color:#666"></p>
+    <p id="profil-role" style="color:#2d5a1b;font-weight:bold;margin-top:5px"></p>
+    <br>
+    <button class="btn" onclick="showPage('mes-annonces')">📌 Mes annonces</button>
+    <br><br>
+    <button style="background:white;color:#2d5a1b;border:2px solid #2d5a1b;padding:8px 16px;border-radius:8px;cursor:pointer" onclick="deconnecter()">Se déconnecter</button>
+  </div>
+</div>
+<div id="page-mes-annonces" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px">📌 Mes annonces</h2>
+  <div id="mes-annonces-liste"></div>
+</div>
+<div style="position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #ddd;display:flex;justify-content:space-around;padding:10px 0">
+  <button onclick="showPage('accueil')" style="background:none;border:none;font-size:1.5em;cursor:pointer">🏠</button>
+  <button onclick="showPage('annonces')" style="background:none;border:none;font-size:1.5em;cursor:pointer">📋</button>
+  <button onclick="checkPublier()" style="background:none;border:none;font-size:1.5em;cursor:pointer">➕</button>
+  <button onclick="showPage('profil')" style="background:none;border:none;font-size:1.5em;cursor:pointer">👤</button>
+</div>
+<div style="height:70px"></div>
+<script>
+const SUPABASE_URL='https://bebillevaxdbtjfdhaut.supabase.co';
+const SUPABASE_KEY='sb_publishable_4jOGEtncvGG_QSFn-AJkWA_HlE5_WBM';
+let utilisateur=JSON.parse(localStorage.getItem('tn_user')||'null');
+let annonces=JSON.parse(localStorage.getItem('tn_annonces')||'[]');
+let roleChoisi='';
+let photoBase64='';
+if(annonces.length===0){annonces=[{id:1,titre:"Terrain résidentiel Cocody",lieu:"Cocody, Abidjan",prix:15000000,surface:500,type:"vente",desc:"Beau terrain en zone résidentielle calme. Titre foncier disponible.",emoji:"🌿",auteur:"Kouamé Jean",tel:"0707000001",photo:""},{id:2,titre:"Terrain commercial Plateau",lieu:"Plateau, Abidjan",prix:25000000,surface:300,type:"vente",desc:"Terrain idéal pour commerce. Situé en plein centre ville.",emoji:"🏢",auteur:"Diabaté Moussa",tel:"0505000002",photo:""},{id:3,titre:"Terrain à louer Yopougon",lieu:"Yopougon, Abidjan",prix:150000,surface:200,type:"location",desc:"Terrain disponible immédiatement. Clôturé et sécurisé.",emoji:"🌱",auteur:"Bamba Fatou",tel:"0101000003",photo:""}];localStorage.setItem('tn_annonces',JSON.stringify(annonces));}
+function previewPhoto(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){photoBase64=e.target.result;const p=document.getElementById('photo-preview');p.src=photoBase64;p.style.display='block';};reader.readAsDataURL(file);}
+function choisirRole(role){roleChoisi=role;document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));document.getElementById('role-'+role).classList.add('selected');const c={acheteur:'<div class="condition-box">🛒 <strong>Acheteur</strong> — Consultez les annonces gratuitement !</div>',vendeur:'<div class="condition-box">🏷️ <strong>Vendeur</strong> — Publiez vos annonces. Localité et CNI requis.</div>',locataire:'<div class="condition-box">🔑 <strong>Locataire</strong> — Consultez les terrains à louer gratuitement !</div>',bailleur:'<div class="condition-box">🏘️ <strong>Bailleur</strong> — Mettez en location. Localité et CNI requis.</div>'};document.getElementById('conditions-role').innerHTML=c[role];document.getElementById('conditions-role').style.display='block';document.getElementById('form-inscription').style.display='block';document.getElementById('champs-vendeur-bailleur').style.display=(role==='vendeur'||role==='bailleur')?'block':'none';}
+function showPage(page){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');window.scrollTo(0,0);if(page==='annonces')afficherAnnonces();if(page==='accueil')afficherAccueil();if(page==='profil')afficherProfil();if(page==='mes-annonces')afficherMesAnnonces();}
+function checkPublier(){if(!utilisateur){alert('Connectez-vous pour publier !');showPage('connexion');return;}if(utilisateur.role==='acheteur'||utilisateur.role==='locataire'){alert('Votre profil ne permet pas de publier.\nDevenez Vendeur ou Bailleur.');return;}showPage('publier');}
+function afficherAccueil(){const el=document.getElementById('annonces-accueil');if(el)el.innerHTML=annonces.slice(0,3).map(a=>carteAnnonce(a)).join('');}
+function afficherAnnonces(){const el=document.getElementById('liste-annonces');if(el)el.innerHTML=annonces.map(a=>carteAnnonce(a)).join('');}
+function carteAnnonce(a){const ph=a.photo?`<img src="${a.photo}" style="width:calc(100% + 30px);height:160px;object-fit:cover;border-radius:8px 8px 0 0;margin:-15px -15px 10px -15px;display:block">`:`<div style="background:#e8f5e9;height:120px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:center;font-size:3em;margin:-15px -15px 10px -15px">${a.emoji||'🌿'}</div>`;return `<div class="card" onclick="voirDetail(${a.id})" style="padding-top:0;overflow:hidden">${ph}<h3 style="color:#2d5a1b">${a.titre}</h3><p style="color:#888;font-size:0.9em">📍 ${a.lieu}</p><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><strong style="color:#2d5a1b">${Number(a.prix).toLocaleString()} FCFA</strong><span class="badge ${a.type==='location'?'badge-red':''}">${a.type==='vente'?'🏷️ Vente':'🔑 Location'}</span></div><p style="color:#888;font-size:0.85em;margin-top:5px">📐 ${a.surface} m²</p></div>`;}
+function voirDetail(id){const a=annonces.find(x=>x.id===id);if(!a)return;const ph=a.photo?`<img src="${a.photo}" style="width:100%;height:250px;object-fit:cover;border-radius:10px;margin-bottom:15px">`:'';document.getElementById('detail-contenu').innerHTML=`${ph}<div class="detail-header"><div style="font-size:3em">${a.emoji||'🌿'}</div><h2 style="margin:10px 0">${a.titre}</h2><span style="background:rgba(255,255,255,0.2);padding:5px 15px;border-radius:20px">${a.type==='vente'?'🏷️ Vente':'🔑 Location'}</span></div><div class="card" style="cursor:default"><div class="detail-row"><span style="color:#666">💰 Prix</span><strong style="color:#2d5a1b">${Number(a.prix).toLocaleString()} FCFA</strong></div><div class="detail-row"><span style="color:#666">📍 Lieu</span><span>${a.lieu}</span></div><div class="detail-row"><span style="color:#666">📐 Surface</span><span>${a.surface} m²</span></div><div class="detail-row"><span style="color:#666">👤 Propriétaire</span><span>${a.auteur||'Anonyme'}</span></div></div><div class="card" style="cursor:default"><h3 style="color:#2d5a1b;margin-bottom:10px">📝 Description</h3><p style="color:#555;line-height:1.6">${a.desc||'Aucune description'}</p></div>${a.tel?`<a href="tel:${a.tel}" style="display:block;text-decoration:none"><button class="btn" style="width:100%;font-size:1.1em;padding:15px;margin-top:10px">📞 Appeler</button></a><a href="https://wa.me/225${a.tel.replace(/\D/g,'')}" target="_blank" style="display:block;text-decoration:none"><button class="btn-green" style="width:100%;font-size:1.1em;padding:15px;margin-top:10px">💬 WhatsApp</button></a>`:''}`;showPage('detail');}
+function connecter(){const email=document.getElementById('email-login').value;const password=document.getElementById('password-login').value;if(!email||!password){alert('Remplissez tous les champs');return;}const users=JSON.parse(localStorage.getItem('tn_users')||'[]');const user=users.find(u=>u.email===email&&u.password===password);if(user){utilisateur=user;localStorage.setItem('tn_user',JSON.stringify(user));alert('Bienvenue '+user.nom+' !');showPage('accueil');}else alert('Email ou mot de passe incorrect');}
+function inscrire(){if(!roleChoisi){alert('Choisissez votre profil !');return;}const nom=document.getElementById('nom-inscription').value;const tel=document.getElementById('tel-inscription').value;const email=document.getElementById('email-inscription').value;const password=document.getElementById('password-inscription').value;if(!nom||!tel||!email||!password){alert('Remplissez tous les champs');return;}if(roleChoisi==='vendeur'||roleChoisi==='bailleur'){const l=document.getElementById('localite-inscription').value;const c=document.getElementById('cni-inscription').value;if(!l||!c){alert('Localité et CNI obligatoires');return;}}const users=JSON.parse(localStorage.getItem('tn_users')||'[]');if(users.find(u=>u.email===email)){alert('Email déjà utilisé');return;}const emojis={acheteur:'🛒',vendeur:'🏷️',locataire:'🔑',bailleur:'🏘️'};const user={id:Date.now(),nom,tel,email,password,role:roleChoisi,emoji:emojis[roleChoisi]};users.push(user);localStorage.setItem('tn_users',JSON.stringify(users));utilisateur=user;localStorage.setItem('tn_user',JSON.stringify(user));alert('Bienvenue '+nom+' !');showPage('accueil');}
+function deconnecter(){utilisateur=null;localStorage.removeItem('tn_user');showPage('accueil');}
+async function publierAnnonce(){if(!utilisateur){alert('Connectez-vous !');showPage('connexion');return;}const titre=document.getElementById('titre-annonce').value;const lieu=document.getElementById('lieu-annonce').value;const prix=document.getElementById('prix-annonce').value;const surface=document.getElementById('surface-annonce').value;const type=document.getElementById('type-annonce').value;const desc=document.getElementById('desc-annonce').value;const tel=document.getElementById('tel-annonce').value;if(!titre||!lieu||!prix||!surface){alert('Remplissez tous les champs');return;}let photoUrl='';if(photoBase64){try{const blob=await fetch(photoBase64).then(r=>r.blob());const fileName='photo_'+Date.now()+'.jpg';const res=await fetch(`${SUPABASE_URL}/storage/v1/object/terranova-photos/${fileName}`,{method:'POST',headers:{'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':blob.type},body:blob});if(res.ok)photoUrl=`${SUPABASE_URL}/storage/v1/object/public/terranova-photos/${fileName}`;}catch(e){}}const emojis=['🌿','🌱','🏡','🏢','🌳','🏘️'];const a={id:Date.now(),titre,lieu,prix,surface,type,desc,tel,emoji:emojis[Math.floor(Math.random()*emojis.length)],auteur:utilisateur.nom,photo:photoUrl};annonces.push(a);localStorage.setItem('tn_annonces',JSON.stringify(annonces));photoBase64='';document.getElementById('photo-preview').style.display='none';alert('Annonce publiée !');showPage('annonces');}
+function afficherProfil(){if(!utilisateur){showPage('connexion');return;}const roles={acheteur:'🛒 Acheteur',vendeur:'🏷️ Vendeur',locataire:'🔑 Locataire',bailleur:'🏘️ Bailleur'};document.getElementById('profil-emoji').textContent=utilisateur.emoji||'👤';document.getElementById('profil-nom').textContent=utilisateur.nom;document.getElementById('profil-email').textContent=utilisateur.email;document.getElementById('profil-role').textContent=roles[utilisateur.role]||'Membre';}
+function afficherMesAnnonces(){if(!utilisateur){showPage('connexion');return;}const mes=annonces.filter(a=>a.auteur===utilisateur.nom);document.getElementById('mes-annonces-liste').innerHTML=mes.length?mes.map(a=>carteAnnonce(a)).join(''):'<p style="color:#666;text-align:center;margin-top:20px">Pas encore d\'annonces</p>';}
+function rechercher(terme){const f=annonces.filter(a=>a.titre.toLowerCase().includes(terme.toLowerCase())||a.lieu.toLowerCase().includes(terme.toLowerCase()));document.getElementById('liste-annonces').innerHTML=f.map(a=>carteAnnonce(a)).join('');}
+afficherAccueil();
+</script>
+</body>
+</html>
