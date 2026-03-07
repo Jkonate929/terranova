@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TerraNova</title>
+<meta name="theme-color" content="#2d5a1b">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:sans-serif;background:#f0f7ee}
+.header{background:#2d5a1b;color:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:1.3em}
+.btn{background:#2d5a1b;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em;width:100%;margin-top:8px}
+.btn-white{background:white;color:#2d5a1b;border:2px solid #2d5a1b;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:1em;width:100%;margin-top:8px}
+.btn-green{background:#25D366;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:1em;width:100%;margin-top:8px}
+.btn-small{background:#2d5a1b;color:white;padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-size:0.9em}
+.page{display:none;padding:20px 15px}
+.page.active{display:block}
+.card{background:white;border-radius:10px;padding:15px;margin:10px 0;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+.card-click{cursor:pointer}
+input,textarea,select{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:8px;font-size:1em;box-sizing:border-box}
+.hero{background:#2d5a1b;color:white;padding:40px 20px;text-align:center}
+.badge{background:#e8f5e9;color:#2d5a1b;padding:4px 10px;border-radius:20px;font-size:0.85em;display:inline-block}
+.badge-red{background:#ffebee;color:#c62828}
+.back-btn{background:none;border:none;color:#2d5a1b;font-size:1em;cursor:pointer;margin-bottom:15px;display:block}
+.detail-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
+.role-card{background:white;border:2px solid #ddd;border-radius:10px;padding:15px;text-align:center;cursor:pointer}
+.role-card.selected{border-color:#2d5a1b;background:#e8f5e9}
+.role-card .emoji{font-size:2em;margin-bottom:5px}
+.role-card h4{color:#2d5a1b;font-size:0.9em}
+.role-card p{color:#888;font-size:0.75em;margin-top:3px}
+.condition-box{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px;margin:10px 0;font-size:0.9em;color:#856404}
+.photo-upload{border:2px dashed #c62828;border-radius:10px;padding:20px;text-align:center;cursor:pointer;margin:10px 0;background:#fff5f5}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
+.stat-card{background:white;border-radius:10px;padding:15px;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+.stat-card .number{font-size:2em;color:#2d5a1b;font-weight:bold}
+.stat-card .label{color:#888;font-size:0.85em;margin-top:5px}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #ddd;display:flex;justify-content:space-around;padding:8px 0;z-index:100}
+.tab-btn{background:none;border:none;font-size:1.4em;cursor:pointer;padding:5px;display:flex;flex-direction:column;align-items:center}
+.tab-btn span{font-size:0.6em;color:#888;margin-top:2px}
+.install-banner{background:#2d5a1b;color:white;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;display:none}
+.step-box{background:#f8f9fa;border-left:4px solid #2d5a1b;border-radius:8px;padding:12px;margin:8px 0;font-size:0.9em;line-height:1.8;color:#333}
+</style>
+</head>
+<body>
+
+<div id="install-banner" class="install-banner">
+  <span>📱 Installer TerraNova sur votre téléphone</span>
+  <button onclick="showPage('installer')" style="background:white;color:#2d5a1b;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold">Installer</button>
+</div>
+
+<div class="header">
+  <h1>🌍 TerraNova</h1>
+  <div id="header-btns"></div>
+</div>
+
+<!-- ACCUEIL -->
+<div id="page-accueil" class="page active">
+  <div class="hero">
+    <h2>Trouvez votre terrain idéal</h2>
+    <p style="margin-top:8px;opacity:0.9">Achetez, vendez et louez en Côte d'Ivoire</p>
+    <br>
+    <button style="background:white;color:#2d5a1b;border:none;padding:12px 30px;border-radius:8px;cursor:pointer;font-size:1.1em;font-weight:bold" onclick="showPage('annonces')">Voir les annonces</button>
+  </div>
+  <div style="padding:10px 0">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">🔥 Annonces récentes</h3>
+    <div id="annonces-accueil"></div>
+  </div>
+</div>
+
+<!-- ANNONCES -->
+<div id="page-annonces" class="page">
+  <h2 style="color:#2d5a1b;margin-bottom:10px">📋 Annonces</h2>
+  <input type="text" placeholder="🔍 Rechercher..." oninput="rechercher(this.value)">
+  <div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap">
+    <button class="btn-small" onclick="filtrer('tous')">Tous</button>
+    <button class="btn-small" style="background:#e8f5e9;color:#2d5a1b" onclick="filtrer('vente')">🏷️ Vente</button>
+    <button class="btn-small" style="background:#ffebee;color:#c62828" onclick="filtrer('location')">🔑 Location</button>
+  </div>
+  <div id="liste-annonces"></div>
+</div>
+
+<!-- DETAIL -->
+<div id="page-detail" class="page">
+  <button class="back-btn" onclick="showPage('annonces')">← Retour</button>
+  <div id="detail-contenu"></div>
+</div>
+
+<!-- CONNEXION -->
+<div id="page-connexion" class="page">
+  <div class="card" style="max-width:400px;margin:20px auto">
+    <h2 style="color:#2d5a1b;margin-bottom:15px;text-align:center">🔐 Connexion</h2>
+    <input type="email" id="email-login" placeholder="Email">
+    <input type="password" id="password-login" placeholder="Mot de passe">
+    <button class="btn" onclick="connecter()">Se connecter</button>
+    <p style="text-align:center;margin-top:10px"><a href="#" onclick="showPage('mot-de-passe-oublie')" style="color:#2d5a1b;font-size:0.9em">Mot de passe oublié ?</a></p>
+    <hr style="margin:15px 0;border-color:#eee">
+    <button class="btn-white" onclick="showPage('inscription')">Créer un compte</button>
+  </div>
+</div>
+
+<!-- MOT DE PASSE OUBLIE -->
+<div id="page-mot-de-passe-oublie" class="page">
+  <div class="card" style="max-width:400px;margin:20px auto">
+    <button class="back-btn" onclick="showPage('connexion')">← Retour</button>
+    <h2 style="color:#2d5a1b;margin-bottom:10px;text-align:center">🔑 Mot de passe oublié</h2>
+    <p style="color:#666;text-align:center;margin-bottom:15px;font-size:0.9em">Entrez votre numéro pour recevoir un code</p>
+    <div id="step-tel-oublie">
+      <input type="tel" id="tel-oublie" placeholder="Votre numéro de téléphone">
+      <button class="btn" onclick="envoyerCodeReset()">Envoyer le code</button>
+    </div>
+    <div id="step-code-oublie" style="display:none">
+      <div class="condition-box">📱 Code envoyé au <span id="tel-affiche"></span></div>
+      <input type="text" id="code-oublie" placeholder="Code reçu">
+      <input type="password" id="nouveau-password" placeholder="Nouveau mot de passe">
+      <input type="password" id="confirm-password" placeholder="Confirmer le mot de passe">
+      <button class="btn" onclick="reinitialiserPassword()">Réinitialiser</button>
+    </div>
+  </div>
+</div>
+
+<!-- INSCRIPTION -->
+<div id="page-inscription" class="page">
+  <div class="card" style="max-width:400px;margin:10px auto">
+    <h2 style="color:#2d5a1b;margin-bottom:5px;text-align:center">📝 Inscription</h2>
+    <p style="text-align:center;color:#666;margin-bottom:15px;font-size:0.9em">Choisissez votre profil</p>
+    <div class="role-grid">
+      <div class="role-card" id="role-acheteur" onclick="choisirRole('acheteur')"><div class="emoji">🛒</div><h4>Acheteur</h4><p>Acheter un terrain</p></div>
+      <div class="role-card" id="role-vendeur" onclick="choisirRole('vendeur')"><div class="emoji">🏷️</div><h4>Vendeur</h4><p>Vendre un terrain</p></div>
+      <div class="role-card" id="role-locataire" onclick="choisirRole('locataire')"><div class="emoji">🔑</div><h4>Locataire</h4><p>Louer un terrain</p></div>
+      <div class="role-card" id="role-bailleur" onclick="choisirRole('bailleur')"><div class="emoji">🏘️</div><h4>Bailleur</h4><p>Mettre en location</p></div>
+    </div>
+    <div id="conditions-role" style="display:none"></div>
+    <div id="form-inscription" style="display:none">
+      <input type="text" id="nom-inscription" placeholder="Nom complet *">
+      <input type="tel" id="tel-inscription" placeholder="Téléphone * (ex: 0707000000)">
+      <input type="email" id="email-inscription" placeholder="Email *">
+      <input type="password" id="password-inscription" placeholder="Mot de passe *">
+      <div id="champs-vendeur-bailleur" style="display:none">
+        <input type="text" id="localite-inscription" placeholder="Votre localité *">
+        <input type="text" id="cni-inscription" placeholder="Numéro CNI *">
+      </div>
+      <div id="step-sms" style="display:none">
+        <div class="condition-box">📱 Code envoyé au <span id="tel-sms-affiche"></span></div>
+        <input type="text" id="code-sms" placeholder="Code de confirmation *">
+      </div>
+      <button class="btn" id="btn-inscription" onclick="etapeInscription()">Continuer</button>
+    </div>
+    <p style="text-align:center;margin-top:15px;font-size:0.9em">Déjà un compte ? <a href="#" onclick="showPage('connexion')" style="color:#2d5a1b">Se connecter</a></p>
+  </div>
+</div>
+
+<!-- PUBLIER -->
+<div id="page-publier" class="page">
+  <div class="card" style="max-width:500px;margin:0 auto">
+    <h2 style="color:#2d5a1b;margin-bottom:15px">➕ Publier une annonce</h2>
+    <input type="text" id="titre-annonce" placeholder="Titre *">
+    <input type="text" id="lieu-annonce" placeholder="Lieu (ex: Cocody, Abidjan) *">
+    <input type="number" id="prix-annonce" placeholder="Prix en FCFA *">
+    <input type="number" id="surface-annonce" placeholder="Surface en m² *">
+    <select id="type-annonce"><option value="vente">Vente</option><option value="location">Location</option></select>
+    <input type="tel" id="tel-annonce" placeholder="Téléphone de contact *">
+    <textarea id="desc-annonce" placeholder="Description..." rows="3"></textarea>
+    <div class="photo-upload" id="photo-zone" onclick="document.getElementById('photo-input').click()">
+      <div style="font-size:2em">📸</div>
+      <p style="color:#c62828;font-weight:bold;margin-top:5px">Photo OBLIGATOIRE</p>
+      <p style="color:#888;font-size:0.85em">Photographiez le terrain</p>
+    </div>
+    <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none" onchange="previewPhoto(this)">
+    <img id="photo-preview" style="display:none;width:100%;height:200px;object-fit:cover;border-radius:10px;margin:10px 0">
+    <button class="btn" onclick="publierAnnonce()">📤 Publier</button>
+  </div>
+</div>
+
+<!-- PROFIL / DASHBOARD -->
+<div id="page-profil" class="page">
+  <div id="dashboard-contenu"></div>
+</div>
+
+<!-- MES ANNONCES -->
+<div id="page-mes-annonces" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px">📌 Mes annonces</h2>
+  <div id="mes-annonces-liste"></div>
+</div>
+
+<!-- FAVORIS -->
+<div id="page-favoris" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px">❤️ Mes favoris</h2>
+  <div id="favoris-liste"></div>
+</div>
+
+<!-- INSTALLER -->
+<div id="page-installer" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:5px">📲 Installer TerraNova</h2>
+  <p style="color:#666;margin-bottom:15px;font-size:0.9em">Installez l'application sur votre téléphone pour un accès rapide !</p>
+
+  <div class="card" style="background:#e8f5e9">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">🍎 Sur iPhone (Safari)</h3>
+    <div class="step-box">
+      1️⃣ Ouvrez <strong>Safari</strong> (pas Chrome)<br>
+      2️⃣ Allez sur <strong>terranova-lilac.vercel.app</strong><br>
+      3️⃣ Appuyez sur le bouton <strong>Partager ⬆️</strong> en bas<br>
+      4️⃣ Faites défiler et appuyez <strong>"Sur l'écran d'accueil"</strong><br>
+      5️⃣ Appuyez <strong>"Ajouter"</strong> en haut à droite<br>
+      ✅ <strong>L'icône TerraNova apparaît sur votre écran !</strong>
+    </div>
+  </div>
+
+  <div class="card" style="background:#e3f2fd;margin-top:5px">
+    <h3 style="color:#1565c0;margin-bottom:10px">🤖 Sur Android (Chrome)</h3>
+    <div class="step-box">
+      1️⃣ Ouvrez <strong>Chrome</strong><br>
+      2️⃣ Allez sur <strong>terranova-lilac.vercel.app</strong><br>
+      3️⃣ Appuyez sur les <strong>3 points ⋮</strong> en haut à droite<br>
+      4️⃣ Appuyez <strong>"Ajouter à l'écran d'accueil"</strong><br>
+      5️⃣ Appuyez <strong>"Ajouter"</strong><br>
+      ✅ <strong>L'icône TerraNova apparaît sur votre écran !</strong>
+    </div>
+  </div>
+
+  <div class="card" style="background:#fff3cd;margin-top:5px">
+    <p style="color:#856404;font-size:0.9em">💡 <strong>Avantage :</strong> L'application s'ouvre sans barre de navigateur, comme une vraie app téléchargée !</p>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn" onclick="showPage('accueil')">🏠<span>Accueil</span></button>
+  <button class="tab-btn" onclick="showPage('annonces')">📋<span>Annonces</span></button>
+  <button class="tab-btn" onclick="checkPublier()">➕<span>Publier</span></button>
+  <button class="tab-btn" onclick="showPage('profil')">👤<span>Profil</span></button>
+</div>
+<div style="height:75px"></div>
+
+<script>
+const SUPABASE_URL='https://bebillevaxdbtjfdhaut.supabase.co';
+const SUPABASE_KEY='sb_publishable_4jOGEtncvGG_QSFn-AJkWA_HlE5_WBM';
+let utilisateur=JSON.parse(localStorage.getItem('tn_user')||'null');
+let annonces=JSON.parse(localStorage.getItem('tn_annonces')||'[]');
+let favoris=JSON.parse(localStorage.getItem('tn_favoris')||'[]');
+let roleChoisi='';
+let photoBase64='';
+let codeReset='';
+let codeSMS='';
+let inscriptionData={};
+
+if(annonces.length===0){
+  annonces=[
+    {id:1,titre:"Terrain résidentiel Cocody",lieu:"Cocody, Abidjan",prix:15000000,surface:500,type:"vente",desc:"Beau terrain en zone résidentielle calme. Titre foncier disponible.",emoji:"🌿",auteur:"Kouamé Jean",tel:"0707000001",photo:"",vues:24},
+    {id:2,titre:"Terrain commercial Plateau",lieu:"Plateau, Abidjan",prix:25000000,surface:300,type:"vente",desc:"Terrain idéal pour commerce. Situé en plein centre ville.",emoji:"🏢",auteur:"Diabaté Moussa",tel:"0505000002",photo:"",vues:18},
+    {id:3,titre:"Terrain à louer Yopougon",lieu:"Yopougon, Abidjan",prix:150000,surface:200,type:"location",desc:"Terrain disponible immédiatement. Clôturé et sécurisé.",emoji:"🌱",auteur:"Bamba Fatou",tel:"0101000003",photo:"",vues:31}
+  ];
+  localStorage.setItem('tn_annonces',JSON.stringify(annonces));
+}
+
+function genererCode(){return Math.floor(1000+Math.random()*9000).toString();}
+
+function envoyerCodeReset(){
+  const tel=document.getElementById('tel-oublie').value;
+  if(!tel){alert('Entrez votre numéro');return;}
+  const users=JSON.parse(localStorage.getItem('tn_users')||'[]');
+  const user=users.find(u=>u.tel===tel);
+  if(!user){alert('Aucun compte avec ce numéro');return;}
+  codeReset=genererCode();
+  localStorage.setItem('tn_code_reset',JSON.stringify({code:codeReset,tel}));
+  document.getElementById('tel-affiche').textContent=tel;
+  document.getElementById('step-tel-oublie').style.display='none';
+  document.getElementById('step-code-oublie').style.display='block';
+  alert('Code : '+codeReset+'\n(En production ce code sera envoyé par SMS)');
+}
+
+function reinitialiserPassword(){
+  const code=document.getElementById('code-oublie').value;
+  const newPwd=document.getElementById('nouveau-password').value;
+  const confirmPwd=document.getElementById('confirm-password').value;
+  const saved=JSON.parse(localStorage.getItem('tn_code_reset')||'{}');
+  if(code!==saved.code){alert('Code incorrect');return;}
+  if(newPwd!==confirmPwd){alert('Mots de passe différents');return;}
+  if(newPwd.length<6){alert('Minimum 6 caractères');return;}
+  const users=JSON.parse(localStorage.getItem('tn_users')||'[]');
+  const idx=users.findIndex(u=>u.tel===saved.tel);
+  if(idx>-1){users[idx].password=newPwd;localStorage.setItem('tn_users',JSON.stringify(users));}
+  localStorage.removeItem('tn_code_reset');
+  alert('Mot de passe réinitialisé !');
+  showPage('connexion');
+}
+
+function choisirRole(role){
+  roleChoisi=role;
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('role-'+role).classList.add('selected');
+  const c={
+    acheteur:'<div class="condition-box">🛒 <strong>Acheteur</strong> — Consultez et contactez les vendeurs. Gratuit !</div>',
+    vendeur:'<div class="condition-box">🏷️ <strong>Vendeur</strong> — Publiez vos terrains. Localité et CNI requis.</div>',
+    locataire:'<div class="condition-box">🔑 <strong>Locataire</strong> — Trouvez un terrain à louer. Gratuit !</div>',
+    bailleur:'<div class="condition-box">🏘️ <strong>Bailleur</strong> — Mettez en location. Localité et CNI requis.</div>'
+  };
+  document.getElementById('conditions-role').innerHTML=c[role];
+  document.getElementById('conditions-role').style.display='block';
+  document.getElementById('form-inscription').style.display='block';
+  document.getElementById('champs-vendeur-bailleur').style.display=(role==='vendeur'||role==='bailleur')?'block':'none';
+  document.getElementById('step-sms').style.display='none';
+  document.getElementById('btn-inscription').textContent='Continuer';
+}
+
+function etapeInscription(){
+  const stepSMS=document.getElementById('step-sms');
+  if(stepSMS.style.display==='none'){
+    if(!roleChoisi){alert('Choisissez votre profil !');return;}
+    const nom=document.getElementById('nom-inscription').value;
+    const tel=document.getElementById('tel-inscription').value;
+    const email=document.getElementById('email-inscription').value;
+    const password=document.getElementById('password-inscription').value;
+    if(!nom||!tel||!email||!password){alert('Remplissez tous les champs');return;}
+    if(roleChoisi==='vendeur'||roleChoisi==='bailleur'){
+      const l=document.getElementById('localite-inscription').value;
+      const c=document.getElementById('cni-inscription').value;
+      if(!l||!c){alert('Localité et CNI obligatoires');return;}
+    }
+    const users=JSON.parse(localStorage.getItem('tn_users')||'[]');
+    if(users.find(u=>u.email===email)){alert('Email déjà utilisé');return;}
+    codeSMS=genererCode();
+    inscriptionData={nom,tel,email,password,role:roleChoisi};
+    document.getElementById('tel-sms-affiche').textContent=tel;
+    stepSMS.style.display='block';
+    document.getElementById('btn-inscription').textContent='Confirmer le compte';
+    alert('Code de confirmation : '+codeSMS+'\n(En production ce code sera envoyé par SMS)');
+  } else {
+    const code=document.getElementById('code-sms').value;
+    if(code!==codeSMS){alert('Code incorrect !');return;}
+    const emojis={acheteur:'🛒',vendeur:'🏷️',locataire:'🔑',bailleur:'🏘️'};
+    const user={id:Date.now(),...inscriptionData,emoji:emojis[inscriptionData.role],vues:0};
+    const users=JSON.parse(localStorage.getItem('tn_users')||'[]');
+    users.push(user);
+    localStorage.setItem('tn_users',JSON.stringify(users));
+    utilisateur=user;
+    localStorage.setItem('tn_user',JSON.stringify(user));
+    alert('✅ Bienvenue '+user.nom+' !');
+    showPage('accueil');
+  }
+}
+
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  window.scrollTo(0,0);
+  if(page==='annonces')afficherAnnonces();
+  if(page==='accueil')afficherAccueil();
+  if(page==='profil')afficherDashboard();
+  if(page==='mes-annonces')afficherMesAnnonces();
+  if(page==='favoris')afficherFavoris();
+  updateHeader();
+}
+
+function updateHeader(){
+  const btns=document.getElementById('header-btns');
+  if(utilisateur){
+    btns.innerHTML=`<span style="color:white;margin-right:8px;font-size:0.9em">${utilisateur.emoji} ${utilisateur.nom.split(' ')[0]}</span><button style="background:white;color:#2d5a1b;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.9em" onclick="checkPublier()">Publier</button>`;
+  } else {
+    btns.innerHTML=`<button style="background:transparent;color:white;border:2px solid white;padding:6px 12px;border-radius:8px;cursor:pointer;margin-right:5px;font-size:0.9em" onclick="showPage('connexion')">Connexion</button><button style="background:white;color:#2d5a1b;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.9em" onclick="checkPublier()">Publier</button>`;
+  }
+}
+
+function checkPublier(){
+  if(!utilisateur){alert('Connectez-vous pour publier !');showPage('connexion');return;}
+  if(utilisateur.role==='acheteur'||utilisateur.role==='locataire'){alert('Votre profil ne permet pas de publier.\nDevenez Vendeur ou Bailleur.');return;}
+  showPage('publier');
+}
+
+function previewPhoto(input){
+  const file=input.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    photoBase64=e.target.result;
+    const p=document.getElementById('photo-preview');
+    p.src=photoBase64;p.style.display='block';
+    document.getElementById('photo-zone').style.borderColor='#2d5a1b';
+    document.getElementById('photo-zone').style.background='#f9fff9';
+  };
+  reader.readAsDataURL(file);
+}
+
+function afficherAccueil(){
+  const el=document.getElementById('annonces-accueil');
+  if(el)el.innerHTML=annonces.slice(0,3).map(a=>carteAnnonce(a)).join('');
+}
+
+function afficherAnnonces(liste){
+  const el=document.getElementById('liste-annonces');
+  if(el)el.innerHTML=(liste||annonces).map(a=>carteAnnonce(a)).join('');
+}
+
+function filtrer(type){
+  if(type==='tous')afficherAnnonces();
+  else afficherAnnonces(annonces.filter(a=>a.type===type));
+}
+
+function carteAnnonce(a){
+  const fav=favoris.includes(a.id);
+  const ph=a.photo?`<img src="${a.photo}" style="width:calc(100% + 30px);height:150px;object-fit:cover;border-radius:8px 8px 0 0;margin:-15px -15px 10px -15px;display:block" onerror="this.style.display='none'">`:`<div style="background:#e8f5e9;height:100px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:center;font-size:3em;margin:-15px -15px 10px -15px">${a.emoji||'🌿'}</div>`;
+  return `<div class="card card-click" onclick="voirDetail(${a.id})" style="padding-top:0;overflow:hidden;position:relative">
+    ${ph}
+    <button onclick="event.stopPropagation();toggleFavori(${a.id})" style="position:absolute;top:8px;right:8px;background:white;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:1.1em">${fav?'❤️':'🤍'}</button>
+    <h3 style="color:#2d5a1b">${a.titre}</h3>
+    <p style="color:#888;font-size:0.9em">📍 ${a.lieu} • 📐 ${a.surface} m²</p>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+      <strong style="color:#2d5a1b">${Number(a.prix).toLocaleString()} FCFA</strong>
+      <span class="badge ${a.type==='location'?'badge-red':''}">${a.type==='vente'?'🏷️ Vente':'🔑 Location'}</span>
+    </div>
+  </div>`;
+}
+
+function toggleFavori(id){
+  const idx=favoris.indexOf(id);
+  if(idx>-1)favoris.splice(idx,1);
+  else favoris.push(id);
+  localStorage.setItem('tn_favoris',JSON.stringify(favoris));
+  afficherAnnonces();
+}
+
+function voirDetail(id){
+  const a=annonces.find(x=>x.id===id);
+  if(!a)return;
+  a.vues=(a.vues||0)+1;
+  localStorage.setItem('tn_annonces',JSON.stringify(annonces));
+  const ph=a.photo?`<img src="${a.photo}" style="width:100%;height:250px;object-fit:cover;border-radius:10px;margin-bottom:15px">`:'';
+  const fav=favoris.includes(a.id);
+  document.getElementById('detail-contenu').innerHTML=`
+    ${ph}
+    <div style="background:#2d5a1b;color:white;padding:25px 20px;text-align:center;border-radius:10px;margin-bottom:15px">
+      <div style="font-size:2.5em">${a.emoji||'🌿'}</div>
+      <h2 style="margin:8px 0">${a.titre}</h2>
+      <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px">${a.type==='vente'?'🏷️ Vente':'🔑 Location'}</span>
+    </div>
+    <div class="card" style="cursor:default">
+      <div class="detail-row"><span style="color:#666">💰 Prix</span><strong style="color:#2d5a1b">${Number(a.prix).toLocaleString()} FCFA</strong></div>
+      <div class="detail-row"><span style="color:#666">📍 Lieu</span><span>${a.lieu}</span></div>
+      <div class="detail-row"><span style="color:#666">📐 Surface</span><span>${a.surface} m²</span></div>
+      <div class="detail-row"><span style="color:#666">👁️ Vues</span><span>${a.vues||0}</span></div>
+      <div class="detail-row" style="border:none"><span style="color:#666">👤 Propriétaire</span><span>${a.auteur||'Anonyme'}</span></div>
+    </div>
+    <div class="card" style="cursor:default">
+      <h3 style="color:#2d5a1b;margin-bottom:8px">📝 Description</h3>
+      <p style="color:#555;line-height:1.6">${a.desc||'Aucune description'}</p>
+    </div>
+    <button onclick="toggleFavori(${a.id})" style="width:100%;padding:12px;border:2px solid #2d5a1b;background:white;color:#2d5a1b;border-radius:8px;cursor:pointer;font-size:1em;margin-top:8px">${fav?'❤️ Retirer des favoris':'🤍 Ajouter aux favoris'}</button>
+    ${a.tel?`<a href="tel:${a.tel}" style="display:block;text-decoration:none;margin-top:8px"><button class="btn">📞 Appeler</button></a><a href="https://wa.me/225${a.tel.replace(/\D/g,'')}" target="_blank" style="display:block;text-decoration:none"><button class="btn-green">💬 WhatsApp</button></a>`:''}
+  `;
+  showPage('detail');
+}
+
+function connecter(){
+  const email=document.getElementById('email-login').value;
+  const password=document.getElementById('password-login').value;
+  if(!email||!password){alert('Remplissez tous les champs');return;}
+  const users=JSON.parse(localStorage.getItem('tn_users')||'[]');
+  const user=users.find(u=>u.email===email&&u.password===password);
+  if(user){utilisateur=user;localStorage.setItem('tn_user',JSON.stringify(user));alert('Bienvenue '+user.nom+' !');showPage('accueil');}
+  else alert('Email ou mot de passe incorrect');
+}
+
+function deconnecter(){
+  utilisateur=null;
+  localStorage.removeItem('tn_user');
+  showPage('accueil');
+}
+
+async function publierAnnonce(){
+  if(!utilisateur){alert('Connectez-vous !');showPage('connexion');return;}
+  const titre=document.getElementById('titre-annonce').value;
+  const lieu=document.getElementById('lieu-annonce').value;
+  const prix=document.getElementById('prix-annonce').value;
+  const surface=document.getElementById('surface-annonce').value;
+  const type=document.getElementById('type-annonce').value;
+  const desc=document.getElementById('desc-annonce').value;
+  const tel=document.getElementById('tel-annonce').value;
+  if(!titre||!lieu||!prix||!surface||!tel){alert('Remplissez tous les champs');return;}
+  if(!photoBase64){alert('📸 Photo obligatoire !\nPhotographiez le terrain avant de publier.');return;}
+  let photoUrl='';
+  try{
+    const blob=await fetch(photoBase64).then(r=>r.blob());
+    const fileName='photo_'+Date.now()+'.jpg';
+    const res=await fetch(`${SUPABASE_URL}/storage/v1/object/terranova-photos/${fileName}`,{method:'POST',headers:{'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':blob.type},body:blob});
+    if(res.ok)photoUrl=`${SUPABASE_URL}/storage/v1/object/public/terranova-photos/${fileName}`;
+    else photoUrl=photoBase64;
+  }catch(e){photoUrl=photoBase64;}
+  const emojis=['🌿','🌱','🏡','🏢','🌳','🏘️'];
+  const a={id:Date.now(),titre,lieu,prix,surface,type,desc,tel,emoji:emojis[Math.floor(Math.random()*emojis.length)],auteur:utilisateur.nom,photo:photoUrl,vues:0,date:new Date().toLocaleDateString('fr-FR')};
+  annonces.push(a);
+  localStorage.setItem('tn_annonces',JSON.stringify(annonces));
+  photoBase64='';
+  document.getElementById('photo-preview').style.display='none';
+  document.getElementById('titre-annonce').value='';
+  document.getElementById('lieu-annonce').value='';
+  document.getElementById('prix-annonce').value='';
+  document.getElementById('surface-annonce').value='';
+  document.getElementById('tel-annonce').value='';
+  document.getElementById('desc-annonce').value='';
+  alert('✅ Annonce publiée !');
+  showPage('annonces');
+}
+
+function afficherDashboard(){
+  if(!utilisateur){
+    document.getElementById('dashboard-contenu').innerHTML=`
+      <div class="card" style="text-align:center;margin-top:30px">
+        <div style="font-size:3em">👤</div>
+        <h2 style="color:#2d5a1b;margin:10px 0">Mon compte</h2>
+        <p style="color:#666;margin-bottom:15px">Connectez-vous pour accéder à votre espace</p>
+        <button class="btn" onclick="showPage('connexion')">Se connecter</button>
+        <button class="btn-white" onclick="showPage('inscription')">Créer un compte</button>
+      </div>`;
+    return;
+  }
+  const mesAnnonces=annonces.filter(a=>a.auteur===utilisateur.nom);
+  const totalVues=mesAnnonces.reduce((s,a)=>s+(a.vues||0),0);
+  const roles={acheteur:'🛒 Acheteur',vendeur:'🏷️ Vendeur',locataire:'🔑 Locataire',bailleur:'🏘️ Bailleur'};
+  let extra='';
+  if(utilisateur.role==='vendeur'||utilisateur.role==='bailleur'){
+    extra=`
+      <div class="stat-grid">
+        <div class="stat-card"><div class="number">${mesAnnonces.length}</div><div class="label">Mes annonces</div></div>
+        <div class="stat-card"><div class="number">${totalVues}</div><div class="label">Vues totales</div></div>
+      </div>
+      <button class="btn" onclick="showPage('mes-annonces')">📌 Gérer mes annonces</button>
+      <button class="btn" style="background:#e8f5e9;color:#2d5a1b" onclick="checkPublier()">➕ Nouvelle annonce</button>`;
+  } else {
+    extra=`
+      <div class="stat-grid">
+        <div class="stat-card"><div class="number">${favoris.length}</div><div class="label">Mes favoris</div></div>
+        <div class="stat-card"><div class="number">${annonces.length}</div><div class="label">Annonces dispo</div></div>
+      </div>
+      <button class="btn" onclick="showPage('favoris')">❤️ Mes favoris</button>
+      <button class="btn" style="background:#e8f5e9;color:#2d5a1b" onclick="showPage('annonces')">🔍 Chercher un terrain</button>`;
+  }
+  document.getElementById('dashboard-contenu').innerHTML=`
+    <div class="card" style="text-align:center">
+      <div style="font-size:3em">${utilisateur.emoji||'👤'}</div>
+      <h2 style="color:#2d5a1b;margin:8px 0">${utilisateur.nom}</h2>
+      <p style="color:#666">${utilisateur.email}</p>
+      <span class="badge" style="margin-top:5px">${roles[utilisateur.role]||'Membre'}</span>
+    </div>
+    ${extra}
+    <div class="card" style="background:#e8f5e9;cursor:default">
+      <h3 style="color:#2d5a1b;margin-bottom:8px">📱 Installer l'application</h3>
+      <p style="color:#555;font-size:0.9em;margin-bottom:10px">Accédez à TerraNova depuis votre écran d'accueil !</p>
+      <button class="btn" onclick="showPage('installer')">📲 Voir comment installer</button>
+    </div>
+    <button class="btn-white" onclick="deconnecter()">🚪 Se déconnecter</button>
+  `;
+}
+
+function afficherMesAnnonces(){
+  if(!utilisateur){showPage('connexion');return;}
+  const mes=annonces.filter(a=>a.auteur===utilisateur.nom);
+  document.getElementById('mes-annonces-liste').innerHTML=mes.length?mes.map(a=>`
+    <div class="card" style="padding-top:0;overflow:hidden">
+      ${a.photo?`<img src="${a.photo}" style="width:calc(100% + 30px);height:120px;object-fit:cover;border-radius:8px 8px 0 0;margin:-15px -15px 10px -15px;display:block">`:`<div style="background:#e8f5e9;height:80px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:center;font-size:2em;margin:-15px -15px 10px -15px">${a.emoji||'🌿'}</div>`}
+      <h3 style="color:#2d5a1b">${a.titre}</h3>
+      <p style="color:#888;font-size:0.85em">📍 ${a.lieu} • 👁️ ${a.vues||0} vues • 📅 ${a.date||''}</p>
+      <p style="color:#2d5a1b;font-weight:bold;margin-top:4px">${Number(a.prix).toLocaleString()} FCFA</p>
+      <button onclick="supprimerAnnonce(${a.id})" style="background:#ffebee;color:#c62828;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;margin-top:8px;font-size:0.85em">🗑️ Supprimer</button>
+    </div>`).join(''):'<p style="color:#666;text-align:center;margin-top:20px">Pas encore d\'annonces</p>';
+}
+
+function supprimerAnnonce(id){
+  if(!confirm('Supprimer cette annonce ?'))return;
+  annonces=annonces.filter(a=>a.id!==id);
+  localStorage.setItem('tn_annonces',JSON.stringify(annonces));
+  afficherMesAnnonces();
+}
+
+function afficherFavoris(){
+  const mesFavoris=annonces.filter(a=>favoris.includes(a.id));
+  document.getElementById('favoris-liste').innerHTML=mesFavoris.length?mesFavoris.map(a=>carteAnnonce(a)).join(''):'<p style="color:#666;text-align:center;margin-top:20px">Aucun favori\nAppuyez sur 🤍 pour ajouter</p>';
+}
+
+function rechercher(terme){
+  const f=annonces.filter(a=>a.titre.toLowerCase().includes(terme.toLowerCase())||a.lieu.toLowerCase().includes(terme.toLowerCase()));
+  document.getElementById('liste-annonces').innerHTML=f.map(a=>carteAnnonce(a)).join('');
+}
+
+afficherAccueil();
+updateHeader();
+</script>
+</body>
+</html>
