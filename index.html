@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TerraNova</title>
+<meta name="theme-color" content="#2d5a1b">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Montserrat',sans-serif;background:#f0f7ee;transition:background 0.3s}
+body.dark{background:#1a1a1a;color:#eee}
+body.dark .card,.dark .luxury-card{background:#2a2a2a;color:#eee;border-color:#3a4a3a}
+body.dark .header{background:#1a3a0a}
+body.dark input,body.dark textarea,body.dark select{background:#333;color:#eee;border-color:#444}
+body.dark .tab-bar{background:#222;border-color:#333}
+body.dark .menu-item,.dark .info-row,.dark .detail-row{border-color:#333}
+body.dark .info-value{color:#eee}
+body.dark .quartier-btn,.dark .type-card,.dark .lang-btn{background:#333;border-color:#444;color:#eee}
+body.dark .stat-card{background:#2a2a2a}
+body.dark .step-box{background:#333}
+body.dark .msg-bubble-other{background:#333;color:#eee}
+body.dark .conv-item:active,.dark .menu-item:active{background:#333}
+.splash{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 30%,#1a4a0a,#0a1a05 60%);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.8s ease,transform 0.8s ease}
+.splash.hide{opacity:0;transform:scale(1.05);pointer-events:none}
+.splash-ring{width:160px;height:160px;border:2px solid rgba(76,175,80,0.2);border-radius:50%;position:absolute;animation:rp 2s ease-in-out infinite}
+.splash-ring2{width:210px;height:210px;border:1px solid rgba(76,175,80,0.1);border-radius:50%;position:absolute;animation:rp 2s ease-in-out infinite 0.3s}
+.splash-ring3{width:260px;height:260px;border:1px solid rgba(76,175,80,0.06);border-radius:50%;position:absolute;animation:rp 2s ease-in-out infinite 0.6s}
+@keyframes rp{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:0.5}}
+.splash-globe{font-size:5em;animation:gi 0.8s ease forwards,fl 3s ease-in-out 0.8s infinite;opacity:0;filter:drop-shadow(0 0 40px rgba(76,175,80,0.8))}
+@keyframes gi{from{opacity:0;transform:scale(0.5)}to{opacity:1;transform:scale(1)}}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.splash-name{font-family:'Bebas Neue',sans-serif;font-size:4em;color:white;letter-spacing:8px;margin-top:20px;animation:fu 0.8s ease 0.4s forwards;opacity:0;text-shadow:0 0 40px rgba(76,175,80,0.5)}
+.splash-sub{font-size:0.75em;color:#4caf50;letter-spacing:4px;text-transform:uppercase;font-weight:600;animation:fu 0.8s ease 0.7s forwards;opacity:0;margin-top:8px}
+.splash-bar{width:200px;height:3px;background:rgba(255,255,255,0.1);border-radius:3px;margin-top:50px;overflow:hidden;animation:fu 0.5s ease 1s forwards;opacity:0}
+.splash-progress{height:100%;background:linear-gradient(90deg,#2d5a1b,#4caf50);border-radius:3px;animation:pg 2.5s ease 1s forwards;width:0}
+@keyframes pg{to{width:100%}}
+.splash-ci{position:absolute;bottom:40px;color:rgba(255,255,255,0.3);font-size:0.7em;letter-spacing:3px;animation:fu 0.5s ease 1.2s forwards;opacity:0}
+@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.header{background:linear-gradient(135deg,#2d5a1b,#3d7a25);color:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 15px rgba(0,0,0,0.2);position:sticky;top:0;z-index:200}
+.header h1{font-family:'Bebas Neue',sans-serif;font-size:1.6em;letter-spacing:3px}
+.btn{background:linear-gradient(135deg,#2d5a1b,#4caf50);color:white;padding:12px 20px;border:none;border-radius:10px;cursor:pointer;font-size:1em;width:100%;margin-top:8px;font-weight:600;box-shadow:0 4px 15px rgba(45,90,27,0.3);transition:transform 0.1s;font-family:'Montserrat',sans-serif}
+.btn:active{transform:scale(0.97)}
+.btn:disabled{opacity:0.6;cursor:not-allowed}
+.btn-white{background:white;color:#2d5a1b;border:2px solid #2d5a1b;padding:10px 20px;border-radius:10px;cursor:pointer;font-size:1em;width:100%;margin-top:8px;font-weight:600;font-family:'Montserrat',sans-serif}
+.btn-green{background:linear-gradient(135deg,#128C7E,#25D366);color:white;padding:10px 20px;border:none;border-radius:10px;cursor:pointer;font-size:1em;width:100%;margin-top:8px;font-weight:600;font-family:'Montserrat',sans-serif}
+.btn-small{background:linear-gradient(135deg,#2d5a1b,#4caf50);color:white;padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-size:0.85em;font-weight:600;font-family:'Montserrat',sans-serif}
+.page{display:none;padding:20px 15px;padding-bottom:90px;animation:pi 0.2s ease}
+.page.active{display:block}
+@keyframes pi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.card{background:white;border-radius:14px;padding:15px;margin:10px 0;box-shadow:0 3px 15px rgba(0,0,0,0.08)}
+.card-click{cursor:pointer;transition:transform 0.15s}
+.card-click:active{transform:scale(0.98)}
+.luxury-card{background:white;border-radius:16px;padding:18px;margin:10px 0;box-shadow:0 5px 20px rgba(45,90,27,0.08);border:1px solid rgba(45,90,27,0.06)}
+input,textarea,select{width:100%;padding:12px;margin:6px 0;border:2px solid #e0e0e0;border-radius:10px;font-size:1em;box-sizing:border-box;font-family:'Montserrat',sans-serif;transition:border-color 0.2s}
+input:focus,textarea:focus,select:focus{border-color:#4caf50;outline:none}
+.hero{background:linear-gradient(135deg,#1a3a0a,#2d5a1b,#3d7a25);color:white;padding:25px 15px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 20%,rgba(76,175,80,0.3),transparent 60%)}
+.hero-content{position:relative;z-index:1}
+.badge{background:#e8f5e9;color:#2d5a1b;padding:4px 10px;border-radius:20px;font-size:0.82em;display:inline-block;font-weight:600}
+.badge-gold{background:linear-gradient(135deg,#fff8e1,#fff3cd);color:#f57f17;border:1px solid #ffc107}
+.badge-blue{background:#e3f2fd;color:#1565c0}
+.badge-new{background:linear-gradient(135deg,#c62828,#e53935);color:white;font-size:0.7em;padding:3px 8px;border-radius:10px;font-weight:700}
+.badge-warning{background:#fff3e0;color:#e65100;border:1px solid #ffcc02}
+.badge-verified{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);color:#2d5a1b;border:1px solid #4caf50;padding:3px 8px;border-radius:10px;font-size:0.72em;font-weight:700}
+.info-box{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:1px solid #90caf9;border-radius:10px;padding:12px;margin:10px 0;font-size:0.9em;color:#1565c0}
+.warning-box{background:linear-gradient(135deg,#ffebee,#ffcdd2);border:1px solid #ef9a9a;border-radius:10px;padding:12px;margin:10px 0;font-size:0.9em;color:#c62828}
+.success-box{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border:1px solid #a5d6a7;border-radius:10px;padding:12px;margin:10px 0;font-size:0.9em;color:#2d5a1b}
+.condition-box{background:linear-gradient(135deg,#fff8e1,#fff3cd);border:1px solid #ffc107;border-radius:10px;padding:12px;margin:10px 0;font-size:0.9em;color:#856404}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
+.stat-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:15px 0}
+.stat-card{background:white;border-radius:12px;padding:14px;text-align:center;box-shadow:0 3px 15px rgba(0,0,0,0.08)}
+.stat-card .number{font-size:1.9em;color:#2d5a1b;font-weight:900;font-family:'Bebas Neue',sans-serif;letter-spacing:1px}
+.stat-card .label{color:#888;font-size:0.72em;margin-top:4px;font-weight:600}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #eee;display:flex;justify-content:space-around;padding:8px 0;z-index:100;box-shadow:0 -3px 15px rgba(0,0,0,0.08)}
+.tab-btn{background:none;border:none;font-size:1.3em;cursor:pointer;padding:5px;display:flex;flex-direction:column;align-items:center;position:relative;transition:transform 0.1s;-webkit-tap-highlight-color:transparent}
+.tab-btn:active{transform:scale(0.85)}
+.tab-btn span{font-size:0.58em;color:#888;margin-top:2px;font-weight:600}
+.notif-badge{position:absolute;top:0;right:0;background:#c62828;color:white;border-radius:50%;width:16px;height:16px;font-size:0.6em;display:flex;align-items:center;justify-content:center;font-weight:bold}
+.back-btn{background:none;border:none;color:#2d5a1b;font-size:1em;cursor:pointer;margin-bottom:15px;display:block;font-weight:600;font-family:'Montserrat',sans-serif;padding:5px 0}
+.detail-row,.info-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f5f5f5;flex-wrap:wrap;gap:5px}
+.info-label{color:#888;font-size:0.88em;min-width:120px;font-weight:500}
+.info-value{color:#333;font-weight:600;font-size:0.88em;text-align:right}
+.menu-item{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f5f5f5;cursor:pointer;-webkit-tap-highlight-color:rgba(45,90,27,0.08)}
+.menu-item:active{background:#f0f7ee;margin:0 -15px;padding:14px 15px;border-radius:8px}
+.menu-icon{font-size:1.3em;margin-right:10px}
+.menu-arrow{color:#ccc;font-size:1.2em}
+.msg-bubble-me{background:linear-gradient(135deg,#2d5a1b,#4caf50);color:white;padding:10px 14px;border-radius:18px 18px 4px 18px;margin:4px 0;max-width:80%;align-self:flex-end;font-size:0.9em;word-break:break-word}
+.msg-bubble-other{background:#f0f0f0;color:#333;padding:10px 14px;border-radius:18px 18px 18px 4px;margin:4px 0;max-width:80%;align-self:flex-start;font-size:0.9em;word-break:break-word}
+.msg-time{font-size:0.68em;opacity:0.6;margin-top:2px}
+.msg-status{font-size:0.68em;color:rgba(255,255,255,0.7);margin-top:2px;text-align:right}
+.conv-item{display:flex;align-items:center;padding:12px;border-bottom:1px solid #f5f5f5;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background 0.1s}
+.conv-item:active{background:#f0f7ee}
+.conv-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#e8f5e9,#c8e6c9);display:flex;align-items:center;justify-content:center;font-size:1.5em;margin-right:12px;flex-shrink:0}
+.conv-unread{background:#c62828;color:white;border-radius:50%;width:20px;height:20px;font-size:0.7em;display:flex;align-items:center;justify-content:center;margin-left:auto;font-weight:bold;flex-shrink:0}
+.photo-upload{border:2px dashed #ccc;border-radius:12px;padding:20px;text-align:center;cursor:pointer;margin:10px 0;background:#fafafa;transition:all 0.2s}
+.photo-upload-ok{border:2px dashed #4caf50;background:#f0fff4;border-radius:12px;padding:20px;text-align:center;cursor:pointer;margin:10px 0}
+.photo-gallery-full{display:flex;gap:8px;overflow-x:auto;margin:10px 0;padding-bottom:5px}
+.photo-gallery-full img{width:200px;height:150px;object-fit:cover;border-radius:10px;flex-shrink:0;cursor:pointer}
+.photo-gallery-full::-webkit-scrollbar{height:3px}
+.photo-gallery-full::-webkit-scrollbar-thumb{background:#4caf50;border-radius:3px}
+.quartier-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.quartier-btn{padding:10px;border:2px solid #e0e0e0;border-radius:10px;background:white;cursor:pointer;font-size:0.82em;text-align:center;font-weight:500;-webkit-tap-highlight-color:transparent;transition:all 0.15s}
+.quartier-btn.selected{border-color:#2d5a1b;background:#e8f5e9;color:#2d5a1b;font-weight:700}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.type-card{border:2px solid #e0e0e0;border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-size:0.85em;font-weight:600;background:white;-webkit-tap-highlight-color:transparent;transition:all 0.15s}
+.type-card.selected{border-color:#2d5a1b;background:#e8f5e9;color:#2d5a1b}
+.type-card:active{background:#f0f7ee}
+.template-card{background:#f0f7ee;border:1px solid #c8e6c9;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:0.8em;color:#2d5a1b;display:inline-block;margin:3px;font-weight:600}
+.rank-card{display:flex;align-items:center;padding:12px;border-bottom:1px solid #f5f5f5;cursor:pointer;transition:background 0.1s}
+.rank-card:active{background:#f0f7ee}
+.rank-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#2d5a1b,#4caf50);color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.9em;margin-right:12px;flex-shrink:0}
+.ville-scroll{display:flex;gap:8px;overflow-x:auto;padding:10px 0;-ms-overflow-style:none;scrollbar-width:none}
+.ville-scroll::-webkit-scrollbar{display:none}
+.ville-pill{background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:0.78em;white-space:nowrap;flex-shrink:0;font-weight:600;-webkit-tap-highlight-color:transparent;transition:background 0.15s}
+.ville-pill:active{background:rgba(255,255,255,0.35)}
+.lang-btn{padding:12px;border:2px solid #e0e0e0;border-radius:10px;background:white;cursor:pointer;font-size:0.9em;text-align:center;font-family:'Montserrat',sans-serif;font-weight:600;transition:all 0.15s}
+.lang-btn.selected{border-color:#2d5a1b;background:#e8f5e9}
+.signal-btn{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:0.78em;font-weight:600;width:100%;font-family:'Montserrat',sans-serif}
+.activity-tab{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+.activity-tab button{padding:8px 14px;border:2px solid #e0e0e0;border-radius:20px;background:white;cursor:pointer;font-size:0.82em;font-weight:600;font-family:'Montserrat',sans-serif;transition:all 0.15s}
+.activity-tab button.active{border-color:#2d5a1b;background:#e8f5e9;color:#2d5a1b}
+.avatar-circle{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #4caf50;box-shadow:0 4px 15px rgba(45,90,27,0.3)}
+.step-box{background:#f8f9fa;border-left:4px solid #2d5a1b;border-radius:8px;padding:12px;margin:8px 0;font-size:0.88em;line-height:1.8}
+.luxury-divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,#4caf50,transparent);margin:15px 0}
+.admin-header{background:linear-gradient(135deg,#1a237e,#283593);color:white;padding:20px;border-radius:14px;text-align:center;margin-bottom:15px}
+.pending-card{border-left:4px solid #ff6600}
+.suspended-card{border-left:4px solid #c62828}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);color:white;padding:12px 20px;border-radius:12px;font-size:0.85em;font-weight:600;z-index:9998;box-shadow:0 5px 20px rgba(0,0,0,0.3);animation:ti 0.25s ease;max-width:90vw;text-align:center;font-family:'Montserrat',sans-serif}
+@keyframes ti{from{opacity:0;transform:translate(-50%,-15px)}to{opacity:1;transform:translate(-50%,0)}}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:sp 0.6s linear infinite;margin-right:6px;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+.notif-center{position:fixed;top:60px;right:10px;width:300px;background:white;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:500;max-height:400px;overflow-y:auto;display:none;animation:pi 0.2s ease}
+body.dark .notif-center{background:#2a2a2a}
+.notif-item{padding:12px 15px;border-bottom:1px solid #f0f0f0;cursor:pointer;transition:background 0.1s}
+.notif-item:active{background:#f0f7ee}
+.notif-item.unread{background:#f0fff4;border-left:3px solid #4caf50}
+.notif-item .notif-title{font-weight:700;font-size:0.85em;color:#2d5a1b}
+.notif-item .notif-body{font-size:0.78em;color:#666;margin-top:3px}
+.notif-item .notif-time{font-size:0.7em;color:#aaa;margin-top:3px}
+.rdv-card{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:1px solid #90caf9;border-radius:12px;padding:14px;margin:8px 0}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(5px)}
+.cgu-modal{background:white;border-radius:20px;padding:25px;max-width:420px;width:100%;max-height:85vh;overflow-y:auto}
+body.dark .cgu-modal{background:#2a2a2a;color:#eee}
+.refused-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:#1a1a1a;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:30px;text-align:center}
+.trust-bar{height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden;margin:8px 0}
+.trust-fill{height:100%;border-radius:4px;transition:width 1s ease}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div class="splash" id="splash">
+  <div class="splash-ring3"></div><div class="splash-ring2"></div><div class="splash-ring"></div>
+  <div class="splash-globe">🌍</div>
+  <div class="splash-name">TerraNova</div>
+  <div class="splash-sub">Immobilier Ivoirien</div>
+  <div class="splash-bar"><div class="splash-progress"></div></div>
+  <div class="splash-ci">🇨🇮 Côte d'Ivoire</div>
+</div>
+
+<!-- CGU -->
+<div class="overlay" id="cgu-overlay" style="display:none">
+  <div class="cgu-modal">
+    <div style="text-align:center;margin-bottom:15px"><div style="font-size:3em">🌍</div><h2 style="color:#2d5a1b;font-family:'Bebas Neue',sans-serif;font-size:2em;letter-spacing:2px">TerraNova</h2><p style="color:#666;font-size:0.88em">Acceptez nos conditions pour continuer</p></div>
+    <div style="background:#f9f9f9;border-radius:10px;padding:14px;max-height:200px;overflow-y:auto;font-size:0.84em;color:#555;line-height:1.7">
+      <strong>1. Présentation</strong><br>TerraNova est une plateforme immobilière 100% ivoirienne.<br><br>
+      <strong>2. Liberté de publication</strong><br>Tout utilisateur inscrit peut publier librement. Aucune certification préalable requise.<br><br>
+      <strong>3. Publications mensongères</strong><br>Toute annonce frauduleuse entraîne une suspension immédiate et un signalement.<br><br>
+      <strong>4. Sécurité</strong><br>Ne versez jamais d'argent sans visiter le bien physiquement. Consultez un notaire agréé.<br><br>
+      <strong>5. Données personnelles</strong><br>Vos données sont sécurisées et ne sont jamais partagées avec des tiers.
+    </div>
+    <button class="btn" onclick="accepterCGU()">✅ J'accepte les conditions</button>
+    <button class="btn-white" onclick="refuserCGU()">❌ Refuser</button>
+  </div>
+</div>
+
+<div class="refused-screen" id="refused-screen" style="display:none">
+  <div style="font-size:4em">🚫</div><h2 style="color:white;margin:15px 0">Accès refusé</h2>
+  <p style="color:#aaa;margin-bottom:20px">Acceptez les conditions pour accéder à TerraNova.</p>
+  <button onclick="relancerCGU()" style="background:#2d5a1b;color:white;border:none;padding:12px 25px;border-radius:10px;cursor:pointer;font-size:1em;font-weight:600">🔄 Réessayer</button>
+</div>
+
+<!-- NOTIF CENTER -->
+<div class="notif-center" id="notif-center">
+  <div style="padding:12px 15px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center">
+    <strong style="color:#2d5a1b">🔔 Notifications</strong>
+    <button onclick="toutMarquerLu()" style="background:none;border:none;color:#2d5a1b;cursor:pointer;font-size:0.78em;font-weight:600">Tout lire</button>
+  </div>
+  <div id="notif-liste"><p style="text-align:center;padding:20px;color:#888;font-size:0.85em">Aucune notification</p></div>
+</div>
+
+<!-- HEADER CORRIGE -->
+<div class="header">
+  <h1>🌍 TerraNova</h1>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button id="notif-btn" onclick="toggleNotifCenter()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:1em;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      🔔<span id="notif-count" style="display:none;position:absolute;top:-4px;right:-4px;background:#c62828;color:white;border-radius:50%;width:16px;height:16px;font-size:0.55em;align-items:center;justify-content:center;font-weight:bold"></span>
+    </button>
+    <div id="header-user"></div>
+  </div>
+</div>
+
+<!-- ACCUEIL -->
+<div id="page-accueil" class="page active">
+  <div class="hero">
+    <div class="hero-content">
+      <h2 id="hero-title" style="font-family:'Bebas Neue',sans-serif;font-size:1.8em;letter-spacing:2px">Trouvez votre bien idéal</h2>
+      <p id="hero-sub" style="margin-top:5px;opacity:0.9;font-size:0.88em">Achetez, vendez et louez en Côte d'Ivoire</p>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <input type="text" id="search-accueil" placeholder="🔍 Rechercher..." style="margin:0;flex:1;border-radius:10px;border:none" oninput="rechercherAccueil(this.value)">
+        <button onclick="sauvegarderRecherche()" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);padding:10px;border-radius:10px;cursor:pointer;font-size:1.1em">🔖</button>
+      </div>
+      <div class="ville-scroll">
+        <span class="ville-pill" onclick="filtrerVille('Abidjan')">📍 Abidjan</span>
+        <span class="ville-pill" onclick="filtrerVille('Cocody')">📍 Cocody</span>
+        <span class="ville-pill" onclick="filtrerVille('Yopougon')">📍 Yopougon</span>
+        <span class="ville-pill" onclick="filtrerVille('Abobo')">📍 Abobo</span>
+        <span class="ville-pill" onclick="filtrerVille('Plateau')">📍 Plateau</span>
+        <span class="ville-pill" onclick="filtrerVille('Marcory')">📍 Marcory</span>
+        <span class="ville-pill" onclick="filtrerVille('Adjamé')">📍 Adjamé</span>
+        <span class="ville-pill" onclick="filtrerVille('Treichville')">📍 Treichville</span>
+        <span class="ville-pill" onclick="filtrerVille('Koumassi')">📍 Koumassi</span>
+        <span class="ville-pill" onclick="filtrerVille('Port-Bouët')">📍 Port-Bouët</span>
+        <span class="ville-pill" onclick="filtrerVille('Bingerville')">📍 Bingerville</span>
+        <span class="ville-pill" onclick="filtrerVille('Yamoussoukro')">📍 Yamoussoukro</span>
+        <span class="ville-pill" onclick="filtrerVille('Bouaké')">📍 Bouaké</span>
+        <span class="ville-pill" onclick="filtrerVille('San-Pédro')">📍 San-Pédro</span>
+        <span class="ville-pill" onclick="filtrerVille('Daloa')">📍 Daloa</span>
+        <span class="ville-pill" onclick="filtrerVille('Korhogo')">📍 Korhogo</span>
+        <span class="ville-pill" onclick="filtrerVille('Man')">📍 Man</span>
+        <span class="ville-pill" onclick="filtrerVille('Gagnoa')">📍 Gagnoa</span>
+        <span class="ville-pill" onclick="filtrerVille('Grand-Bassam')">📍 Grand-Bassam</span>
+        <span class="ville-pill" onclick="filtrerVille('Abengourou')">📍 Abengourou</span>
+        <span class="ville-pill" onclick="filtrerVille('Anyama')">📍 Anyama</span>
+        <span class="ville-pill" onclick="filtrerVille('Dabou')">📍 Dabou</span>
+        <span class="ville-pill" onclick="filtrerVille('Soubré')">📍 Soubré</span>
+        <span class="ville-pill" onclick="filtrerVille('Divo')">📍 Divo</span>
+        <span class="ville-pill" onclick="filtrerVille('Bondoukou')">📍 Bondoukou</span>
+        <span class="ville-pill" onclick="filtrerVille('Ferkessédougou')">📍 Ferkessédougou</span>
+        <span class="ville-pill" onclick="filtrerVille('Odiénné')">📍 Odiénné</span>
+        <span class="ville-pill" onclick="filtrerVille('Séguéla')">📍 Séguéla</span>
+        <span class="ville-pill" onclick="filtrerVille('Bouna')">📍 Bouna</span>
+        <span class="ville-pill" onclick="filtrerVille('Dimbokro')">📍 Dimbokro</span>
+        <span class="ville-pill" onclick="filtrerVille('Agboville')">📍 Agboville</span>
+        <span class="ville-pill" onclick="filtrerVille('Aboisso')">📍 Aboisso</span>
+        <span class="ville-pill" onclick="filtrerVille('Guiglo')">📍 Guiglo</span>
+        <span class="ville-pill" onclick="filtrerVille('Sassandra')">📍 Sassandra</span>
+        <span class="ville-pill" onclick="filtrerVille('Katiola')">📍 Katiola</span>
+        <span class="ville-pill" onclick="filtrerVille('Boundiali')">📍 Boundiali</span>
+        <span class="ville-pill" onclick="filtrerVille('Touba')">📍 Touba</span>
+        <span class="ville-pill" onclick="filtrerVille('Adzopé')">📍 Adzopé</span>
+        <span class="ville-pill" onclick="filtrerVille('Jacqueville')">📍 Jacqueville</span>
+        <span class="ville-pill" onclick="filtrerVille('Agnibilékrou')">📍 Agnibilékrou</span>
+      </div>
+    </div>
+  </div>
+  <div style="padding:10px 0">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h3 style="color:#2d5a1b;font-family:'Bebas Neue',sans-serif;font-size:1.3em;letter-spacing:1px">🔥 Annonces récentes</h3>
+      <button onclick="showPage('classement')" style="background:none;border:none;color:#2d5a1b;cursor:pointer;font-size:0.82em;font-weight:700">🏆 Top membres</button>
+    </div>
+    <div id="annonces-accueil"><div style="text-align:center;padding:30px;color:#888">⏳ Chargement...</div></div>
+  </div>
+</div>
+
+<!-- ANNONCES -->
+<div id="page-annonces" class="page">
+  <h2 style="color:#2d5a1b;margin-bottom:10px;font-family:'Bebas Neue',sans-serif;font-size:1.5em">📋 Annonces</h2>
+  <input type="text" id="search-annonces" placeholder="🔍 Rechercher un bien..." oninput="rechercher(this.value)">
+  <div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap">
+    <button class="btn-small" onclick="filtrer('tous')">Tous</button>
+    <button class="btn-small" style="background:linear-gradient(135deg,#1565c0,#1976d2)" onclick="filtrer('terrain-vente')">🌿 Terrain</button>
+    <button class="btn-small" style="background:linear-gradient(135deg,#6a1b9a,#8e24aa)" onclick="filtrer('maison-vente')">🏠 Maison</button>
+    <button class="btn-small" style="background:linear-gradient(135deg,#e65100,#f57c00)" onclick="filtrer('location')">🔑 Location</button>
+    <button class="btn-small" style="background:linear-gradient(135deg,#f57f17,#fbc02d);color:#333" onclick="filtrer('certifie')">✅ Certifiés</button>
+    <button class="btn-small" style="background:linear-gradient(135deg,#37474f,#546e7a)" onclick="showPage('filtres-avances')">⚙️ Filtres</button>
+  </div>
+  <div id="liste-annonces"><div style="text-align:center;padding:30px;color:#888">⏳ Chargement...</div></div>
+</div>
+
+<!-- FILTRES -->
+<div id="page-filtres-avances" class="page">
+  <button class="back-btn" onclick="showPage('annonces')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px;font-family:'Bebas Neue',sans-serif;font-size:1.5em">⚙️ Filtres avancés</h2>
+  <div class="luxury-card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">💰 Budget (FCFA)</h3>
+    <div style="display:flex;gap:10px"><input type="number" id="prix-min" placeholder="Min" style="flex:1"><input type="number" id="prix-max" placeholder="Max" style="flex:1"></div>
+  </div>
+  <div class="luxury-card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">📐 Surface (m²)</h3>
+    <div style="display:flex;gap:10px"><input type="number" id="surface-min" placeholder="Min" style="flex:1"><input type="number" id="surface-max" placeholder="Max" style="flex:1"></div>
+  </div>
+  <div class="luxury-card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">🏷️ Type de bien</h3>
+    <div class="type-grid">
+      <div class="type-card" onclick="toggleTypeFiltre(this,'terrain-vente')">🌿 Terrain à vendre</div>
+      <div class="type-card" onclick="toggleTypeFiltre(this,'terrain-location')">🌱 Terrain à louer</div>
+      <div class="type-card" onclick="toggleTypeFiltre(this,'maison-vente')">🏠 Maison à vendre</div>
+      <div class="type-card" onclick="toggleTypeFiltre(this,'maison-location')">🏡 Maison à louer</div>
+    </div>
+  </div>
+  <div class="luxury-card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">📍 Ville</h3>
+    <div class="quartier-grid">
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Abidjan')">📍 Abidjan</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Cocody')">📍 Cocody</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Yopougon')">📍 Yopougon</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Abobo')">📍 Abobo</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Bouaké')">📍 Bouaké</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Yamoussoukro')">📍 Yamoussoukro</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'San-Pédro')">📍 San-Pédro</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Korhogo')">📍 Korhogo</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Abengourou')">📍 Abengourou</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Grand-Bassam')">📍 Grand-Bassam</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Daloa')">📍 Daloa</div>
+      <div class="quartier-btn" onclick="toggleQuartier(this,'Gagnoa')">📍 Gagnoa</div>
+    </div>
+  </div>
+  <div class="luxury-card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">📅 Date</h3>
+    <select id="filtre-date"><option value="">Toutes les dates</option><option value="1">Aujourd'hui</option><option value="7">Cette semaine</option><option value="30">Ce mois</option></select>
+  </div>
+  <button class="btn" onclick="appliquerFiltres()">🔍 Appliquer</button>
+  <button class="btn-white" onclick="reinitialiserFiltres()">🔄 Réinitialiser</button>
+</div>
+
+<!-- DETAIL -->
+<div id="page-detail" class="page">
+  <button class="back-btn" onclick="showPage('annonces')">← Retour</button>
+  <div id="detail-contenu"></div>
+</div>
+
+<!-- CONNEXION -->
+<div id="page-connexion" class="page">
+  <div class="luxury-card" style="max-width:400px;margin:20px auto">
+    <div style="text-align:center;margin-bottom:20px"><div style="font-size:3em">🔐</div><h2 style="color:#2d5a1b;font-family:'Bebas Neue',sans-serif;font-size:1.8em;letter-spacing:2px">Connexion</h2></div>
+    <input type="email" id="email-login" placeholder="Email" autocomplete="email">
+    <input type="password" id="password-login" placeholder="Mot de passe" autocomplete="current-password" onkeydown="if(event.key==='Enter')connecter()">
+    <button class="btn" id="btn-login" onclick="connecter()">🔐 Se connecter</button>
+    <p style="text-align:center;margin-top:12px"><a href="#" onclick="showPage('mot-de-passe-oublie')" style="color:#2d5a1b;font-size:0.88em;font-weight:600">Mot de passe oublié ?</a></p>
+    <div class="luxury-divider"></div>
+    <button class="btn-white" onclick="showPage('inscription')">📝 Créer un compte gratuit</button>
+  </div>
+</div>
+
+<!-- MOT DE PASSE OUBLIE -->
+<div id="page-mot-de-passe-oublie" class="page">
+  <div class="luxury-card" style="max-width:400px;margin:20px auto">
+    <button class="back-btn" onclick="showPage('connexion')">← Retour</button>
+    <h2 style="color:#2d5a1b;font-family:'Bebas Neue',sans-serif;font-size:1.5em">🔑 Mot de passe oublié</h2>
+    <div id="step-tel-oublie">
+      <input type="tel" id="tel-oublie" placeholder="Votre numéro de téléphone">
+      <button class="btn" onclick="envoyerCodeReset()">Envoyer le code</button>
+    </div>
+    <div id="step-code-oublie" style="display:none">
+      <div class="condition-box">📱 Code envoyé au <span id="tel-affiche"></span></div>
+      <input type="text" id="code-oublie" placeholder="Code reçu">
+      <input type="password" id="nouveau-password" placeholder="Nouveau mot de passe">
+      <input type="password" id="confirm-password" placeholder="Confirmer">
+      <button class="btn" onclick="reinitialiserPassword()">Réinitialiser</button>
+    </div>
+  </div>
+</div>
+
+<!-- INSCRIPTION -->
+<div id="page-inscription" class="page">
+  <div class="luxury-card" style="max-width:400px;margin:10px auto">
+    <div style="text-align:center;margin-bottom:15px"><div style="font-size:2.5em">🌍</div><h2 style="color:#2d5a1b;font-family:'Bebas Neue',sans-serif;font-size:1.8em;letter-spacing:2px">Inscription</h2></div>
+    <div class="success-box" style="font-size:0.82em">✅ Gratuit • Publier librement • Sécurisé</div>
+    <input type="text" id="nom-inscription" placeholder="Nom complet *">
+    <input type="tel" id="tel-inscription" placeholder="Téléphone *">
+    <input type="email" id="email-inscription" placeholder="Email *" autocomplete="email">
+    <input type="password" id="password-inscription" placeholder="Mot de passe *">
+    <select id="role-inscription"><option value="">-- Votre profil --</option><option value="acheteur">🛒 Acheteur / Locataire</option><option value="vendeur">🏷️ Vendeur / Bailleur</option><option value="entreprise">🏢 Entreprise / Agence</option></select>
+    <div id="step-sms" style="display:none">
+      <div class="condition-box">📱 Code envoyé au <span id="tel-sms-affiche"></span></div>
+      <input type="text" id="code-sms" placeholder="Code de confirmation *">
+    </div>
+    <div id="cgu-texte" style="display:none;font-size:0.78em;color:#888;margin:8px 0;line-height:1.5">☑️ En créant un compte, vous acceptez les <a href="#" onclick="showPage('cgu')" style="color:#2d5a1b;font-weight:600">CGU</a>.</div>
+    <button class="btn" id="btn-inscription" onclick="etapeInscription()">Continuer</button>
+    <p style="text-align:center;margin-top:15px;font-size:0.88em">Déjà un compte ? <a href="#" onclick="showPage('connexion')" style="color:#2d5a1b;font-weight:700">Se connecter</a></p>
+  </div>
+</div>
+
+<!-- CERTIFICATION -->
+<div id="page-certifier" class="page">
+  <div class="luxury-card" style="max-width:400px;margin:10px auto">
+    <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+    <div style="background:linear-gradient(135deg,#2d5a1b,#4caf50);color:white;padding:20px;border-radius:14px;text-align:center;margin-bottom:15px"><div style="font-size:2.5em">🏅</div><h2 style="font-family:'Bebas Neue',sans-serif;font-size:1.5em;letter-spacing:2px">Certification</h2><p style="font-size:0.82em;opacity:0.9">Obtenez le badge ✅ de confiance</p></div>
+    <div class="info-box">💡 Facultatif mais recommandé pour inspirer confiance aux acheteurs !</div>
+    <h3 style="color:#2d5a1b;margin:12px 0 5px">1️⃣ Selfie</h3>
+    <div class="photo-upload" id="selfie-zone" onclick="document.getElementById('selfie-input').click()"><div style="font-size:2em">🤳</div><p style="color:#888;font-weight:600">Ajouter selfie</p></div>
+    <input type="file" id="selfie-input" accept="image/*" capture="user" style="display:none" onchange="previewCertif(this,'selfie-preview','selfie-zone','selfie')">
+    <img id="selfie-preview" style="display:none;width:100%;height:160px;object-fit:cover;border-radius:10px;margin:5px 0">
+    <h3 style="color:#2d5a1b;margin:12px 0 5px">2️⃣ CNI Recto</h3>
+    <div class="photo-upload" id="cni-recto-zone" onclick="document.getElementById('cni-recto-input').click()"><div style="font-size:2em">🪪</div><p style="color:#888;font-weight:600">CNI Recto</p></div>
+    <input type="file" id="cni-recto-input" accept="image/*" style="display:none" onchange="previewCertif(this,'cni-recto-preview','cni-recto-zone','cni-recto')">
+    <img id="cni-recto-preview" style="display:none;width:100%;height:160px;object-fit:cover;border-radius:10px;margin:5px 0">
+    <h3 style="color:#2d5a1b;margin:12px 0 5px">3️⃣ CNI Verso</h3>
+    <div class="photo-upload" id="cni-verso-zone" onclick="document.getElementById('cni-verso-input').click()"><div style="font-size:2em">🪪</div><p style="color:#888;font-weight:600">CNI Verso</p></div>
+    <input type="file" id="cni-verso-input" accept="image/*" style="display:none" onchange="previewCertif(this,'cni-verso-preview','cni-verso-zone','cni-verso')">
+    <img id="cni-verso-preview" style="display:none;width:100%;height:160px;object-fit:cover;border-radius:10px;margin:5px 0">
+    <input type="text" id="cni-numero" placeholder="Numéro CNI (optionnel)">
+    <input type="text" id="localite-certif" placeholder="Votre localité (optionnel)">
+    <button class="btn" onclick="envoyerCertification()">📤 Envoyer pour vérification</button>
+  </div>
+</div>
+
+<!-- PUBLIER -->
+<div id="page-publier" class="page">
+  <div class="luxury-card" style="max-width:500px;margin:0 auto">
+    <h2 style="color:#2d5a1b;font-family:'Bebas Neue',sans-serif;font-size:1.5em">➕ Publier une annonce</h2>
+    <div class="success-box" style="font-size:0.8em">✅ Publication gratuite et libre !</div>
+    <h3 style="color:#2d5a1b;margin:12px 0 8px;font-size:0.95em">🏷️ Type de bien *</h3>
+    <div class="type-grid">
+      <div class="type-card" id="type-terrain-vente" onclick="choisirType('terrain-vente')">🌿<br>Terrain à vendre</div>
+      <div class="type-card" id="type-terrain-location" onclick="choisirType('terrain-location')">🌱<br>Terrain à louer</div>
+      <div class="type-card" id="type-maison-vente" onclick="choisirType('maison-vente')">🏠<br>Maison à vendre</div>
+      <div class="type-card" id="type-maison-location" onclick="choisirType('maison-location')">🏡<br>Maison à louer</div>
+    </div>
+    <input type="text" id="titre-annonce" placeholder="Titre de l'annonce *">
+    <input type="text" id="lieu-annonce" placeholder="Ville / Quartier *">
+    <input type="number" id="prix-annonce" placeholder="Prix en FCFA *">
+    <input type="number" id="surface-annonce" placeholder="Surface en m² (optionnel)">
+    <input type="tel" id="tel-annonce" placeholder="Téléphone *">
+    <div style="flex-wrap:wrap;display:flex;margin:5px 0">
+      <span class="template-card" onclick="utiliserTemplate('borde-route')">🛣️ Bord de route</span>
+      <span class="template-card" onclick="utiliserTemplate('viabilise')">✅ Viabilisé</span>
+      <span class="template-card" onclick="utiliserTemplate('titre-foncier')">📄 Titre foncier</span>
+      <span class="template-card" onclick="utiliserTemplate('residentiel')">🏡 Résidentiel</span>
+      <span class="template-card" onclick="utiliserTemplate('maison')">🏠 Maison</span>
+    </div>
+    <textarea id="desc-annonce" placeholder="Description (optionnel)..." rows="3"></textarea>
+    <p style="color:#2d5a1b;font-size:0.88em;margin:10px 0 5px;font-weight:700">📸 Photos (optionnel)</p>
+    <div id="photos-preview-container" style="display:flex;gap:8px;flex-wrap:wrap;margin:5px 0"></div>
+    <div class="photo-upload" id="photo-zone" onclick="document.getElementById('photo-input').click()"><div style="font-size:2em">📸</div><p style="color:#888;font-weight:600">Ajouter des photos</p></div>
+    <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="previewPhotos(this)">
+    <div class="luxury-card" style="background:#f0f7ee;padding:12px">
+      <p style="color:#2d5a1b;font-size:0.88em;font-weight:700;margin-bottom:8px">📍 GPS (optionnel)</p>
+      <div style="display:flex;gap:8px"><input type="text" id="lat-annonce" placeholder="Latitude" style="flex:1;margin:0"><input type="text" id="lng-annonce" placeholder="Longitude" style="flex:1;margin:0"></div>
+      <button onclick="maPosition()" style="background:#2d5a1b;color:white;border:none;padding:10px;border-radius:8px;cursor:pointer;width:100%;margin-top:8px;font-weight:600;font-family:'Montserrat',sans-serif">📍 Ma position</button>
+    </div>
+    <div class="warning-box" style="font-size:0.78em">⚠️ Toute annonce mensongère = suspension immédiate.</div>
+    <button class="btn" id="btn-publier" onclick="publierAnnonce()">📤 Publier gratuitement</button>
+  </div>
+</div>
+
+<!-- PROFIL -->
+<div id="page-profil" class="page"><div id="dashboard-contenu"></div></div>
+<div id="page-mes-infos" class="page"><button class="back-btn" onclick="showPage('profil')">← Retour</button><h2 style="color:#2d5a1b;margin-bottom:15px;font-family:'Bebas Neue',sans-serif;font-size:1.5em">👤 Mes informations</h2><div id="mes-infos-contenu"></div></div>
+<div id="page-mes-annonces" class="page"><button class="back-btn" onclick="showPage('profil')">← Retour</button><h2 style="color:#2d5a1b;margin-bottom:15px;font-family:'Bebas Neue',sans-serif;font-size:1.5em">📌 Mes annonces</h2><div id="mes-annonces-liste"></div></div>
+<div id="page-favoris" class="page"><button class="back-btn" onclick="showPage('profil')">← Retour</button><h2 style="color:#2d5a1b;margin-bottom:15px;font-family:'Bebas Neue',sans-serif;font-size:1.5em">❤️ Mes favoris</h2><div id="favoris-liste"></div></div>
+
+<!-- ACTIVITE -->
+<div id="page-activite" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:10px;font-family:'Bebas Neue',sans-serif;font-size:1.5em">📊 Mon activité</h2>
+  <div class="activity-tab">
+    <button class="active" onclick="afficherActivite('favoris',this)">❤️ Sauvegardées</button>
+    <button onclick="afficherActivite('recherches',this)">🔍 Recherches</button>
+    <button onclick="afficherActivite('masquees',this)">🚫 Masquées</button>
+    <button onclick="afficherActivite('rdv',this)">📅 Rendez-vous</button>
+  </div>
+  <div id="activite-contenu"></div>
+</div>
+
+<!-- CALCULATEUR -->
+<div id="page-calculateur" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px;font-family:'Bebas Neue',sans-serif;font-size:1.5em">💰 Calculateur de budget</h2>
+  <div class="luxury-card"><input type="number" id="budget-input" placeholder="Votre budget en FCFA" oninput="calculerBudget()"></div>
+  <div id="budget-result"></div>
+  <div class="luxury-card" style="background:linear-gradient(135deg,#e8f5e9,#f0fff4)"><h3 style="color:#2d5a1b;margin-bottom:10px">📊 Frais estimés</h3><div id="frais-result"><p style="color:#888">Entrez un budget</p></div></div>
+</div>
+
+<!-- CLASSEMENT -->
+<div id="page-classement" class="page">
+  <button class="back-btn" onclick="showPage('accueil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px;font-family:'Bebas Neue',sans-serif;font-size:1.5em">🏆 Top membres</h2>
+  <div id="classement-liste"><div style="text-align:center;padding:30px;color:#888">⏳</div></div>
+</div>
+
+<!-- PROFIL VENDEUR -->
+<div id="page-profil-vendeur" class="page">
+  <button class="back-btn" onclick="showPage('annonces')">← Retour</button>
+  <div id="profil-vendeur-contenu"></div>
+</div>
+
+<!-- PARAMETRES -->
+<div id="page-parametres" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;margin-bottom:15px;font-family:'Bebas Neue',sans-serif;font-size:1.5em">⚙️ Paramètres</h2>
+  <div class="luxury-card">
+    <h3 style="color:#2d5a1b;margin-bottom:15px">🌍 Langue</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="lang-btn" id="lang-fr" onclick="changerLangue('fr')">🇫🇷<br><strong>Français</strong></div>
+      <div class="lang-btn" id="lang-en" onclick="changerLangue('en')">🇬🇧<br><strong>English</strong></div>
+      <div class="lang-btn" id="lang-es" onclick="changerLangue('es')">🇪🇸<br><strong>Español</strong></div>
+    </div>
+  </div>
+  <div class="luxury-card">
+    <div class="menu-item" onclick="toggleDarkMode()"><span><span class="menu-icon">🌙</span>Mode sombre</span><span id="dark-mode-status" class="badge">Désactivé</span></div>
+  </div>
+  <div class="luxury-card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">🔔 Notifications push</h3>
+    <div class="menu-item" onclick="activerNotifsPush()"><span><span class="menu-icon">📱</span>Activer les notifications</span><span id="notif-push-status" class="badge">Désactivé</span></div>
+    <p style="color:#888;font-size:0.78em;margin-top:5px">Recevez des alertes même quand l'app est fermée</p>
+  </div>
+  <div class="luxury-card">
+    <h3 style="color:#2d5a1b;margin-bottom:10px">🏠 Villes favorites</h3>
+    <p style="color:#888;font-size:0.82em;margin-bottom:10px">Alertes automatiques pour les nouvelles annonces</p>
+    <div class="quartier-grid">
+      <div class="quartier-btn" onclick="toggleVilleFav(this,'Abidjan')">📍 Abidjan</div>
+      <div class="quartier-btn" onclick="toggleVilleFav(this,'Cocody')">📍 Cocody</div>
+      <div class="quartier-btn" onclick="toggleVilleFav(this,'Yopougon')">📍 Yopougon</div>
+      <div class="quartier-btn" onclick="toggleVilleFav(this,'Bouaké')">📍 Bouaké</div>
+      <div class="quartier-btn" onclick="toggleVilleFav(this,'Yamoussoukro')">📍 Yamoussoukro</div>
+      <div class="quartier-btn" onclick="toggleVilleFav(this,'San-Pédro')">📍 San-Pédro</div>
+    </div>
+    <button class="btn-small" onclick="sauvegarderVillesFav()" style="margin-top:10px">💾 Sauvegarder</button>
+  </div>
+  <div class="luxury-card"><div class="menu-item" onclick="showPage('cgu')"><span>⚖️ Conditions d'utilisation</span><span class="menu-arrow">›</span></div></div>
+</div>
+
+<!-- MESSAGES -->
+<div id="page-messages" class="page">
+  <h2 style="color:#2d5a1b;margin-bottom:15px;font-family:'Bebas Neue',sans-serif;font-size:1.5em">💬 Messages</h2>
+  <div id="conversations-liste"><div style="text-align:center;padding:30px;color:#888">⏳</div></div>
+</div>
+
+<!-- CONVERSATION -->
+<div id="page-conversation" class="page">
+  <button class="back-btn" onclick="showPage('messages')">← Retour</button>
+  <div id="conv-header" style="background:linear-gradient(135deg,#e8f5e9,#f0fff4);padding:12px;border-radius:12px;margin-bottom:10px;border:1px solid #c8e6c9"></div>
+  <div id="conv-messages" style="display:flex;flex-direction:column;min-height:200px;max-height:50vh;overflow-y:auto;padding:10px;background:white;border-radius:12px;margin-bottom:10px;box-shadow:0 2px 10px rgba(0,0,0,0.05)"></div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button onclick="document.getElementById('msg-photo-input').click()" style="background:#e8f5e9;border:1px solid #c8e6c9;padding:10px;border-radius:10px;cursor:pointer;font-size:1.2em;flex-shrink:0">📷</button>
+    <input type="file" id="msg-photo-input" accept="image/*" style="display:none" onchange="envoyerPhotoMessage(this)">
+    <input type="text" id="msg-input" placeholder="Écrire un message..." style="margin:0;flex:1" onkeydown="if(event.key==='Enter')envoyerMessage()">
+    <button onclick="envoyerMessage()" style="background:linear-gradient(135deg,#2d5a1b,#4caf50);color:white;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:1.2em;flex-shrink:0">➤</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="page-admin" class="page">
+  <div class="admin-header"><div style="font-size:2.5em">🛡️</div><h2 style="font-family:'Bebas Neue',sans-serif;font-size:1.8em;letter-spacing:2px">Administration</h2><p style="opacity:0.7;font-size:0.82em">TerraNova Dashboard</p></div>
+  <div id="admin-stats"></div>
+  <div style="display:flex;gap:8px;margin:10px 0;flex-wrap:wrap">
+    <button class="btn-small" onclick="adminAfficher('pending')" style="background:linear-gradient(135deg,#e65100,#ff6600)">⏳ Certifications</button>
+    <button class="btn-small" onclick="adminAfficher('users')">👥 Utilisateurs</button>
+    <button class="btn-small" onclick="adminAfficher('annonces')" style="background:linear-gradient(135deg,#1565c0,#1976d2)">📋 Annonces</button>
+    <button class="btn-small" onclick="adminAfficher('signalements')" style="background:linear-gradient(135deg,#c62828,#e53935)">🚨 Signalements</button>
+  </div>
+  <div id="admin-contenu"></div>
+</div>
+
+<!-- INSTALLER -->
+<div id="page-installer" class="page">
+  <button class="back-btn" onclick="showPage('profil')">← Retour</button>
+  <h2 style="color:#2d5a1b;font-family:'Bebas Neue',sans-serif;font-size:1.5em">📲 Installer TerraNova</h2>
+  <div class="luxury-card"><h3 style="color:#2d5a1b;margin-bottom:10px">🍎 iPhone</h3><div class="step-box">1️⃣ Safari → terranova-lilac.vercel.app<br>2️⃣ Partager ⬆️ → "Sur l'écran d'accueil"<br>3️⃣ Ajouter ✅</div></div>
+  <div class="luxury-card"><h3 style="color:#1565c0;margin-bottom:10px">🤖 Android</h3><div class="step-box">1️⃣ Chrome → terranova-lilac.vercel.app<br>2️⃣ Menu ⋮ → "Ajouter à l'écran d'accueil"<br>3️⃣ Ajouter ✅</div></div>
+</div>
+
+<!-- CGU -->
+<div id="page-cgu" class="page">
+  <button class="back-btn" onclick="showPage('parametres')">← Retour</button>
+  <div class="luxury-card"><h2 style="color:#2d5a1b;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.5em">⚖️ CGU TerraNova</h2><p style="color:#555;font-size:0.88em;line-height:1.7;margin-top:10px">TerraNova est une plateforme de mise en relation immobilière en Côte d'Ivoire. Publication libre. Annonces mensongères = suspension immédiate.</p><div class="warning-box" style="margin-top:15px;font-size:0.82em">⚠️ Ne versez jamais d'argent sans visiter le bien • Consultez un notaire agréé</div></div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn" onclick="showPage('accueil')">🏠<span>Accueil</span></button>
+  <button class="tab-btn" onclick="showPage('annonces')">📋<span>Annonces</span></button>
+  <button class="tab-btn" onclick="showPage('publier')">➕<span>Publier</span></button>
+  <button class="tab-btn" onclick="showPage('messages')" id="tab-messages">💬<span>Messages</span></button>
+  <button class="tab-btn" onclick="showPage('profil')">👤<span>Profil</span></button>
+</div>
+
+<script>
+const SB_URL='https://bebillevaxdbtjfdhaut.supabase.co';
+const SB_KEY='sb_publishable_4jOGEtncvGG_QSFn-AJkWA_HlE5_WBM';
+const H={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+const ADMIN_EMAIL='jkonate929@gmail.com';
+
+let utilisateur=JSON.parse(localStorage.getItem('tn_user')||'null');
+let annonces=[];
+let favoris=JSON.parse(localStorage.getItem('tn_favoris')||'[]');
+let masquees=JSON.parse(localStorage.getItem('tn_masquees')||'[]');
+let recherches=JSON.parse(localStorage.getItem('tn_recherches')||'[]');
+let rdvList=JSON.parse(localStorage.getItem('tn_rdv')||'[]');
+let villesFav=JSON.parse(localStorage.getItem('tn_villes_fav')||'[]');
+let notifications=JSON.parse(localStorage.getItem('tn_notifs')||'[]');
+let photosBase64=[];
+let selfieBase64='',cniRectoBase64='',cniVersoBase64='';
+let codeSMS='',codeReset='',inscriptionData={};
+let convActuelle=null;
+let langueActuelle=localStorage.getItem('tn_langue')||'fr';
+let darkMode=localStorage.getItem('tn_dark')==='true';
+let quartiersChoisis=[],typesFiltres=[],typeChoisi='';
+let noteSelectionnee=0,annonceCourante=null;
+let notifInterval=null;
+let derniereVerifAnnonces=0;
+let notifCenterOuvert=false;
+
+window.addEventListener('load',()=>{
+  setTimeout(()=>{const s=document.getElementById('splash');if(s){s.classList.add('hide');setTimeout(()=>s.style.display='none',800);}},3000);
+});
+
+function toast(msg,type='success'){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t=document.createElement('div');t.className='toast';
+  t.style.background=type==='error'?'linear-gradient(135deg,#c62828,#e53935)':type==='warning'?'linear-gradient(135deg,#e65100,#ff6600)':'linear-gradient(135deg,#2d5a1b,#4caf50)';
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity 0.3s';setTimeout(()=>t.remove(),300);},2500);
+}
+
+function toastBienvenue(prenom){
+  const ancien=document.getElementById('toast-bienvenue');if(ancien)ancien.remove();
+  const t=document.createElement('div');t.id='toast-bienvenue';
+  t.style.cssText='position:fixed;top:-130px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#1a3a0a,#2d5a1b);color:white;padding:18px 28px;border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,0.4);z-index:9999;text-align:center;min-width:280px;max-width:90vw;transition:top 0.5s cubic-bezier(0.175,0.885,0.32,1.275);font-family:Montserrat,sans-serif';
+  t.innerHTML=`<div style="font-size:2.2em;margin-bottom:6px">👋</div><div style="font-family:'Bebas Neue',sans-serif;font-size:2em;letter-spacing:3px">${prenom} !</div><div style="font-size:0.78em;opacity:0.85;margin-top:5px">Bienvenue sur TerraNova 🇨🇮</div><div style="height:3px;background:rgba(255,255,255,0.15);border-radius:3px;margin-top:14px;overflow:hidden"><div id="bvn-bar" style="height:100%;background:linear-gradient(90deg,#4caf50,#8bc34a);border-radius:3px;width:0;transition:width 3s linear"></div></div>`;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.top='20px';},50);
+  setTimeout(()=>{const b=document.getElementById('bvn-bar');if(b)b.style.width='100%';},150);
+  setTimeout(()=>{t.style.top='-130px';setTimeout(()=>t.remove(),600);},3800);
+}
+
+function setBtnLoading(id,loading,txt){
+  const b=document.getElementById(id);if(!b)return;
+  if(loading){b.disabled=true;b.innerHTML=`<span class="spinner"></span>Chargement...`;}
+  else{b.disabled=false;b.innerHTML=txt;}
+}
+
+async function compresserPhoto(base64,maxW=900,q=0.75){
+  return new Promise(res=>{
+    const img=new Image();
+    img.onload=()=>{const c=document.createElement('canvas');let w=img.width,h=img.height;if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);res(c.toDataURL('image/jpeg',q));};
+    img.onerror=()=>res(base64);img.src=base64;
+  });
+}
+
+async function sbGet(t,q=''){try{const r=await fetch(`${SB_URL}/rest/v1/${t}?${q}&order=created_at.desc`,{headers:H});if(!r.ok)return[];return await r.json();}catch(e){return[];}}
+async function sbPost(t,d){try{const r=await fetch(`${SB_URL}/rest/v1/${t}`,{method:'POST',headers:{...H,'Prefer':'return=representation'},body:JSON.stringify(d)});return await r.json();}catch(e){return[];}}
+async function sbPatch(t,id,d){try{const r=await fetch(`${SB_URL}/rest/v1/${t}?id=eq.${id}`,{method:'PATCH',headers:{...H,'Prefer':'return=representation'},body:JSON.stringify(d)});return await r.json();}catch(e){return[];}}
+async function sbDelete(t,id){try{await fetch(`${SB_URL}/rest/v1/${t}?id=eq.${id}`,{method:'DELETE',headers:H});}catch(e){}}
+
+function genCode(){return Math.floor(1000+Math.random()*9000).toString();}
+
+function verifierCGU(){if(!localStorage.getItem('tn_cgu_accepte'))document.getElementById('cgu-overlay').style.display='flex';}
+function accepterCGU(){localStorage.setItem('tn_cgu_accepte','true');document.getElementById('cgu-overlay').style.display='none';}
+function refuserCGU(){document.getElementById('cgu-overlay').style.display='none';document.getElementById('refused-screen').style.display='flex';document.querySelector('.header').style.display='none';document.querySelector('.tab-bar').style.display='none';document.querySelectorAll('.page').forEach(p=>p.style.display='none');}
+function relancerCGU(){document.getElementById('refused-screen').style.display='none';document.querySelector('.header').style.display='flex';document.querySelector('.tab-bar').style.display='flex';document.querySelectorAll('.page').forEach(p=>p.style.display='');document.getElementById('page-accueil').classList.add('active');document.getElementById('cgu-overlay').style.display='flex';}
+
+function appliquerLangue(){
+  const L={fr:{hero:'Trouvez votre bien idéal',sub:'Achetez, vendez et louez en Côte d\'Ivoire'},en:{hero:'Find your ideal property',sub:'Buy, sell and rent in Côte d\'Ivoire'},es:{hero:'Encuentra tu propiedad ideal',sub:'Compra, vende y alquila en Costa de Marfil'}};
+  const l=L[langueActuelle]||L.fr;
+  const ht=document.getElementById('hero-title');if(ht)ht.textContent=l.hero;
+  const hs=document.getElementById('hero-sub');if(hs)hs.textContent=l.sub;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('selected'));
+  const lb=document.getElementById('lang-'+langueActuelle);if(lb)lb.classList.add('selected');
+}
+function changerLangue(l){langueActuelle=l;localStorage.setItem('tn_langue',l);if(utilisateur){sbPatch('users',utilisateur.id,{langue:l});utilisateur.langue=l;localStorage.setItem('tn_user',JSON.stringify(utilisateur));}appliquerLangue();toast('✅ Langue changée');}
+function toggleDarkMode(){darkMode=!darkMode;localStorage.setItem('tn_dark',darkMode);document.body.classList.toggle('dark',darkMode);const s=document.getElementById('dark-mode-status');if(s)s.textContent=darkMode?'Activé':'Désactivé';}
+
+function ajouterNotif(titre,corps,type='info',lien=''){
+  const notif={id:Date.now(),titre,corps,type,lien,lu:false,date:new Date().toISOString()};
+  notifications.unshift(notif);if(notifications.length>50)notifications=notifications.slice(0,50);
+  localStorage.setItem('tn_notifs',JSON.stringify(notifications));mettreAJourBadgeNotif();
+  if('Notification'in window&&Notification.permission==='granted')new Notification('🌍 TerraNova — '+titre,{body:corps,icon:'/icon.png'});
+}
+function mettreAJourBadgeNotif(){
+  const nonLues=notifications.filter(n=>!n.lu).length;
+  const cnt=document.getElementById('notif-count');
+  if(cnt){cnt.textContent=nonLues;cnt.style.display=nonLues>0?'flex':'none';}
+}
+function toggleNotifCenter(){
+  notifCenterOuvert=!notifCenterOuvert;
+  const el=document.getElementById('notif-center');el.style.display=notifCenterOuvert?'block':'none';
+  if(notifCenterOuvert){afficherNotifCenter();setTimeout(()=>{document.addEventListener('click',fermerNotifCenter,{once:true});},100);}
+}
+function fermerNotifCenter(e){
+  const c=document.getElementById('notif-center');const b=document.getElementById('notif-btn');
+  if(c&&b&&!c.contains(e.target)&&!b.contains(e.target)){c.style.display='none';notifCenterOuvert=false;}
+}
+function afficherNotifCenter(){
+  const el=document.getElementById('notif-liste');
+  if(!notifications.length){el.innerHTML='<p style="text-align:center;padding:20px;color:#888;font-size:0.85em">Aucune notification</p>';return;}
+  el.innerHTML=notifications.slice(0,20).map(n=>`<div class="notif-item ${n.lu?'':'unread'}" onclick="clicNotif('${n.id}','${n.lien}')"><div class="notif-title">${n.titre}</div><div class="notif-body">${n.corps}</div><div class="notif-time">${tempsEcoule(n.date)}</div></div>`).join('');
+}
+function clicNotif(id,lien){notifications=notifications.map(n=>n.id==id?{...n,lu:true}:n);localStorage.setItem('tn_notifs',JSON.stringify(notifications));mettreAJourBadgeNotif();document.getElementById('notif-center').style.display='none';notifCenterOuvert=false;if(lien)showPage(lien);}
+function toutMarquerLu(){notifications=notifications.map(n=>({...n,lu:true}));localStorage.setItem('tn_notifs',JSON.stringify(notifications));mettreAJourBadgeNotif();afficherNotifCenter();}
+function tempsEcoule(date){const diff=Date.now()-new Date(date).getTime();const min=Math.floor(diff/60000);const h=Math.floor(min/60);const j=Math.floor(h/24);if(j>0)return`il y a ${j}j`;if(h>0)return`il y a ${h}h`;if(min>0)return`il y a ${min}min`;return'à l\'instant';}
+function activerNotifsPush(){if(!('Notification'in window)){toast('Non supporté','warning');return;}Notification.requestPermission().then(p=>{const s=document.getElementById('notif-push-status');if(p==='granted'){if(s){s.textContent='Activé';s.style.background='#e8f5e9';s.style.color='#2d5a1b';}toast('🔔 Notifications activées !');}else{if(s)s.textContent='Refusé';toast('Refusé','warning');}});}
+function toggleVilleFav(btn,ville){btn.classList.toggle('selected');if(villesFav.includes(ville))villesFav=villesFav.filter(v=>v!==ville);else villesFav.push(ville);}
+function sauvegarderVillesFav(){localStorage.setItem('tn_villes_fav',JSON.stringify(villesFav));toast('✅ Villes favorites sauvegardées !');}
+
+async function verifierNouvellesAnnonces(){
+  if(!villesFav.length)return;
+  const maintenant=Date.now();if(maintenant-derniereVerifAnnonces<5*60*1000)return;
+  derniereVerifAnnonces=maintenant;
+  const recentes=await sbGet('annonces','select=id,titre,lieu,prix&limit=20');
+  if(!Array.isArray(recentes))return;
+  recentes.forEach(a=>{
+    if(!a.created_at)return;const age=Date.now()-new Date(a.created_at).getTime();if(age>10*60*1000)return;
+    if(villesFav.some(v=>a.lieu&&a.lieu.toLowerCase().includes(v.toLowerCase()))){
+      const dejuNotifie=notifications.some(n=>n.corps.includes(a.id));
+      if(!dejuNotifie)ajouterNotif('🏠 Nouvelle annonce !',`${a.titre} — ${a.lieu} — ${Number(a.prix).toLocaleString()} FCFA`,'annonce','annonces');
+    }
+  });
+}
+
+// ===== CONNEXION CORRIGEE =====
+async function connecter(){
+  const email=document.getElementById('email-login').value.trim();
+  const password=document.getElementById('password-login').value;
+  if(!email||!password){toast('Remplissez tous les champs','error');return;}
+  setBtnLoading('btn-login',true,'🔐 Se connecter');
+  let users=null;let erreurReseau=false;
+  try{users=await sbGet('users',`email=eq.${encodeURIComponent(email)}&password=eq.${encodeURIComponent(password)}&select=*`);}
+  catch(e){erreurReseau=true;}
+  setBtnLoading('btn-login',false,'🔐 Se connecter');
+  if(erreurReseau){toast('❌ Impossible de se connecter. Vérifiez votre internet.','error');return;}
+  if(!Array.isArray(users)||users.length===0){toast('❌ Email ou mot de passe incorrect','error');return;}
+  utilisateur=users[0];
+  if(utilisateur.statut==='suspendu'){toast('🚫 Compte suspendu : '+(utilisateur.raison_suspension||''),'error');utilisateur=null;return;}
+  if(utilisateur.langue)langueActuelle=utilisateur.langue;
+  localStorage.setItem('tn_user',JSON.stringify(utilisateur));
+  localStorage.setItem('tn_langue',langueActuelle);
+  appliquerLangue();demarrerNotifs();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-accueil').classList.add('active');
+  updateHeader();afficherAccueil();window.scrollTo(0,0);
+  toastBienvenue(utilisateur.nom.split(' ')[0]);
+}
+
+function deconnecter(){utilisateur=null;localStorage.removeItem('tn_user');if(notifInterval)clearInterval(notifInterval);toast('👋 Déconnecté');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-accueil').classList.add('active');updateHeader();afficherAccueil();window.scrollTo(0,0);}
+
+async function etapeInscription(){
+  const stepSMS=document.getElementById('step-sms');
+  if(stepSMS.style.display==='none'||!stepSMS.style.display){
+    const nom=document.getElementById('nom-inscription').value.trim();const tel=document.getElementById('tel-inscription').value.trim();const email=document.getElementById('email-inscription').value.trim();const password=document.getElementById('password-inscription').value;
+    if(!nom||!tel||!email||!password){toast('Remplissez tous les champs','error');return;}
+    setBtnLoading('btn-inscription',true,'Continuer');
+    const [existing,bl]=await Promise.all([sbGet('users',`email=eq.${encodeURIComponent(email)}&select=id`),sbGet('blacklist',`email=eq.${encodeURIComponent(email)}`)]);
+    setBtnLoading('btn-inscription',false,'Continuer');
+    if(Array.isArray(existing)&&existing.length>0){toast('❌ Email déjà utilisé','error');return;}
+    if(Array.isArray(bl)&&bl.length>0){toast('❌ Compte banni','error');return;}
+    codeSMS=genCode();inscriptionData={nom,tel,email,password,role:document.getElementById('role-inscription').value||'acheteur',certifie:false,statut:'actif',langue:langueActuelle,emoji:'👤',user_code:'TN-'+Math.floor(10000+Math.random()*90000)};
+    document.getElementById('tel-sms-affiche').textContent=tel;stepSMS.style.display='block';document.getElementById('cgu-texte').style.display='block';document.getElementById('btn-inscription').textContent='✅ Confirmer';toast('📱 Code : '+codeSMS);
+  }else{
+    const code=document.getElementById('code-sms').value;if(code!==codeSMS){toast('❌ Code incorrect !','error');return;}
+    setBtnLoading('btn-inscription',true,'✅ Confirmer');
+    const result=await sbPost('users',inscriptionData);setBtnLoading('btn-inscription',false,'✅ Confirmer');
+    if(Array.isArray(result)&&result.length>0){
+      utilisateur=result[0];localStorage.setItem('tn_user',JSON.stringify(utilisateur));demarrerNotifs();
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      document.getElementById('page-accueil').classList.add('active');
+      updateHeader();afficherAccueil();window.scrollTo(0,0);
+      toastBienvenue(utilisateur.nom.split(' ')[0]);
+    }else toast('❌ Erreur. Réessayez.','error');
+  }
+}
+
+function previewCertif(input,previewId,zoneId,type){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){const c=await compresserPhoto(e.target.result,800,0.7);if(type==='selfie')selfieBase64=c;else if(type==='cni-recto')cniRectoBase64=c;else if(type==='cni-verso')cniVersoBase64=c;const p=document.getElementById(previewId);p.src=c;p.style.display='block';const z=document.getElementById(zoneId);z.className='photo-upload-ok';z.innerHTML='<div style="font-size:1.5em">✅</div><p style="color:#2d5a1b;font-weight:600">Photo OK !</p>';};reader.readAsDataURL(file);}
+
+async function uploadPhoto(base64,nom){
+  try{const c=await compresserPhoto(base64,900,0.75);const blob=await fetch(c).then(r=>r.blob());const fn=nom+'_'+Date.now()+'.jpg';const res=await fetch(`${SB_URL}/storage/v1/object/terranova-photos/${fn}`,{method:'POST',headers:{'Authorization':'Bearer '+SB_KEY,'Content-Type':'image/jpeg'},body:blob});if(res.ok)return`${SB_URL}/storage/v1/object/public/terranova-photos/${fn}`;return base64;}catch(e){return base64;}
+}
+
+async function envoyerCertification(){
+  if(!selfieBase64||!cniRectoBase64||!cniVersoBase64){toast('Ajoutez les 3 photos','error');return;}
+  toast('⏳ Envoi...');
+  const [s,r,v]=await Promise.all([uploadPhoto(selfieBase64,'selfie'),uploadPhoto(cniRectoBase64,'cni-recto'),uploadPhoto(cniVersoBase64,'cni-verso')]);
+  const result=await sbPatch('users',utilisateur.id,{cni:document.getElementById('cni-numero').value||null,localite:document.getElementById('localite-certif').value||null,selfie_url:s,cni_url:r,cni_verso_url:v,certifie:false,certification_status:'pending'});
+  if(Array.isArray(result)&&result.length>0){
+    utilisateur=result[0];localStorage.setItem('tn_user',JSON.stringify(utilisateur));
+    sbPost('messages',{expediteur_id:utilisateur.id,destinataire_id:utilisateur.id,contenu:'✅ Documents reçus ! Vérification en cours (24-48h). Merci 🙏',lu:false,type:'admin'});
+    ajouterNotif('📤 Certification envoyée','Vos documents sont en cours de vérification (24-48h).','info','profil');
+    selfieBase64='';cniRectoBase64='';cniVersoBase64='';
+    toast('✅ Envoyé !');showPage('profil');
+  }
+}
+
+function previewPhotos(input){
+  const files=Array.from(input.files);photosBase64=[];const container=document.getElementById('photos-preview-container');container.innerHTML='';
+  files.forEach(file=>{const reader=new FileReader();reader.onload=async function(e){const c=await compresserPhoto(e.target.result,900,0.75);photosBase64.push(c);const wrap=document.createElement('div');wrap.style.position='relative';const img=document.createElement('img');img.src=c;img.style.cssText='width:75px;height:65px;object-fit:cover;border-radius:8px;border:2px solid #4caf50;display:block';const del=document.createElement('button');del.textContent='✕';del.style.cssText='position:absolute;top:-5px;right:-5px;background:#c62828;color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:0.6em;cursor:pointer';del.onclick=()=>{const i=photosBase64.indexOf(c);if(i>-1)photosBase64.splice(i,1);wrap.remove();};wrap.appendChild(img);wrap.appendChild(del);container.appendChild(wrap);};reader.readAsDataURL(file);});
+  document.getElementById('photo-zone').innerHTML=`<div style="font-size:1.5em">✅</div><p style="color:#2d5a1b;font-weight:600">${files.length} photo(s)</p>`;
+}
+
+function choisirType(type){typeChoisi=type;document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));const el=document.getElementById('type-'+type);if(el)el.classList.add('selected');}
+function toggleTypeFiltre(btn,type){btn.classList.toggle('selected');if(typesFiltres.includes(type))typesFiltres=typesFiltres.filter(t=>t!==type);else typesFiltres.push(type);}
+function toggleQuartier(btn,q){btn.classList.toggle('selected');if(quartiersChoisis.includes(q))quartiersChoisis=quartiersChoisis.filter(x=>x!==q);else quartiersChoisis.push(q);}
+function maPosition(){if(!navigator.geolocation){toast('GPS non supporté','error');return;}navigator.geolocation.getCurrentPosition(p=>{document.getElementById('lat-annonce').value=p.coords.latitude.toFixed(6);document.getElementById('lng-annonce').value=p.coords.longitude.toFixed(6);toast('📍 Position ajoutée !');},e=>{toast('❌ GPS indisponible','error');},{enableHighAccuracy:true,timeout:15000,maximumAge:0});}
+function utiliserTemplate(type){const t={'borde-route':'Terrain en bord de route principale, idéal pour activité commerciale ou résidentielle. Accès facile.','viabilise':'Terrain viabilisé avec accès eau, électricité et voie bitumée. Prêt à construire immédiatement.','titre-foncier':'Terrain avec titre foncier authentique certifié. Vente sécurisée, documentation complète disponible.','residentiel':'Terrain résidentiel dans quartier calme et sécurisé, proche des commodités.','maison':'Belle maison bien entretenue, spacieuse et lumineuse. Disponible rapidement. Visite sur RDV.'};document.getElementById('desc-annonce').value=t[type]||'';}
+async function signalerAnnonce(annonceId){if(!utilisateur){showPage('connexion');return;}const raison=prompt('Pourquoi signalez-vous cette annonce ?\n(mensongère, arnaque, doublon, autre)');if(!raison)return;sbPost('messages',{expediteur_id:utilisateur.id,destinataire_id:utilisateur.id,contenu:`🚨 SIGNALEMENT annonce ${annonceId}: ${raison}`,lu:false,type:'admin'});toast('✅ Signalement envoyé !');}
+
+function planifierRDV(annonceId,titreBien,vendeurId,vendeurNom){
+  if(!utilisateur){showPage('connexion');return;}
+  const date=prompt('Date souhaitée ? (ex: 15/03/2026)');if(!date)return;
+  const heure=prompt('Heure souhaitée ? (ex: 10h00)');if(!heure)return;
+  const rdv={id:Date.now(),annonceId,titreBien,vendeurId,vendeurNom,date,heure,statut:'en_attente',creeLe:new Date().toISOString()};
+  rdvList.push(rdv);localStorage.setItem('tn_rdv',JSON.stringify(rdvList));
+  sbPost('messages',{expediteur_id:utilisateur.id,destinataire_id:vendeurId,contenu:`📅 Demande de visite pour "${titreBien}"\n📆 Date : ${date}\n⏰ Heure : ${heure}\nContactez-moi pour confirmer !`,lu:false,type:'rdv'});
+  ajouterNotif('📅 RDV planifié',`Visite de "${titreBien}" demandée pour le ${date} à ${heure}`,'rdv','activite');
+  toast('✅ Demande de RDV envoyée au vendeur !');
+}
+
+async function chargerAnnonces(){try{annonces=await sbGet('annonces','select=*&limit=100');if(!Array.isArray(annonces))annonces=[];}catch(e){annonces=[];}}
+function isNew(d){return d&&(Date.now()-new Date(d).getTime())<48*3600*1000;}
+function filtrerVille(v){document.getElementById('search-annonces').value=v;showPage('annonces');}
+function rechercherAccueil(terme){if(!terme){const el=document.getElementById('annonces-accueil');if(el)el.innerHTML=annonces.filter(a=>!masquees.includes(a.id)).slice(0,6).map(a=>carteAnnonce(a)).join('');return;}const f=annonces.filter(a=>!masquees.includes(a.id)&&(a.titre.toLowerCase().includes(terme.toLowerCase())||a.lieu.toLowerCase().includes(terme.toLowerCase())));const el=document.getElementById('annonces-accueil');if(el)el.innerHTML=f.length?f.map(a=>carteAnnonce(a)).join(''):'<p style="color:#888;text-align:center;padding:20px">Aucun résultat</p>';}
+function sauvegarderRecherche(){const t=document.getElementById('search-accueil').value.trim();if(!t){toast('Entrez un terme','warning');return;}if(!recherches.includes(t)){recherches.unshift(t);if(recherches.length>10)recherches.pop();localStorage.setItem('tn_recherches',JSON.stringify(recherches));toast('🔖 Sauvegardé !');}}
+
+async function afficherAccueil(){
+  await chargerAnnonces();
+  const visible=annonces.filter(a=>!masquees.includes(a.id));
+  const el=document.getElementById('annonces-accueil');
+  if(el)el.innerHTML=visible.slice(0,6).map(a=>carteAnnonce(a)).join('')||'<p style="color:#888;text-align:center;padding:20px">Aucune annonce</p>';
+  verifierNouvellesAnnonces();
+}
+
+async function afficherAnnonces(liste){
+  const el=document.getElementById('liste-annonces');if(!el)return;
+  const terme=document.getElementById('search-annonces')?.value||'';
+  if(!liste){if(!annonces.length)await chargerAnnonces();liste=annonces.filter(a=>!masquees.includes(a.id));if(terme)liste=liste.filter(a=>a.titre.toLowerCase().includes(terme.toLowerCase())||a.lieu.toLowerCase().includes(terme.toLowerCase()));}
+  el.innerHTML=liste.map(a=>carteAnnonce(a)).join('')||'<p style="color:#888;text-align:center;padding:20px">Aucune annonce</p>';
+}
+
+function filtrer(type){const v=annonces.filter(a=>!masquees.includes(a.id));if(type==='tous')afficherAnnonces(v);else if(type==='certifie')afficherAnnonces(v.filter(a=>a.certifie_annonceur));else if(type==='location')afficherAnnonces(v.filter(a=>a.type&&a.type.includes('location')));else afficherAnnonces(v.filter(a=>a.type===type));}
+
+function appliquerFiltres(){
+  const pMin=parseInt(document.getElementById('prix-min').value)||0;const pMax=parseInt(document.getElementById('prix-max').value)||Infinity;const sMin=parseInt(document.getElementById('surface-min').value)||0;const sMax=parseInt(document.getElementById('surface-max').value)||Infinity;const jours=parseInt(document.getElementById('filtre-date').value)||0;
+  let f=annonces.filter(a=>!masquees.includes(a.id));f=f.filter(a=>a.prix>=pMin&&a.prix<=pMax&&(a.surface||0)>=sMin&&(a.surface||Infinity)<=sMax);
+  if(typesFiltres.length>0)f=f.filter(a=>typesFiltres.includes(a.type));if(quartiersChoisis.length>0)f=f.filter(a=>quartiersChoisis.some(q=>a.lieu&&a.lieu.toLowerCase().includes(q.toLowerCase())));if(jours>0){const c=Date.now()-jours*24*3600*1000;f=f.filter(a=>new Date(a.created_at).getTime()>c);}
+  afficherAnnonces(f);showPage('annonces');toast(`✅ ${f.length} résultat(s)`);
+}
+
+function reinitialiserFiltres(){['prix-min','prix-max','surface-min','surface-max'].forEach(id=>document.getElementById(id).value='');document.getElementById('filtre-date').value='';quartiersChoisis=[];typesFiltres=[];document.querySelectorAll('.quartier-btn,.type-card').forEach(b=>b.classList.remove('selected'));afficherAnnonces();showPage('annonces');}
+
+function getTypeLabel(type){const L={'terrain-vente':'🌿 Terrain à vendre','terrain-location':'🌱 Terrain à louer','maison-vente':'🏠 Maison à vendre','maison-location':'🏡 Maison à louer','vente':'🏷️ Vente','location':'🔑 Location'};return L[type]||type||'Bien immobilier';}
+
+function calculerTrustScore(a){let score=0;if(a.certifie_annonceur)score+=40;if(a.photo)score+=20;if(a.description&&a.description.length>30)score+=15;if(a.tel)score+=10;if(a.lat&&a.lng)score+=10;if((a.vues||0)>10)score+=5;return Math.min(score,100);}
+function trustScoreHtml(score){const color=score>=70?'#4caf50':score>=40?'#ff9800':'#f44336';const label=score>=70?'Fiable':'À vérifier';return`<div style="margin:8px 0"><div style="display:flex;justify-content:space-between;font-size:0.75em;margin-bottom:3px"><span style="color:#888">🛡️ Score confiance</span><span style="color:${color};font-weight:700">${score}% — ${label}</span></div><div class="trust-bar"><div class="trust-fill" style="width:${score}%;background:${color}"></div></div></div>`;}
+
+function carteAnnonce(a){
+  const fav=favoris.includes(a.id);const certBadge=a.certifie_annonceur?'<span class="badge-verified">✅ Certifié</span>':'';const newBadge=isNew(a.created_at)?'<span class="badge-new">NOUVEAU</span>':'';
+  const ph=a.photo?`<img src="${a.photo}" style="width:calc(100% + 30px);height:150px;object-fit:cover;border-radius:10px 10px 0 0;margin:-15px -15px 10px -15px;display:block" loading="lazy" onerror="this.style.display='none'">`:`<div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);height:80px;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:center;font-size:2.5em;margin:-15px -15px 10px -15px">🌿</div>`;
+  return`<div class="card card-click" onclick="voirDetail('${a.id}')" style="padding-top:0;overflow:hidden;position:relative">
+    ${ph}
+    <div style="position:absolute;top:8px;right:8px;display:flex;gap:4px">
+      <button onclick="event.stopPropagation();toggleFavori('${a.id}')" style="background:rgba(255,255,255,0.92);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:0.9em">${fav?'❤️':'🤍'}</button>
+      <button onclick="event.stopPropagation();masquerAnnonce('${a.id}')" style="background:rgba(255,255,255,0.92);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:0.78em">🚫</button>
+    </div>
+    ${newBadge?`<div style="position:absolute;top:8px;left:8px">${newBadge}</div>`:''}
+    <h3 style="color:#2d5a1b;margin-bottom:4px;font-size:0.9em;font-weight:700">${a.titre} ${certBadge}</h3>
+    <p style="color:#888;font-size:0.8em;margin-bottom:4px">📍 ${a.lieu}${a.surface?' • 📐 '+a.surface+' m²':''}</p>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong style="color:#2d5a1b;font-size:0.92em">${Number(a.prix).toLocaleString()} FCFA</strong>
+      <span class="badge" style="font-size:0.72em">${getTypeLabel(a.type)}</span>
+    </div>
+  </div>`;
+}
+
+function masquerAnnonce(id){if(!masquees.includes(id)){masquees.push(id);localStorage.setItem('tn_masquees',JSON.stringify(masquees));}afficherAnnonces(annonces.filter(a=>!masquees.includes(a.id)));toast('Annonce masquée');}
+function toggleFavori(id){const idx=favoris.indexOf(id);if(idx>-1)favoris.splice(idx,1);else{favoris.push(id);const a=annonces.find(x=>x.id===id);if(a)ajouterNotif('❤️ Favori ajouté',`"${a.titre}" ajouté à vos favoris`,'info','favoris');}localStorage.setItem('tn_favoris',JSON.stringify(favoris));afficherAnnonces(annonces.filter(a=>!masquees.includes(a.id)));toast(idx>-1?'💔 Retiré des favoris':'❤️ Ajouté aux favoris');}
+async function activerAlertesPrix(annonceId,prix){if(!utilisateur){toast('Connectez-vous !','warning');return;}sbPost('alertes_prix',{user_id:utilisateur.id,annonce_id:annonceId,prix_initial:prix});ajouterNotif('🔔 Alerte prix activée','Vous serez notifié si le prix change','info','activite');toast('🔔 Alerte prix activée !');}
+async function signalerInteret(annonceId,auteurId){if(!utilisateur){showPage('connexion');return;}if(annonceCourante)sbPatch('annonces',annonceId,{interesses:(annonceCourante.interesses||0)+1});sbPost('messages',{expediteur_id:utilisateur.id,destinataire_id:auteurId,contenu:`👋 Je suis intéressé par "${annonceCourante.titre}" — ${annonceCourante.lieu}. Pouvez-vous me contacter ?`,lu:false,type:'user'});toast('✅ Message envoyé au vendeur !');}
+function partagerWhatsApp(a){window.open('https://wa.me/?text='+encodeURIComponent(`🌍 *TerraNova* — ${a.titre}\n📍 ${a.lieu}\n💰 ${Number(a.prix).toLocaleString()} FCFA${a.surface?'\n📐 '+a.surface+' m²':''}\n\n🔗 https://terranova-lilac.vercel.app`),'_blank');}
+
+async function voirDetail(id){
+  const a=annonces.find(x=>x.id===id);if(!a)return;annonceCourante=a;sbPatch('annonces',id,{vues:(a.vues||0)+1});a.vues=(a.vues||0)+1;
+  const fav=favoris.includes(a.id);const trust=calculerTrustScore(a);
+  const certBadge=a.certifie_annonceur?'<span class="badge-verified" style="font-size:0.9em">✅ Annonceur certifié</span>':'<span class="badge-warning">⚠️ Non certifié</span>';
+  let photosHtml='';if(a.photo){const all=[a.photo];try{all.push(...JSON.parse(a.photos||'[]'));}catch(e){}photosHtml=`<div class="photo-gallery-full">${all.map(p=>`<img src="${p}" onclick="window.open('${p}','_blank')" loading="lazy" onerror="this.style.display='none'">`).join('')}</div>`;}
+  const mapsUrl=a.lat&&a.lng?`https://www.google.com/maps?q=${a.lat},${a.lng}`:`https://www.google.com/maps/search/${encodeURIComponent((a.lieu||'')+' Côte d\'Ivoire')}`;
+  document.getElementById('detail-contenu').innerHTML=`
+    ${photosHtml}
+    <div style="background:linear-gradient(135deg,#1a3a0a,#2d5a1b);color:white;padding:18px;border-radius:12px;margin-bottom:10px"><h2 style="font-size:1em;font-weight:700">${a.titre}</h2><span style="background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:20px;font-size:0.8em">${getTypeLabel(a.type)}</span></div>
+    <div class="luxury-card">
+      ${trustScoreHtml(trust)}
+      <div class="detail-row"><span style="color:#888">💰 Prix</span><strong style="color:#2d5a1b">${Number(a.prix).toLocaleString()} FCFA</strong></div>
+      <div class="detail-row"><span style="color:#888">📍 Lieu</span><span>${a.lieu}</span></div>
+      ${a.surface?`<div class="detail-row"><span style="color:#888">📐 Surface</span><span>${a.surface} m²</span></div>`:''}
+      <div class="detail-row"><span style="color:#888">👁️ Vues</span><span>${a.vues||0}</span></div>
+      <div class="detail-row"><span style="color:#888">🤝 Intéressés</span><span>${a.interesses||0}</span></div>
+      <div class="detail-row"><span style="color:#888">👤 Vendeur</span><span style="cursor:pointer;color:#2d5a1b;font-weight:600" onclick="voirProfilVendeur('${a.auteur_id||''}')">${a.auteur||'Anonyme'} ${certBadge}</span></div>
+      <div class="detail-row" style="border:none"><span style="color:#888">📅 Publié</span><span>${a.created_at?new Date(a.created_at).toLocaleDateString('fr-FR'):''}</span></div>
+    </div>
+    ${a.description?`<div class="luxury-card"><h3 style="color:#2d5a1b;margin-bottom:8px">📝 Description</h3><p style="color:#555;line-height:1.6;font-size:0.88em">${a.description}</p></div>`:''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0">
+      <button onclick="toggleFavori('${a.id}')" style="padding:10px;border:2px solid #2d5a1b;background:white;color:#2d5a1b;border-radius:10px;cursor:pointer;font-size:0.82em;font-weight:600">${fav?'❤️ Retirer':'🤍 Favoris'}</button>
+      <button onclick="partagerWhatsApp(annonceCourante)" style="padding:10px;background:linear-gradient(135deg,#128C7E,#25D366);color:white;border:none;border-radius:10px;cursor:pointer;font-size:0.82em;font-weight:600">📤 Partager</button>
+      <button onclick="activerAlertesPrix('${a.id}',${a.prix})" style="padding:10px;background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:10px;cursor:pointer;font-size:0.82em;font-weight:600">🔔 Alerte prix</button>
+      <a href="${mapsUrl}" target="_blank" style="text-decoration:none"><button style="width:100%;padding:10px;background:#e3f2fd;color:#1565c0;border:1px solid #90caf9;border-radius:10px;cursor:pointer;font-size:0.82em;font-weight:600">🗺️ Carte</button></a>
+    </div>
+    ${utilisateur&&a.auteur_id&&a.auteur_id!==utilisateur.id?`<button onclick="signalerInteret('${a.id}','${a.auteur_id}')" class="btn">🤝 Je suis intéressé</button><button onclick="ouvrirConversation('${a.auteur_id}','${a.auteur||'Vendeur'}')" style="width:100%;padding:10px;background:#e8f5e9;color:#2d5a1b;border:1px solid #c8e6c9;border-radius:10px;cursor:pointer;margin-top:8px;font-weight:600;font-family:'Montserrat',sans-serif">💬 Envoyer un message</button><button onclick="planifierRDV('${a.id}','${a.titre.replace(/'/g,'').substring(0,30)}','${a.auteur_id}','${(a.auteur||'Vendeur').replace(/'/g,'')}')" style="width:100%;padding:10px;background:linear-gradient(135deg,#1565c0,#1976d2);color:white;border:none;border-radius:10px;cursor:pointer;margin-top:8px;font-weight:600;font-family:'Montserrat',sans-serif">📅 Planifier une visite</button>`:''}
+    ${a.tel?`<a href="tel:${a.tel}" style="display:block;margin-top:8px;text-decoration:none"><button class="btn">📞 Appeler</button></a><a href="https://wa.me/225${a.tel.replace(/\D/g,'')}" target="_blank" style="display:block;text-decoration:none"><button class="btn-green">💬 WhatsApp</button></a>`:''}
+    <button onclick="signalerAnnonce('${a.id}')" class="signal-btn" style="margin-top:8px">🚨 Signaler cette annonce</button>
+    <div class="warning-box" style="font-size:0.78em;margin-top:10px">🛡️ Ne versez jamais d'argent sans visiter physiquement le bien.</div>`;
+  showPage('detail');
+}
+
+async function voirProfilVendeur(userId){
+  if(!userId)return;showPage('profil-vendeur');document.getElementById('profil-vendeur-contenu').innerHTML='<div style="text-align:center;padding:40px;color:#888">⏳ Chargement...</div>';
+  const [users,anns,avis]=await Promise.all([sbGet('users',`id=eq.${userId}&select=*`),sbGet('annonces',`auteur_id=eq.${userId}&select=*&limit=20`),sbGet('avis',`vendeur_id=eq.${userId}&select=*&limit=20`)]);
+  const u=Array.isArray(users)&&users.length?users[0]:null;if(!u)return;
+  const totalVues=Array.isArray(anns)?anns.reduce((s,a)=>s+(a.vues||0),0):0;const nbAvis=Array.isArray(avis)?avis.length:0;
+  const trustVendeur=Math.min(100,Math.round((u.certifie?40:0)+(u.nombre_avis||0)*5+(u.note_moyenne||0)*5+(Array.isArray(anns)?anns.length*2:0)));
+  const avatar=u.photo_profil?`<img src="${u.photo_profil}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #4caf50">`:`<div style="font-size:4em">${u.emoji||'👤'}</div>`;
+  document.getElementById('profil-vendeur-contenu').innerHTML=`
+    <div class="luxury-card" style="text-align:center;background:linear-gradient(135deg,#1a3a0a,#2d5a1b);color:white">${avatar}<h2 style="margin:10px 0;font-family:'Bebas Neue',sans-serif;font-size:1.5em;letter-spacing:2px">${u.nom}</h2><p style="opacity:0.8;font-size:0.82em">${u.user_code||''} ${u.certifie?'✅ Certifié':''}</p></div>
+    <div class="luxury-card"><h3 style="color:#2d5a1b;margin-bottom:8px">🛡️ Score de confiance</h3>${trustScoreHtml(trustVendeur)}</div>
+    <div class="stat-grid-3"><div class="stat-card"><div class="number">${Array.isArray(anns)?anns.length:0}</div><div class="label">Annonces</div></div><div class="stat-card"><div class="number">${totalVues}</div><div class="label">Vues</div></div><div class="stat-card"><div class="number">${Number(u.note_moyenne||0).toFixed(1)}</div><div class="label">⭐ Note</div></div></div>
+    <div class="luxury-card"><h3 style="color:#2d5a1b;margin-bottom:10px">⭐ Avis (${nbAvis})</h3>${Array.isArray(avis)&&avis.length?avis.map(av=>`<div style="padding:8px 0;border-bottom:1px solid #f0f0f0"><strong>${av.acheteur_nom||'Anonyme'}</strong> ${'⭐'.repeat(av.note)}<p style="color:#666;font-size:0.82em">${av.commentaire||''}</p></div>`).join(''):'<p style="color:#888">Aucun avis</p>'}</div>
+    ${utilisateur&&utilisateur.id!==userId?`<div class="luxury-card"><h3 style="color:#2d5a1b;margin-bottom:10px">✍️ Laisser un avis</h3><div style="display:flex;gap:8px;margin:8px 0">${[1,2,3,4,5].map(n=>`<span style="font-size:1.5em;cursor:pointer" onclick="selectionnerNote(${n})" id="star-${n}">☆</span>`).join('')}</div><textarea id="avis-commentaire" placeholder="Votre commentaire..." rows="3"></textarea><button onclick="envoyerAvis('${userId}')" class="btn">📝 Envoyer l'avis</button></div>`:''}
+    <h3 style="color:#2d5a1b;margin:15px 0 10px;font-family:'Bebas Neue',sans-serif">📋 Ses annonces</h3>
+    ${Array.isArray(anns)?anns.map(a=>carteAnnonce(a)).join(''):''}`;
+}
+
+function selectionnerNote(n){noteSelectionnee=n;for(let i=1;i<=5;i++){const s=document.getElementById('star-'+i);if(s)s.textContent=i<=n?'⭐':'☆';}}
+async function envoyerAvis(vendeurId){if(!noteSelectionnee){toast('Choisissez une note !','warning');return;}const commentaire=document.getElementById('avis-commentaire').value;await sbPost('avis',{vendeur_id:vendeurId,acheteur_id:utilisateur.id,acheteur_nom:utilisateur.nom,note:noteSelectionnee,commentaire});const avisVendeur=await sbGet('avis',`vendeur_id=eq.${vendeurId}&select=note`);if(Array.isArray(avisVendeur)&&avisVendeur.length){const avg=avisVendeur.reduce((s,a)=>s+a.note,0)/avisVendeur.length;sbPatch('users',vendeurId,{note_moyenne:avg,nombre_avis:avisVendeur.length});}toast('✅ Avis envoyé !');voirProfilVendeur(vendeurId);}
+
+async function afficherClassement(){
+  const users=await sbGet('users','select=id,nom,emoji,photo_profil,note_moyenne,nombre_avis,user_code,certifie&order=note_moyenne.desc&limit=10');
+  const el=document.getElementById('classement-liste');if(!Array.isArray(users)||!users.length){el.innerHTML='<p style="color:#666;text-align:center;padding:20px">Pas encore de classement</p>';return;}
+  const medals=['🥇','🥈','🥉'];
+  el.innerHTML=users.map((u,i)=>{const av=u.photo_profil?`<img src="${u.photo_profil}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;margin:0 10px">`:`<div style="width:42px;height:42px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;font-size:1.3em;margin:0 10px">${u.emoji||'👤'}</div>`;return`<div class="rank-card" onclick="voirProfilVendeur('${u.id}')"><div class="rank-num">${medals[i]||i+1}</div>${av}<div style="flex:1"><strong>${u.nom}</strong>${u.certifie?' ✅':''}<p style="color:#888;font-size:0.8em">${'⭐'.repeat(Math.round(u.note_moyenne||0))} (${u.nombre_avis||0} avis)</p></div></div>`;}).join('');
+}
+
+function calculerBudget(){
+  const budget=parseInt(document.getElementById('budget-input').value)||0;
+  if(!budget){document.getElementById('budget-result').innerHTML='';document.getElementById('frais-result').innerHTML='<p style="color:#888">Entrez un budget</p>';return;}
+  const matching=annonces.filter(a=>a.prix<=budget&&!masquees.includes(a.id));const fn=Math.round(budget*0.05),ft=Math.round(budget*0.03),fg=150000;
+  document.getElementById('budget-result').innerHTML=`<div class="success-box">✅ <strong>${matching.length} bien(s)</strong> dans votre budget</div>${matching.slice(0,3).map(a=>carteAnnonce(a)).join('')}`;
+  document.getElementById('frais-result').innerHTML=`<div class="info-row"><span class="info-label">💰 Budget</span><span class="info-value">${budget.toLocaleString()} FCFA</span></div><div class="info-row"><span class="info-label">⚖️ Notaire ~5%</span><span class="info-value">${fn.toLocaleString()} FCFA</span></div><div class="info-row"><span class="info-label">🏛️ Taxes ~3%</span><span class="info-value">${ft.toLocaleString()} FCFA</span></div><div class="info-row"><span class="info-label">📐 Géomètre</span><span class="info-value">~${fg.toLocaleString()} FCFA</span></div><div style="background:#fff3cd;padding:10px;border-radius:10px;display:flex;justify-content:space-between;margin-top:8px"><strong style="color:#856404">💳 Total</strong><strong style="color:#856404">${(budget+fn+ft+fg).toLocaleString()} FCFA</strong></div>`;
+}
+
+async function publierAnnonce(){
+  if(!utilisateur){showPage('connexion');return;}if(utilisateur.statut==='suspendu'){toast('🚫 Compte suspendu','error');return;}
+  const titre=document.getElementById('titre-annonce').value.trim();const lieu=document.getElementById('lieu-annonce').value.trim();const prix=document.getElementById('prix-annonce').value;const tel=document.getElementById('tel-annonce').value.trim();
+  if(!titre||!lieu||!prix||!tel){toast('Remplissez les champs obligatoires *','error');return;}if(!typeChoisi){toast('Choisissez le type de bien','error');return;}
+  setBtnLoading('btn-publier',true,'📤 Publier gratuitement');
+  let photoUrls=[];if(photosBase64.length>0)photoUrls=await Promise.all(photosBase64.map((p,i)=>uploadPhoto(p,'bien'+i)));
+  const surface=document.getElementById('surface-annonce').value;
+  const result=await sbPost('annonces',{titre,lieu,prix:parseInt(prix),surface:surface?parseInt(surface):null,type:typeChoisi,description:document.getElementById('desc-annonce').value,tel,emoji:'🌿',auteur:utilisateur.nom,auteur_id:utilisateur.id,photo:photoUrls[0]||null,photos:JSON.stringify(photoUrls.slice(1)),vues:0,certifie_annonceur:utilisateur.certifie||false,lat:document.getElementById('lat-annonce').value||null,lng:document.getElementById('lng-annonce').value||null,interesses:0});
+  setBtnLoading('btn-publier',false,'📤 Publier gratuitement');
+  if(Array.isArray(result)&&result.length>0){
+    photosBase64=[];typeChoisi='';document.getElementById('photos-preview-container').innerHTML='';document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));
+    ['titre-annonce','lieu-annonce','prix-annonce','surface-annonce','tel-annonce','desc-annonce','lat-annonce','lng-annonce'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('photo-zone').innerHTML='<div style="font-size:2em">📸</div><p style="color:#888;font-weight:600">Ajouter des photos</p>';
+    ajouterNotif('✅ Annonce publiée !',`"${titre}" est maintenant en ligne 🌍`,'success','mes-annonces');toast('✅ Annonce publiée !');showPage('annonces');
+  }else toast('❌ Erreur. Réessayez.','error');
+}
+
+async function afficherDashboard(){
+  if(!utilisateur){document.getElementById('dashboard-contenu').innerHTML=`<div class="luxury-card" style="text-align:center;margin-top:30px"><div style="font-size:3.5em">👤</div><h2 style="color:#2d5a1b;font-family:'Bebas Neue',sans-serif;font-size:1.8em;letter-spacing:2px">Mon Profil</h2><div class="info-box">💡 Connectez-vous pour accéder à votre espace !</div><button class="btn" onclick="showPage('connexion')">🔐 Se connecter</button><button class="btn-white" onclick="showPage('inscription')">📝 Créer un compte</button></div>`;return;}
+  renderDashboard({nb:0,totalVues:0,nbMsgs:0});
+  const [mesAnnonces,msgs]=await Promise.all([sbGet('annonces',`auteur_id=eq.${utilisateur.id}&select=id,vues&limit=50`),sbGet('messages',`destinataire_id=eq.${utilisateur.id}&lu=eq.false&select=id&limit=99`)]);
+  renderDashboard({nb:Array.isArray(mesAnnonces)?mesAnnonces.length:0,totalVues:Array.isArray(mesAnnonces)?mesAnnonces.reduce((s,a)=>s+(a.vues||0),0):0,nbMsgs:Array.isArray(msgs)?msgs.length:0});
+}
+
+function renderDashboard({nb,totalVues,nbMsgs}){
+  const roles={acheteur:'🛒 Acheteur',vendeur:'🏷️ Vendeur',locataire:'🔑 Locataire',bailleur:'🏘️ Bailleur',entreprise:'🏢 Entreprise'};
+  let certifBlock='';
+  if(utilisateur.statut==='suspendu')certifBlock=`<div class="warning-box">🚫 Suspendu — ${utilisateur.raison_suspension||''}</div>`;
+  else if(utilisateur.certifie)certifBlock='<div class="success-box">🛡️ Identité vérifiée — Badge ✅ visible sur vos annonces</div>';
+  else if(utilisateur.certification_status==='pending')certifBlock='<div class="condition-box">⏳ Vérification en cours... (24-48h)</div>';
+  else certifBlock=`<div class="info-box">💡 Certifiez votre identité pour le badge ✅ de confiance<br><button onclick="showPage('certifier')" class="btn-small" style="margin-top:8px">🏅 Me certifier (gratuit)</button></div>`;
+  const isAdmin=utilisateur.email===ADMIN_EMAIL;
+  const avatar=utilisateur.photo_profil?`<img src="${utilisateur.photo_profil}" class="avatar-circle" style="margin:10px auto;display:block">`:`<div style="font-size:4em;text-align:center">${utilisateur.emoji||'👤'}</div>`;
+  document.getElementById('dashboard-contenu').innerHTML=`
+    <div class="luxury-card" style="text-align:center;background:linear-gradient(135deg,#1a3a0a,#2d5a1b);color:white">
+      ${avatar}<h2 style="color:white;margin:8px 0;font-family:'Bebas Neue',sans-serif;font-size:1.5em;letter-spacing:2px">${utilisateur.nom}</h2>
+      <p style="color:rgba(255,255,255,0.6);font-size:0.78em">${utilisateur.user_code||''}</p>
+      <div style="margin-top:8px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap"><span class="badge" style="background:rgba(255,255,255,0.2);color:white">${roles[utilisateur.role]||'Membre'}</span>${utilisateur.certifie?'<span class="badge badge-gold">✅ Certifié</span>':''}${isAdmin?'<span class="badge badge-blue">🛡️ Admin</span>':''}</div>
+    </div>
+    ${certifBlock}
+    <div class="stat-grid"><div class="stat-card"><div class="number">${nb}</div><div class="label">📋 Annonces</div></div><div class="stat-card"><div class="number">${totalVues}</div><div class="label">👁️ Vues totales</div></div></div>
+    <div class="luxury-card" style="padding:5px 15px">
+      <div class="menu-item" onclick="showPage('mes-infos')"><span><span class="menu-icon">👤</span>Mes informations</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('mes-annonces')"><span><span class="menu-icon">📌</span>Mes annonces</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('favoris')"><span><span class="menu-icon">❤️</span>Mes favoris</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('activite')"><span><span class="menu-icon">📊</span>Mon activité & RDV</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('calculateur')"><span><span class="menu-icon">💰</span>Calculateur budget</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('classement')"><span><span class="menu-icon">🏆</span>Top membres</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('messages')"><span><span class="menu-icon">💬</span>Messages${nbMsgs>0?` <span style="background:#c62828;color:white;border-radius:50%;padding:2px 7px;font-size:0.75em;margin-left:5px">${nbMsgs}</span>`:''}</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('publier')"><span><span class="menu-icon">➕</span>Publier une annonce</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('parametres')"><span><span class="menu-icon">⚙️</span>Paramètres</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="showPage('installer')"><span><span class="menu-icon">📲</span>Installer l'app</span><span class="menu-arrow">›</span></div>
+      ${isAdmin?`<div class="menu-item" onclick="showPage('admin')"><span><span class="menu-icon">🛡️</span><strong>Administration</strong></span><span class="menu-arrow">›</span></div>`:''}
+    </div>
+    <button class="btn-white" onclick="deconnecter()">🚪 Se déconnecter</button>`;
+}
+
+function afficherMesInfos(){
+  if(!utilisateur){showPage('connexion');return;}
+  let s=utilisateur.certifie?'<span class="badge badge-gold">✅ Certifié</span>':utilisateur.certification_status==='pending'?'<span class="badge-warning">⏳ En attente</span>':'<span class="badge">❌ Non certifié</span>';
+  const avatar=utilisateur.photo_profil?`<img src="${utilisateur.photo_profil}" class="avatar-circle">`:`<div style="font-size:4em">${utilisateur.emoji||'👤'}</div>`;
+  document.getElementById('mes-infos-contenu').innerHTML=`
+    <div class="luxury-card" style="text-align:center;background:linear-gradient(135deg,#1a3a0a,#2d5a1b);color:white">${avatar}<h2 style="margin-top:10px;font-family:'Bebas Neue',sans-serif;font-size:1.5em;letter-spacing:2px">${utilisateur.nom}</h2></div>
+    <div class="luxury-card" style="text-align:center"><button onclick="document.getElementById('photo-profil-input').click()" class="btn-small">📷 Changer la photo</button><input type="file" id="photo-profil-input" accept="image/*" style="display:none" onchange="changerPhotoProfil(this)"></div>
+    <div class="luxury-card">
+      <div class="info-row"><span class="info-label">👤 Nom</span><span class="info-value">${utilisateur.nom||'—'}</span></div>
+      <div class="info-row"><span class="info-label">🔢 ID</span><span class="info-value" style="color:#2d5a1b">${utilisateur.user_code||'—'}</span></div>
+      <div class="info-row"><span class="info-label">📧 Email</span><span class="info-value">${utilisateur.email||'—'}</span></div>
+      <div class="info-row"><span class="info-label">📱 Téléphone</span><span class="info-value">${utilisateur.tel||'—'}</span></div>
+      <div class="info-row" style="border:none"><span class="info-label">✅ Certification</span><span class="info-value">${s}</span></div>
+    </div>`;
+}
+
+async function changerPhotoProfil(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=async function(e){toast('⏳ Mise à jour...');const url=await uploadPhoto(e.target.result,'profil');utilisateur.photo_profil=url;localStorage.setItem('tn_user',JSON.stringify(utilisateur));sbPatch('users',utilisateur.id,{photo_profil:url});toast('✅ Photo mise à jour !');afficherMesInfos();updateHeader();};reader.readAsDataURL(file);}
+
+async function afficherMesAnnonces(){
+  if(!utilisateur){showPage('connexion');return;}
+  const mes=await sbGet('annonces',`auteur_id=eq.${utilisateur.id}&select=*&limit=50`);
+  document.getElementById('mes-annonces-liste').innerHTML=Array.isArray(mes)&&mes.length?mes.map(a=>`
+    <div class="luxury-card" style="padding-top:0;overflow:hidden">
+      ${a.photo?`<img src="${a.photo}" style="width:calc(100% + 36px);height:110px;object-fit:cover;border-radius:12px 12px 0 0;margin:-18px -18px 12px -18px" loading="lazy">`:`<div style="background:#e8f5e9;height:70px;display:flex;align-items:center;justify-content:center;font-size:2em;margin:-18px -18px 12px -18px;border-radius:12px 12px 0 0">🌿</div>`}
+      <h3 style="color:#2d5a1b;font-size:0.9em;font-weight:700">${a.titre}</h3>
+      <p style="color:#888;font-size:0.78em">📍 ${a.lieu} • 👁️ ${a.vues||0} vues • 🤝 ${a.interesses||0} intéressés</p>
+      <p style="color:#2d5a1b;font-weight:700;font-size:0.88em">${Number(a.prix).toLocaleString()} FCFA</p>
+      ${trustScoreHtml(calculerTrustScore(a))}
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button onclick="remonterAnnonce('${a.id}')" style="flex:1;background:#e8f5e9;color:#2d5a1b;border:1px solid #c8e6c9;padding:8px;border-radius:8px;cursor:pointer;font-size:0.78em;font-weight:600">🔄 Remonter</button>
+        <button onclick="supprimerAnnonce('${a.id}')" style="background:#ffebee;color:#c62828;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:0.78em;font-weight:600">🗑️</button>
+      </div>
+    </div>`).join(''):'<p style="color:#666;text-align:center;padding:30px">Vous n\'avez pas encore publié d\'annonce</p>';
+}
+
+async function remonterAnnonce(id){const a=annonces.find(x=>x.id===id);if(a&&a.derniere_remontee&&Date.now()-new Date(a.derniere_remontee).getTime()<7*24*3600*1000){toast('⏳ 1x par semaine maximum','warning');return;}await sbPatch('annonces',id,{derniere_remontee:new Date().toISOString(),created_at:new Date().toISOString()});toast('✅ Annonce remontée !');afficherMesAnnonces();}
+async function supprimerAnnonce(id){if(!confirm('Supprimer cette annonce ?'))return;await sbDelete('annonces',id);annonces=annonces.filter(a=>a.id!==id);toast('🗑️ Supprimée');afficherMesAnnonces();}
+function afficherFavoris(){const f=annonces.filter(a=>favoris.includes(a.id));document.getElementById('favoris-liste').innerHTML=f.length?f.map(a=>carteAnnonce(a)).join(''):'<p style="color:#666;text-align:center;padding:30px">Aucun favori</p>';}
+
+function afficherActivite(type,btn){
+  document.querySelectorAll('.activity-tab button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');
+  const el=document.getElementById('activite-contenu');
+  if(type==='favoris'){const f=annonces.filter(a=>favoris.includes(a.id));el.innerHTML=f.length?f.map(a=>carteAnnonce(a)).join(''):'<p style="color:#666;text-align:center;padding:20px">Aucune</p>';}
+  else if(type==='recherches'){el.innerHTML=recherches.length?recherches.map(r=>`<div class="luxury-card" style="display:flex;justify-content:space-between;align-items:center;padding:12px"><span onclick="lancerRechercheSauvegardee('${r}')" style="cursor:pointer;color:#2d5a1b;font-weight:600">🔍 ${r}</span><button onclick="supprimerRecherche('${r}')" style="background:none;border:none;color:#c62828;cursor:pointer;font-size:1.2em">✕</button></div>`).join(''):'<p style="color:#666;text-align:center;padding:20px">Aucune</p>';}
+  else if(type==='masquees'){const m=annonces.filter(a=>masquees.includes(a.id));el.innerHTML=m.length?m.map(a=>`<div class="luxury-card" style="display:flex;justify-content:space-between;align-items:center;padding:12px;opacity:0.7"><span>🌿 ${a.titre}</span><button onclick="demasquerAnnonce('${a.id}')" style="background:#e8f5e9;color:#2d5a1b;border:none;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:0.82em">👁️</button></div>`).join(''):'<p style="color:#666;text-align:center;padding:20px">Aucune</p>';}
+  else if(type==='rdv'){el.innerHTML=rdvList.length?rdvList.map(r=>`<div class="rdv-card"><div style="display:flex;justify-content:space-between;align-items:center"><div><strong style="color:#1565c0;font-size:0.88em">${r.titreBien}</strong><p style="color:#555;font-size:0.8em;margin-top:3px">👤 ${r.vendeurNom}</p></div><div style="text-align:right"><p style="color:#1565c0;font-weight:700;font-size:0.82em">📆 ${r.date}</p><p style="color:#555;font-size:0.8em">⏰ ${r.heure}</p></div></div><div style="margin-top:8px;display:flex;gap:8px"><span class="badge badge-blue" style="font-size:0.72em">⏳ En attente</span><button onclick="annulerRDV(${r.id})" style="background:none;border:none;color:#c62828;cursor:pointer;font-size:0.75em;font-weight:600">❌ Annuler</button></div></div>`).join(''):'<div class="info-box">📅 Aucun rendez-vous planifié.<br><br>Depuis une annonce, appuyez sur "Planifier une visite" !</div>';}
+}
+
+function annulerRDV(id){rdvList=rdvList.filter(r=>r.id!==id);localStorage.setItem('tn_rdv',JSON.stringify(rdvList));afficherActivite('rdv');toast('❌ RDV annulé');}
+function lancerRechercheSauvegardee(t){document.getElementById('search-annonces').value=t;rechercher(t);showPage('annonces');}
+function supprimerRecherche(t){recherches=recherches.filter(r=>r!==t);localStorage.setItem('tn_recherches',JSON.stringify(recherches));afficherActivite('recherches');}
+function demasquerAnnonce(id){masquees=masquees.filter(m=>m!==id);localStorage.setItem('tn_masquees',JSON.stringify(masquees));afficherActivite('masquees');}
+function rechercher(terme){const f=annonces.filter(a=>!masquees.includes(a.id)&&(a.titre.toLowerCase().includes(terme.toLowerCase())||a.lieu.toLowerCase().includes(terme.toLowerCase())));const el=document.getElementById('liste-annonces');if(el)el.innerHTML=f.length?f.map(a=>carteAnnonce(a)).join(''):'<p style="color:#888;text-align:center;padding:20px">Aucun résultat</p>';}
+
+async function afficherMessages(){
+  if(!utilisateur){document.getElementById('conversations-liste').innerHTML=`<div class="luxury-card" style="text-align:center;margin-top:20px"><p style="color:#666;margin-bottom:10px">Connectez-vous</p><button class="btn" onclick="showPage('connexion')">🔐 Connexion</button></div>`;return;}
+  const msgs=await sbGet('messages',`or=(expediteur_id.eq.${utilisateur.id},destinataire_id.eq.${utilisateur.id})&select=*&limit=100`);
+  if(!Array.isArray(msgs)||!msgs.length){document.getElementById('conversations-liste').innerHTML='<p style="color:#666;text-align:center;padding:30px">Aucun message</p>';return;}
+  const convMap={};msgs.forEach(m=>{const otherId=m.expediteur_id===utilisateur.id?m.destinataire_id:m.expediteur_id;if(!convMap[otherId]||new Date(m.created_at)>new Date(convMap[otherId].created_at))convMap[otherId]=m;});
+  const allIds=[...new Set(Object.keys(convMap).filter(id=>id!==utilisateur.id))];const usersMap={};
+  if(allIds.length>0){const ud=await sbGet('users',`id=in.(${allIds.join(',')})&select=id,nom,emoji,photo_profil`);if(Array.isArray(ud))ud.forEach(u=>usersMap[u.id]=u);}
+  document.getElementById('conversations-liste').innerHTML=Object.entries(convMap).map(([otherId,lastMsg])=>{
+    const isSelf=otherId===utilisateur.id;const other=usersMap[otherId]||{nom:'Utilisateur',emoji:'👤'};
+    const unread=msgs.filter(m=>m.destinataire_id===utilisateur.id&&m.expediteur_id===otherId&&!m.lu).length;
+    const preview=lastMsg.contenu?.startsWith('IMG:')?'📷 Photo':lastMsg.contenu?.substring(0,40)||'...';
+    const isMe=lastMsg.expediteur_id===utilisateur.id;const readStatus=isMe?(lastMsg.lu?'✓✓':'✓'):'';
+    const avatarHtml=isSelf?`<div class="conv-avatar">🌍</div>`:other.photo_profil?`<img src="${other.photo_profil}" style="width:46px;height:46px;border-radius:50%;object-fit:cover;margin-right:12px;flex-shrink:0">`:`<div class="conv-avatar">${other.emoji||'👤'}</div>`;
+    return`<div class="conv-item" onclick="ouvrirConversation('${otherId}','${isSelf?'TerraNova':other.nom}')">${avatarHtml}<div style="flex:1;min-width:0"><strong style="font-size:0.9em">${isSelf?'🌍 TerraNova':other.nom}</strong><p style="color:#888;font-size:0.78em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${readStatus?`<span style="color:${lastMsg.lu?'#4caf50':'#aaa'}">${readStatus}</span> `:''} ${preview}</p></div>${unread>0?`<div class="conv-unread">${unread}</div>`:''}</div>`;
+  }).join('');
+}
+
+async function ouvrirConversation(otherId,otherNom){
+  if(!utilisateur){showPage('connexion');return;}convActuelle={id:otherId,nom:otherNom};showPage('conversation');
+  document.getElementById('conv-header').innerHTML=`<div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;font-size:1.2em">${otherId===utilisateur.id?'🌍':'👤'}</div><div><strong>${otherId===utilisateur.id?'🌍 TerraNova':otherNom}</strong><p style="font-size:0.72em;color:#888">TerraNova</p></div></div>`;
+  document.getElementById('conv-messages').innerHTML='<div style="text-align:center;padding:20px;color:#888">⏳</div>';
+  const msgs=await sbGet('messages',`or=(and(expediteur_id.eq.${utilisateur.id},destinataire_id.eq.${otherId}),and(expediteur_id.eq.${otherId},destinataire_id.eq.${utilisateur.id}))&order=created_at.asc&limit=50`);
+  const el=document.getElementById('conv-messages');
+  if(Array.isArray(msgs)){
+    el.innerHTML=msgs.map(m=>{const isMe=m.expediteur_id===utilisateur.id;const time=new Date(m.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});const isImg=m.contenu&&m.contenu.startsWith('IMG:');const content=isImg?`<img src="${m.contenu.substring(4)}" style="max-width:200px;border-radius:10px;cursor:pointer" onclick="window.open('${m.contenu.substring(4)}','_blank')">`:`<span>${m.contenu}</span>`;const readBadge=isMe?`<div class="msg-status">${m.lu?'✓✓ Lu':'✓ Envoyé'}</div>`:'';return`<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'};margin-bottom:8px"><div class="${isMe?'msg-bubble-me':'msg-bubble-other'}">${content}</div><div class="msg-time">${time}</div>${readBadge}</div>`;}).join('');
+    el.scrollTop=el.scrollHeight;const nonLus=msgs.filter(m=>m.destinataire_id===utilisateur.id&&!m.lu);nonLus.forEach(m=>sbPatch('messages',m.id,{lu:true}));
+  }
+}
+
+async function envoyerMessage(){if(!utilisateur||!convActuelle)return;const input=document.getElementById('msg-input');const contenu=input.value.trim();if(!contenu)return;input.value='';const el=document.getElementById('conv-messages');const time=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});el.innerHTML+=`<div style="display:flex;flex-direction:column;align-items:flex-end;margin-bottom:8px"><div class="msg-bubble-me"><span>${contenu}</span></div><div class="msg-time">${time}</div><div class="msg-status">✓ Envoyé</div></div>`;el.scrollTop=el.scrollHeight;sbPost('messages',{expediteur_id:utilisateur.id,destinataire_id:convActuelle.id,contenu,lu:false,type:'user'});}
+
+async function envoyerPhotoMessage(input){if(!utilisateur||!convActuelle)return;const file=input.files[0];if(!file)return;toast('⏳ Envoi photo...');const reader=new FileReader();reader.onload=async function(e){const photoUrl=await uploadPhoto(e.target.result,'msg');const el=document.getElementById('conv-messages');el.innerHTML+=`<div style="display:flex;flex-direction:column;align-items:flex-end;margin-bottom:8px"><div class="msg-bubble-me"><img src="${photoUrl}" style="max-width:200px;border-radius:10px"></div><div class="msg-status">✓ Envoyé</div></div>`;el.scrollTop=el.scrollHeight;sbPost('messages',{expediteur_id:utilisateur.id,destinataire_id:convActuelle.id,contenu:'IMG:'+photoUrl,lu:false,type:'photo'});toast('✅ Photo envoyée !');};reader.readAsDataURL(file);}
+
+function envoyerCodeReset(){const tel=document.getElementById('tel-oublie').value;if(!tel){toast('Entrez votre numéro','error');return;}codeReset=genCode();localStorage.setItem('tn_code_reset',JSON.stringify({code:codeReset,tel}));document.getElementById('tel-affiche').textContent=tel;document.getElementById('step-tel-oublie').style.display='none';document.getElementById('step-code-oublie').style.display='block';toast('📱 Code : '+codeReset);}
+async function reinitialiserPassword(){const code=document.getElementById('code-oublie').value;const np=document.getElementById('nouveau-password').value;const cp=document.getElementById('confirm-password').value;const saved=JSON.parse(localStorage.getItem('tn_code_reset')||'{}');if(code!==saved.code){toast('Code incorrect','error');return;}if(np!==cp){toast('Mots de passe différents','error');return;}if(np.length<6){toast('6 caractères minimum','error');return;}const users=await sbGet('users',`tel=eq.${saved.tel}&select=id`);if(Array.isArray(users)&&users.length){await sbPatch('users',users[0].id,{password:np});localStorage.removeItem('tn_code_reset');toast('✅ Réinitialisé !');showPage('connexion');}else toast('Numéro non trouvé','error');}
+
+async function verifierNotifs(){
+  if(!utilisateur)return;
+  try{
+    const msgs=await sbGet('messages',`destinataire_id=eq.${utilisateur.id}&lu=eq.false&select=id,contenu,expediteur_id,created_at&limit=99`);
+    const nb=Array.isArray(msgs)?msgs.length:0;
+    const tabMsg=document.getElementById('tab-messages');if(tabMsg)tabMsg.innerHTML=nb>0?`💬<span>Messages</span><div class="notif-badge">${nb}</div>`:`💬<span>Messages</span>`;
+    if(Array.isArray(msgs)&&msgs.length>0){const recent=msgs.filter(m=>Date.now()-new Date(m.created_at).getTime()<60000);if(recent.length>0){const dejuNotif=notifications.some(n=>n.lien==='messages'&&(Date.now()-new Date(n.date).getTime())<60000);if(!dejuNotif)ajouterNotif(`💬 ${recent.length} nouveau(x) message(s)`,'Appuyez pour voir','message','messages');}}
+  }catch(e){}
+}
+
+function demarrerNotifs(){if(notifInterval)clearInterval(notifInterval);if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();verifierNotifs();notifInterval=setInterval(verifierNotifs,30000);setInterval(verifierNouvellesAnnonces,5*60*1000);}
+
+async function afficherAdmin(){
+  if(!utilisateur||utilisateur.email!==ADMIN_EMAIL){toast('Accès refusé !','error');showPage('profil');return;}
+  try{
+    const [users,anns]=await Promise.all([sbGet('users','select=id,certifie,certification_status,statut&limit=500'),sbGet('annonces','select=id,vues&limit=500')]);
+    const total=Array.isArray(users)?users.length:0,certifies=Array.isArray(users)?users.filter(u=>u.certifie).length:0,pending=Array.isArray(users)?users.filter(u=>u.certification_status==='pending'&&!u.certifie).length:0,suspendus=Array.isArray(users)?users.filter(u=>u.statut==='suspendu').length:0,totalAnn=Array.isArray(anns)?anns.length:0,totalVues=Array.isArray(anns)?anns.reduce((s,a)=>s+(a.vues||0),0):0;
+    document.getElementById('admin-stats').innerHTML=`<div class="stat-grid-3"><div class="stat-card"><div class="number">${total}</div><div class="label">👥 Inscrits</div></div><div class="stat-card"><div class="number">${certifies}</div><div class="label">✅ Certifiés</div></div><div class="stat-card"><div class="number" style="color:#ff6600">${pending}</div><div class="label">⏳ Attente</div></div><div class="stat-card"><div class="number" style="color:#c62828">${suspendus}</div><div class="label">🚫 Suspendus</div></div><div class="stat-card"><div class="number">${totalAnn}</div><div class="label">📋 Annonces</div></div><div class="stat-card"><div class="number">${totalVues}</div><div class="label">👁️ Vues</div></div></div>`;
+    adminAfficher('pending');
+  }catch(e){}
+}
+
+async function adminAfficher(type){
+  const el=document.getElementById('admin-contenu');el.innerHTML='<div style="text-align:center;padding:20px;color:#888">⏳</div>';
+  try{
+    if(type==='pending'){const users=await sbGet('users','select=*&certification_status=eq.pending&certifie=eq.false&limit=20');el.innerHTML=`<h3 style="color:#ff6600;margin:10px 0">⏳ En attente (${Array.isArray(users)?users.length:0})</h3>`+(Array.isArray(users)&&users.length?users.map(u=>`<div class="luxury-card pending-card"><strong>${u.emoji||'👤'} ${u.nom}</strong><p style="color:#888;font-size:0.8em">${u.email} • ${u.tel||'—'}</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">${u.selfie_url?`<img src="${u.selfie_url}" style="width:80px;height:80px;object-fit:cover;border-radius:50%;cursor:pointer" onclick="window.open('${u.selfie_url}','_blank')">`:''}${u.cni_url?`<img src="${u.cni_url}" style="flex:1;min-width:120px;height:80px;object-fit:cover;border-radius:8px;cursor:pointer" onclick="window.open('${u.cni_url}','_blank')">`:''}${u.cni_verso_url?`<img src="${u.cni_verso_url}" style="flex:1;min-width:120px;height:80px;object-fit:cover;border-radius:8px;cursor:pointer" onclick="window.open('${u.cni_verso_url}','_blank')">`:''}  </div><div style="display:flex;gap:8px"><button onclick="adminCertifier('${u.id}')" style="flex:1;background:linear-gradient(135deg,#2d5a1b,#4caf50);color:white;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:600">✅ Approuver</button><button onclick="adminRefuser('${u.id}')" style="flex:1;background:linear-gradient(135deg,#c62828,#e53935);color:white;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:600">❌ Refuser</button></div></div>`).join(''):'<p style="color:#666;text-align:center;padding:20px">🎉 Aucune en attente</p>');}
+    else if(type==='users'){const users=await sbGet('users','select=id,nom,email,role,certifie,statut,emoji,photo_profil,user_code,raison_suspension&limit=50&order=created_at.desc');el.innerHTML=`<h3 style="color:#2d5a1b;margin:10px 0">👥 ${Array.isArray(users)?users.length:0} utilisateurs</h3>`+(Array.isArray(users)?users.map(u=>`<div class="luxury-card ${u.statut==='suspendu'?'suspended-card':''}"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">${u.photo_profil?`<img src="${u.photo_profil}" style="width:38px;height:38px;border-radius:50%;object-fit:cover">`:`<div style="width:38px;height:38px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center">${u.emoji||'👤'}</div>`}<div><strong style="font-size:0.88em">${u.nom}</strong><p style="color:#888;font-size:0.75em">${u.email} ${u.certifie?'✅':''} ${u.statut==='suspendu'?'🚫':''}</p></div></div><div style="display:flex;gap:5px;flex-wrap:wrap"><button onclick="adminEnvoyerMessage('${u.id}','${u.nom}')" style="background:#6a1b9a;color:white;border:none;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:0.72em;font-weight:600">💬</button>${u.statut==='suspendu'?`<button onclick="adminReactiver('${u.id}')" style="background:#2d5a1b;color:white;border:none;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:0.72em;font-weight:600">✅ Réactiver</button>`:`<button onclick="adminSuspendre('${u.id}')" style="background:#ff6600;color:white;border:none;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:0.72em;font-weight:600">🚫 Suspendre</button>`}<button onclick="adminSupprimerUser('${u.id}')" style="background:#ffebee;color:#c62828;border:none;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:0.72em;font-weight:600">🗑️</button></div></div>`).join(''):'');}
+    else if(type==='annonces'){const anns=await sbGet('annonces','select=id,titre,lieu,prix,auteur,vues,type&limit=50&order=created_at.desc');el.innerHTML=`<h3 style="color:#1565c0;margin:10px 0">📋 ${Array.isArray(anns)?anns.length:0} annonces</h3>`+(Array.isArray(anns)?anns.map(a=>`<div class="luxury-card" style="padding:12px"><div style="display:flex;justify-content:space-between;gap:8px"><div><strong style="color:#2d5a1b;font-size:0.85em">${a.titre}</strong><p style="color:#888;font-size:0.75em">📍 ${a.lieu} • 👁️ ${a.vues||0} • ${getTypeLabel(a.type)}</p><p style="color:#2d5a1b;font-size:0.82em;font-weight:700">${Number(a.prix).toLocaleString()} FCFA</p></div><button onclick="adminSupprimerAnnonce('${a.id}')" style="background:#ffebee;color:#c62828;border:none;padding:6px;border-radius:8px;cursor:pointer">🗑️</button></div></div>`).join(''):'');}
+    else if(type==='signalements'){const msgs=await sbGet('messages','select=*&contenu=like.*SIGNALEMENT*&limit=30&order=created_at.desc');el.innerHTML=`<h3 style="color:#c62828;margin:10px 0">🚨 Signalements</h3>`+(Array.isArray(msgs)&&msgs.length?msgs.map(m=>`<div class="luxury-card" style="border-left:4px solid #c62828;padding:12px"><p style="font-size:0.82em">${m.contenu}</p><p style="color:#aaa;font-size:0.72em">${new Date(m.created_at).toLocaleDateString('fr-FR')}</p></div>`).join(''):'<p style="color:#666;text-align:center;padding:20px">Aucun signalement</p>');}
+  }catch(e){el.innerHTML=`<div class="warning-box">❌ Erreur</div>`;}
+}
+
+async function adminCertifier(userId){if(!confirm('Approuver ?'))return;await sbPatch('users',userId,{certifie:true,certification_status:'approved',statut:'actif'});sbPost('messages',{expediteur_id:userId,destinataire_id:userId,contenu:'🎉 Félicitations ! Votre compte est certifié ✅ ! Bienvenue dans la communauté TerraNova 🌍',lu:false,type:'admin'});toast('✅ Certifié !');adminAfficher('pending');}
+async function adminRefuser(userId){const r=prompt('Raison du refus :');await sbPatch('users',userId,{certifie:false,certification_status:'refused'});sbPost('messages',{expediteur_id:userId,destinataire_id:userId,contenu:`❌ Certification refusée.${r?' Raison : '+r:''} Renvoyez des documents clairs.`,lu:false,type:'admin'});toast('❌ Refusé');adminAfficher('pending');}
+async function adminSuspendre(userId){const r=prompt('Raison :');if(!r)return;await sbPatch('users',userId,{statut:'suspendu',raison_suspension:r});sbPost('messages',{expediteur_id:userId,destinataire_id:userId,contenu:`🚫 Compte suspendu. Raison : ${r}.`,lu:false,type:'admin'});toast('🚫 Suspendu');adminAfficher('users');}
+async function adminReactiver(userId){if(!confirm('Réactiver ?'))return;await sbPatch('users',userId,{statut:'actif',raison_suspension:''});sbPost('messages',{expediteur_id:userId,destinataire_id:userId,contenu:'✅ Compte réactivé ! 🌍',lu:false,type:'admin'});toast('✅ Réactivé');adminAfficher('users');}
+async function adminEnvoyerMessage(userId,nom){const msg=prompt(`Message à ${nom} :`);if(!msg)return;sbPost('messages',{expediteur_id:utilisateur.id,destinataire_id:userId,contenu:'🌍 TerraNova : '+msg,lu:false,type:'admin'});toast('✅ Envoyé');}
+async function adminSupprimerUser(userId){if(!confirm('Supprimer définitivement ?'))return;await sbDelete('users',userId);toast('🗑️ Supprimé');adminAfficher('users');}
+async function adminSupprimerAnnonce(id){if(!confirm('Supprimer ?'))return;await sbDelete('annonces',id);toast('🗑️ Supprimée');adminAfficher('annonces');}
+
+// ===== SHOW PAGE CORRIGE =====
+function showPage(page){
+  document.getElementById('notif-center').style.display='none';notifCenterOuvert=false;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('page-'+page);if(el)el.classList.add('active');
+  window.scrollTo(0,0);
+  if(page==='annonces')afficherAnnonces();
+  else if(page==='accueil')afficherAccueil();
+  else if(page==='profil')afficherDashboard();
+  else if(page==='mes-annonces')afficherMesAnnonces();
+  else if(page==='favoris')afficherFavoris();
+  else if(page==='mes-infos')afficherMesInfos();
+  else if(page==='admin')afficherAdmin();
+  else if(page==='messages')afficherMessages();
+  else if(page==='activite')afficherActivite('favoris');
+  else if(page==='classement')afficherClassement();
+  else if(page==='parametres'){
+    appliquerLangue();
+    const d=document.getElementById('dark-mode-status');if(d)d.textContent=darkMode?'Activé':'Désactivé';
+    const np=document.getElementById('notif-push-status');if(np&&'Notification'in window&&Notification.permission==='granted'){np.textContent='Activé';np.style.background='#e8f5e9';np.style.color='#2d5a1b';}
+    villesFav.forEach(v=>{document.querySelectorAll('.quartier-btn').forEach(b=>{if(b.textContent.includes(v))b.classList.add('selected');});});
+  }
+  updateHeader();
+}
+
+// ===== UPDATE HEADER CORRIGE =====
+function updateHeader(){
+  const el=document.getElementById('header-user');if(!el)return;
+  if(utilisateur){
+    const av=utilisateur.photo_profil?`<img src="${utilisateur.photo_profil}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.5);vertical-align:middle;flex-shrink:0">`:`<span style="font-size:1.1em">${utilisateur.emoji||'👤'}</span>`;
+    el.innerHTML=`<div style="display:flex;align-items:center;gap:6px;cursor:pointer" onclick="showPage('profil')">${av}<span style="color:white;font-size:0.82em;font-weight:700;white-space:nowrap">${utilisateur.nom.split(' ')[0]}${utilisateur.certifie?' ✅':''}</span></div>`;
+  }else{
+    el.innerHTML=`<div style="display:flex;align-items:center;gap:6px">
+      <button onclick="showPage('connexion')" style="background:transparent;color:white;border:2px solid rgba(255,255,255,0.5);padding:5px 10px;border-radius:8px;cursor:pointer;font-size:0.78em;font-weight:600;font-family:'Montserrat',sans-serif;white-space:nowrap">Connexion</button>
+      <button onclick="showPage('publier')" style="background:white;color:#2d5a1b;border:none;padding:5px 10px;border-radius:8px;cursor:pointer;font-size:0.78em;font-weight:700;font-family:'Montserrat',sans-serif;white-space:nowrap">Publier</button>
+    </div>`;
+  }
+}
+
+// INIT
+if(darkMode)document.body.classList.add('dark');
+verifierCGU();appliquerLangue();updateHeader();afficherAccueil();mettreAJourBadgeNotif();
+if(utilisateur)demarrerNotifs();
+window.addEventListener('load',()=>{const np=document.getElementById('notif-push-status');if(np&&'Notification'in window&&Notification.permission==='granted'){np.textContent='Activé';np.style.background='#e8f5e9';np.style.color='#2d5a1b';}});
+</script>
+</body>
+</html>
